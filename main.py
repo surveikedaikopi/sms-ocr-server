@@ -1,3 +1,4 @@
+import json
 import numpy as np
 from fastapi import FastAPI, Form
 
@@ -8,9 +9,9 @@ app = FastAPI()
 @app.get("/read")
 async def read_inbox():
     try:
-        with open("inbox.txt", "r") as myfile:
-            content = myfile.read()
-        return {"message": content}
+        with open("inbox.json", "r") as json_file:
+            data = [json.loads(line) for line in json_file]
+        return {"inbox_data": data}
     except FileNotFoundError:
         return {"message": "File not found"}
 
@@ -23,6 +24,19 @@ async def receive_sms(
     receive_date: str = Form(...)
 ):
     
+    # Create a dictionary to store the data
+    data = {
+        "ID": id,
+        "Originator": originator,
+        "Message": msg,
+        "Receive Date": receive_date
+    }
+
+    # Log the received data to a JSON file
+    with open("inbox.json", "a") as json_file:
+        json.dump(data, json_file)
+        json_file.write('\n')  # Add a newline to separate the JSON objects
+
     try:
         # Split message
         info = msg.split('#')
@@ -59,13 +73,6 @@ async def receive_sms(
                     'smsInvalid': invalid,
                     'smsTotal': total_votes
                 }
-
-        # Log the received data to a file
-        with open("inbox.txt", "a") as myfile:
-            myfile.write(f"ID: {id}\n")
-            myfile.write(f"Originator: {originator}\n")
-            myfile.write(f"Message: {msg}\n")
-            myfile.write(f"Receive Date: {receive_date}\n\n")
 
         # Return the message as the API response
         return {"message": message}
