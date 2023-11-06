@@ -60,7 +60,7 @@ async def receive_sms(
             votes = info[2:]
             invalid = info[-1]
             total_votes = np.array(votes).astype(int).sum()
-            summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates[event])]) + f'\ninvalid:{invalid}' + f'\ntotal:{total_votes}\n'
+            summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates[event])]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
             # Check Error Type 3 (maximum votes is 300)
             if total_votes > 300:
                 message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
