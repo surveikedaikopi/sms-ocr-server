@@ -1,9 +1,9 @@
 import json
 import tools
-import base64
 import requests
 import numpy as np
-from fastapi import Form, FastAPI, UploadFile
+from fastapi import Form, FastAPI
+from fastapi.responses import StreamingResponse
 
 app = FastAPI()
 
@@ -133,9 +133,13 @@ async def get_uid(
     # Forward file to Bubble database
     excel_file_path = f'target_{event}.xlsx'
     
-    with open(excel_file_path, 'rb') as file_content:
-        file = {'target_file': (excel_file_path, file_content, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')}
-        return file
+    def file_generator():
+        with open(excel_file_path, 'rb') as file_content:
+            yield from file_content
+
+    response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response.headers["Content-Disposition"] = f"attachment; filename={excel_file_path}"
+    return response
 
         # # Send the PATCH request
         # response = requests.patch(f'{url_bubble}/events/{_id}', files=files, headers=headers)
