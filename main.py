@@ -1,12 +1,17 @@
 import json
+import tools
+import base64
 import requests
 import numpy as np
-from fastapi import FastAPI, Form
+from fastapi import Form, FastAPI, UploadFile
 
 app = FastAPI()
 
 url_send_sms = "https://api.nusasms.com/api/v3/sendsms/plain"
+url_bubble = "https://quick-count.bubbleapps.io/version-test/api/1.1/obj"
+API_KEY = "cecd6c1aa78871f6746b03bb1997508f"
 
+# ================================================================================================================
 # Endpoint to read the "inbox.txt" file
 @app.get("/read")
 async def read_inbox():
@@ -17,10 +22,12 @@ async def read_inbox():
     except FileNotFoundError:
         return {"message": "File not found"}
 
-
+# ================================================================================================================
+# Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 @app.post("/receive")
 async def receive_sms(
     id: int = Form(...),
+    gateway_number: int = Form(...),
     originator: str = Form(...),
     msg: str = Form(...),
     receive_date: str = Form(...)
@@ -29,7 +36,8 @@ async def receive_sms(
     # Create a dictionary to store the data
     data = {
         "ID": id,
-        "Originator": originator,
+        "Gateway": gateway_number,
+        "Sender": originator,
         "Message": msg,
         "Receive Date": receive_date
     }
@@ -41,7 +49,8 @@ async def receive_sms(
 
     # Split message
     info = msg.lower().split('#')
-    event = info[1]
+    uid = info[1]
+    event = info[2]
 
     number_candidates = {
         'pilpres': 2,
@@ -50,40 +59,85 @@ async def receive_sms(
     # Check Error Type 1 (prefix)
     if info[0] == 'kk':
 
-        format = 'kk#event#' + '#'.join([f'0{i+1}' for i in range(number_candidates[event])]) + '#rusak'
+        format = 'kk#uid#event#' + '#'.join([f'0{i+1}' for i in range(number_candidates[event])]) + '#rusak'
         template_error_msg = 'cek & kirim ulang dgn format:\n' + format
 
-        # Check Error Type 2 (data completeness)
-        if len(info) != number_candidates[event] + 3:
-            message = 'Data tidak sesuai, ' + template_error_msg
+        # Check Error Type 2 (UID)
+        if uid not in list_uid:
+            message = 'Unique ID (UID) tidak terdaftar, ' + template_error_msg
         else:
-            votes = info[2:]
-            invalid = info[-1]
-            total_votes = np.array(votes).astype(int).sum()
-            summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates[event])]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
-            # Check Error Type 3 (maximum votes is 300)
-            if total_votes > 300:
-                message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+            # Check Error Type 3 (data completeness)
+            if len(info) != number_candidates[event] + 3:
+                message = 'Data tidak sesuai, ' + template_error_msg
             else:
-                message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                votes = info[3:]
+                invalid = info[-1]
+                total_votes = np.array(votes).astype(int).sum()
+                summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates[event])]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
+                # Check Error Type 4 (maximum votes)
+                if total_votes > 300:
+                    message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+                else:
+                    message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
-                # Forward data to Bubble API
-                output = {
-                    'smsID': id,
-                    'phone': originator,
-                    'smsTime': receive_date,
-                    'event': event,
-                    'smsVotes': votes[:-1],
-                    'smsInvalid': invalid,
-                    'smsTotal': total_votes
-                }
+                    # Payload
+                    payload = {
+                        'SMS': True,
+                        'UID': uid,
+                        'Gateway': gateway_number,
+                        'Phone': originator,
+                        'SMS Timestamp': receive_date,
+                        'Event Name': event,
+                        'SMS Votes': votes[:-1],
+                        'SMS Invalid': invalid,
+                        'SMS Total Voters': total_votes
+                    }
+                    headers = {'Authorization': f'Bearer {API_KEY}'}
 
-        # Return the message to the sender via SMS Gateway
-        params = {
-            "user": "taufikadinugraha_api",
-            "password": "SekarangSeriusSMS@ku99",
-            "SMSText": message,
-            "GSM": originator,
-            "output": "json",
-        }
-        requests.get(url_send_sms, params=params)
+                    # Check if data with the same "Phone" number exists in database
+                    res = requests.get(f'{url_bubble}/votes?filter[Phone]={originator}', headers=headers)
+                    data = res.json()                                    
+
+                    # Forward data to Bubble database
+                    if len(data['response']['results']) == 0:
+                        # Add new data
+                        requests.post(f'{url_bubble}/votes', headers=headers, data=payload)
+                    else:
+                        _id = data['response']['results'][0]['_id']
+                        # Modify existing data
+                        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+
+
+        # # Return the message to the sender via SMS Gateway
+        # params = {
+        #     "user": "taufikadinugraha_api",
+        #     "password": "SekarangSeriusSMS@ku99",
+        #     "SMSText": message,
+        #     "GSM": originator,
+        #     "output": "json",
+        # }
+        # requests.get(url_send_sms, params=params)
+
+
+# ================================================================================================================
+# Endpoint to generate UID
+@app.post("/getUID")
+async def get_uid(
+    event: str = Form(...),
+    N_TPS: int = Form(...),
+):
+    
+    # Generate target file
+    tools.create_target(event, N_TPS)
+    
+    # Forward file to Bubble database
+    excel_file_path = f'target_{event}.xlsx'
+    
+    with open(excel_file_path, 'rb') as file_content:
+        file = {'target_file': (excel_file_path, file_content, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')}
+        return file
+
+        # # Send the PATCH request
+        # response = requests.patch(f'{url_bubble}/events/{_id}', files=files, headers=headers)
+
+        # print(response.text)
