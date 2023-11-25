@@ -1,8 +1,9 @@
+import os
 import json
 import tools
 import requests
 import numpy as np
-from fastapi import Form, FastAPI
+from fastapi import Form, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
 
 app = FastAPI()
@@ -139,9 +140,41 @@ async def get_uid(
 
     response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response.headers["Content-Disposition"] = f"attachment; filename={excel_file_path}"
+
+    # Remove file
+    os.remove(excel_file_path)
+
+    # Return response
     return response
 
-        # # Send the PATCH request
-        # response = requests.patch(f'{url_bubble}/events/{_id}', files=files, headers=headers)
 
-        # print(response.text)
+
+# ================================================================================================================
+# Endpoint to generate SCTO xlsform
+@app.post("/generate_xlsform")
+async def generate_xlsform(
+    form_title: str = Form(...),
+    form_id: str = Form(...),
+    target_file_name: str = Form(...),
+    target_file: UploadFile = Form(...)
+):
+
+    # Save the target file to a temporary location
+    with open(target_file_name, 'wb') as target_file_content:
+        target_file_content.write(target_file.file.read())
+
+    # Generate xlsform logic using the target file
+    tools.create_xlsform_template(target_file_name, form_title, form_id)
+    xlsform_path = f'xlsform_{form_id}.xlsx'
+
+    def file_generator():
+        with open(xlsform_path, 'rb') as file_content:
+            yield from file_content
+
+    response = StreamingResponse(file_generator(), media_type='application/vnd.ms-excel')
+    response.headers["Content-Disposition"] = f"attachment; filename={xlsform_path}"
+
+    # Remove file after sending the response
+    os.remove(xlsform_path)
+
+    return response
