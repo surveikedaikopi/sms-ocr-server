@@ -171,7 +171,7 @@ async def generate_xlsform(
         with open(xlsform_path, 'rb') as file_content:
             yield from file_content
 
-    response = StreamingResponse(file_generator(), media_type='application/vnd.ms-excel')
+    response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response.headers["Content-Disposition"] = f"attachment; filename={xlsform_path}"
 
     # Remove file after sending the response
