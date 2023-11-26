@@ -175,6 +175,7 @@ async def generate_xlsform(
     response.headers["Content-Disposition"] = f"attachment; filename={xlsform_path}"
 
     # Remove file after sending the response
-    os.remove(xlsform_path)
+    os.remove(target_file_name)
+    # os.remove(xlsform_path)
 
     return response
