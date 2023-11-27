@@ -118,7 +118,7 @@ def create_xlsform_template(target_file, form_title, form_id):
     # Create a nested dictionary
     nested_target = {}
     for row in target_data.itertuples(index=False):
-        provinsi, kab_kota, kecamatan = row[2:]
+        provinsi, kab_kota, kecamatan = row[2:-1]
         # Check for None values and initialize nested dictionaries
         if provinsi is not None:
             nested_target.setdefault(provinsi, {})
