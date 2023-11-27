@@ -260,16 +260,17 @@ async def generate_xlsform(
     # Generate Text for API input
     data = '\n'.join([f'{{"UID": "{uid}", "event": {event}, "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
 
-    ##################################
-    print(data)
-    ##################################
-
     # Populate votes table
     headers = {
         'Authorization': f'Bearer {API_KEY}', 
         'Content-Type': 'text/plain'
         }
-    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+    res = requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+
+
+    #############
+    print(res.json())
+    #############
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
