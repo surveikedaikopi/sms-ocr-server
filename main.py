@@ -271,10 +271,6 @@ async def generate_xlsform(
         }
     requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
-    ##################################
-    print(requests.json())
-    ##################################
-
     # Get UIDs and store as json
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
