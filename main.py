@@ -240,13 +240,7 @@ async def get_uid(
     UID = df['UID']
 
     # Generate Text for API input
-    data = '\n'.join([f'{{"UID": "{uid}", "event": "ngetes", "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", 
-                      "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], 
-                                                                                                                                                 df['Korwil'], 
-                                                                                                                                                 df['Provinsi'], 
-                                                                                                                                                 df['Kab/Kota'], 
-                                                                                                                                                 df['Kecamatan'], 
-                                                                                                                                                 df['Kelurahan'])])
+    data = '\n'.join([f'{{"UID": "{uid}", "event": "ngetes", "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
     
     # Populate event table with the generated UIDs
     requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
