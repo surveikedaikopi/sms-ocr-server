@@ -258,7 +258,7 @@ async def generate_xlsform(
     df = pd.read_excel(target_file_name)
 
     # Generate Text for API input
-    data = '\n'.join([f'{{"UID": "{uid}", "Event Name": {event}, "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
+    data = '\n'.join([f'{{"UID": "{uid}", "Event Name": "{event}", "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
 
     # Populate votes table
     headers = {
@@ -276,9 +276,7 @@ async def generate_xlsform(
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
-    headers = {
-        'Authorization': f'Bearer {API_KEY}', 
-        }
+    headers = {'Authorization': f'Bearer {API_KEY}'}
     res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
     uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
     with open(f'uid_{event}.json', 'w') as json_file:
