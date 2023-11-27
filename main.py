@@ -269,13 +269,16 @@ async def generate_xlsform(
 
 
     #############
-    print(res.json())
+    print(res.content)
     #############
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
+    headers = {
+        'Authorization': f'Bearer {API_KEY}', 
+        }
     res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
     uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
     with open(f'uid_{event}.json', 'w') as json_file:
