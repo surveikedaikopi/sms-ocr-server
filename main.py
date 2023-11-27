@@ -230,9 +230,6 @@ async def get_uid(
     response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response.headers["Content-Disposition"] = f"attachment; filename={excel_file_path}"
 
-    # Remove file
-    # os.remove(excel_file_path)
-
     # Return response
     return response
 
@@ -267,11 +264,6 @@ async def generate_xlsform(
         }
     res = requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
-
-    #############
-    print(res.content)
-    #############
-
     # Get UIDs and store as json
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
@@ -293,8 +285,14 @@ async def generate_xlsform(
     response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response.headers["Content-Disposition"] = f"attachment; filename={xlsform_path}"
 
-    # Remove file after sending the response
-    os.remove(target_file_name)
-    # os.remove(xlsform_path)
-
     return response
+
+
+
+# ================================================================================================================
+# Endpoint to delete event
+@app.post("/delete_event")
+async def delete_event(
+    event: str = Form(...)
+):
+    os.system(f'rm *_{event}.*')
