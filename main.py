@@ -293,6 +293,8 @@ async def generate_xlsform(
 # Endpoint to delete event
 @app.post("/delete_event")
 async def delete_event(
-    event: str = Form(...)
+    event: str = Form(...),
+    form_id: str = Form(...)
 ):
     os.system(f'rm *_{event}.*')
+    os.system(f'rm *_{form_id}.*')
