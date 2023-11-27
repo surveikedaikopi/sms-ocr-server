@@ -253,7 +253,7 @@ async def generate_xlsform(
     target_file: UploadFile = Form(...)
 ):
 
-    event = target_file_name.split('_')[-1].split(.)[0]
+    event = target_file_name.split('_')[-1].split('.')[0]
 
     # Save the target file to a temporary location
     with open(target_file_name, 'wb') as target_file_content:
