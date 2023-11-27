@@ -255,7 +255,7 @@ async def get_uid(
         json.dump(uid_dict, json_file)
 
     # Remove file
-    os.remove(excel_file_path)
+    # os.remove(excel_file_path)
 
     # Return response
     return response
