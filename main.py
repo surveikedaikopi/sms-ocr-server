@@ -235,25 +235,6 @@ async def get_uid(
     response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response.headers["Content-Disposition"] = f"attachment; filename={excel_file_path}"
 
-    # Get UIDs from the generated file
-    df = pd.read_excel(excel_file_path)
-    UID = df['UID']
-
-    # Generate Text for API input
-    data = '\n'.join([f'{{"UID": "{uid}", "event": "ngetes", "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
-    
-    # Populate event table with the generated UIDs
-    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
-
-    # Get UIDs and store as json
-    filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
-    filter_json = json.dumps(filter_params)
-    params = {"constraints": filter_json}
-    res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-    uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
-    with open(f'uid_{event}.json', 'w') as json_file:
-        json.dump(uid_dict, json_file)
-
     # Remove file
     # os.remove(excel_file_path)
 
@@ -275,6 +256,24 @@ async def generate_xlsform(
     # Save the target file to a temporary location
     with open(target_file_name, 'wb') as target_file_content:
         target_file_content.write(target_file.file.read())
+
+    # Get UIDs from the target file
+    df = pd.read_excel(target_file_name)
+
+    # Generate Text for API input
+    data = '\n'.join([f'{{"UID": "{uid}", "event": "ngetes", "Korwil": "{korwil}", "Provinsi": "{provinsi}", "Kab/Kota": "{kab_kota}", "Kecamatan": "{kecamatan}", "Kelurahan": "{kelurahan}"}}' for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(df['UID'], df['Korwil'], df['Provinsi'], df['Kab/Kota'], df['Kecamatan'], df['Kelurahan'])])
+    
+    # Populate votes table
+    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+
+    # Get UIDs and store as json
+    filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
+    filter_json = json.dumps(filter_params)
+    params = {"constraints": filter_json}
+    res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+    uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
+    with open(f'uid_{event}.json', 'w') as json_file:
+        json.dump(uid_dict, json_file)
 
     # Generate xlsform logic using the target file
     tools.create_xlsform_template(target_file_name, form_title, form_id)
