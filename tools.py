@@ -28,7 +28,7 @@ def generate_unique_codes(N):
     return codes
 
 def create_target(event, N):
-    df = pd.DataFrame(columns=['UID', 'Korwil', 'Provinsi', 'Kab/Kota', 'Kecamatan'])
+    df = pd.DataFrame(columns=['UID', 'Korwil', 'Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan'])
     # Generate unique IDs
     df['UID'] = generate_unique_codes(N)
     # Save UIDs in json file
