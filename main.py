@@ -137,7 +137,7 @@ for port in range(1, num_endpoints + 1):
                             status = 'SMS Only'
 
                         # Convert receive_date_str to datetime format
-                        tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S %z")
+                        tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
                         # Extract the hour as an integer
                         hour = tmp.hour
 
