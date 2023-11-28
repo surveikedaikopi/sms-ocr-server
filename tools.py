@@ -31,9 +31,9 @@ def create_target(event, N):
     df = pd.DataFrame(columns=['UID', 'Korwil', 'Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan'])
     # Generate unique IDs
     df['UID'] = generate_unique_codes(N)
-    # Save UIDs in json file
-    with open(f'uid_{event}.json', 'w') as json_file:
-        json.dump(df['UID'].tolist(), json_file)
+    # # Save UIDs in json file
+    # with open(f'uid_{event}.json', 'w') as json_file:
+    #     json.dump(df['UID'].tolist(), json_file)
     # Save excel file
     with pd.ExcelWriter(f'target_{event}.xlsx', engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='survey')
