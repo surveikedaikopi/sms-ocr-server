@@ -97,8 +97,29 @@ for port in range(1, num_endpoints + 1):
                     message = 'Data tidak sesuai, ' + template_error_msg
                     error_type = 3
                 else:
+                    # Get votes
                     votes = info[3:]
+                    vote1 = votes[0]
+                    vote2 = votes[1]
+                    try:
+                        vote3 = votes[2]
+                    except:
+                        vote3 = np.nan
+                    try:
+                        vote4 = votes[3]
+                    except:
+                        vote4 = np.nan
+                    try:
+                        vote5 = votes[4]
+                    except:
+                        vote5 = np.nan
+                    try:
+                        vote6 = votes[5]
+                    except:
+                        vote6 = np.nan
+                    # Get invalid votes
                     invalid = info[-1]
+                    # Get total votes
                     total_votes = np.array(votes).astype(int).sum()
                     summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
                     # Check Error Type 4 (maximum votes)
@@ -115,16 +136,8 @@ for port in range(1, num_endpoints + 1):
                         res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
                         data = res.json()
 
-                        #####################
-                        print(data)
-                        #####################
-
                         # Check if SCTO data exists
                         scto = data['response']['results'][0]['SCTO']
-
-                        #####################
-                        print(scto)
-                        #####################
 
                         # If SCTO data exists, check if they are consistent
                         if scto:
@@ -161,6 +174,12 @@ for port in range(1, num_endpoints + 1):
                             'SMS Votes': votes[:-1],
                             'SMS Invalid': invalid,
                             'SMS Total Voters': total_votes, 
+                            'Vote1': vote1,
+                            'Vote2': vote2,
+                            'Vote3': vote3,
+                            'Vote4': vote4,
+                            'Vote5': vote5,
+                            'Vote6': vote6,
                             'Final Votes': votes[:-1],
                             'Invalid Votes': invalid,
                             'Complete': scto,
@@ -176,9 +195,7 @@ for port in range(1, num_endpoints + 1):
 
                         # Forward data to Bubble database
                         _id = uid_dict[uid.upper()]
-                        res = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
-
-                        print(res.content)
+                        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
 
             # # Return the message to the sender via SMS Gateway
             # params = {
