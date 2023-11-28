@@ -141,6 +141,12 @@ for port in range(1, num_endpoints + 1):
                         # Extract the hour as an integer
                         hour = tmp.hour
 
+                        # if note is not yet defined
+                        try:
+                            note
+                        except:
+                            note = ''
+
                         # Payload
                         payload = {
                             'Active': True,
