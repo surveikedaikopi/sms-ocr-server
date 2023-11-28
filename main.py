@@ -104,19 +104,19 @@ for port in range(1, num_endpoints + 1):
                         try:
                             vote3 = votes[2]
                         except:
-                            vote3 = np.nan
+                            vote3 = 0
                         try:
                             vote4 = votes[3]
                         except:
-                            vote4 = np.nan
+                            vote4 = 0
                         try:
                             vote5 = votes[4]
                         except:
-                            vote5 = np.nan
+                            vote5 = 0
                         try:
                             vote6 = votes[5]
                         except:
-                            vote6 = np.nan
+                            vote6 = 0
                         # Get invalid votes
                         invalid = info[-1]
                         # Get total votes
