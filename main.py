@@ -73,142 +73,142 @@ for port in range(1, num_endpoints + 1):
         # Check Error Type 1 (prefix)
         if info[0] == 'kk':
 
-            # try:
-            uid = info[1].lower()
-            event = info[2]
+            try:
+                uid = info[1].lower()
+                event = info[2]
 
-            # Get number of candidate pairs
-            with open(f'event_{event}.json', 'r') as json_file:
-                json_content = json.load(json_file)
-                number_candidates = json_content['n_candidate']
+                # Get number of candidate pairs
+                with open(f'event_{event}.json', 'r') as json_file:
+                    json_content = json.load(json_file)
+                    number_candidates = json_content['n_candidate']
 
-            format = 'kk#uid#event#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#rusak'
-            template_error_msg = 'cek & kirim ulang dgn format:\n' + format
+                format = 'kk#uid#event#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#rusak'
+                template_error_msg = 'cek & kirim ulang dgn format:\n' + format
 
-            tmp = pd.read_excel(f'target_{event}.xlsx', usecols=['UID'])
+                tmp = pd.read_excel(f'target_{event}.xlsx', usecols=['UID'])
 
-            # Check Error Type 2 (UID)
-            if uid not in tmp['UID'].str.lower().tolist():
-                message = f'Unique ID (UID) "{uid.upper()}" tidak terdaftar, ' + template_error_msg
-                error_type = 2
-            else:
-                # Check Error Type 3 (data completeness)
-                if len(info) != number_candidates + 4:
-                    message = 'Data tidak sesuai, ' + template_error_msg
-                    error_type = 3
+                # Check Error Type 2 (UID)
+                if uid not in tmp['UID'].str.lower().tolist():
+                    message = f'Unique ID (UID) "{uid.upper()}" tidak terdaftar, ' + template_error_msg
+                    error_type = 2
                 else:
-                    # Get votes
-                    votes = info[3:]
-                    vote1 = votes[0]
-                    vote2 = votes[1]
-                    try:
-                        vote3 = votes[2]
-                    except:
-                        vote3 = np.nan
-                    try:
-                        vote4 = votes[3]
-                    except:
-                        vote4 = np.nan
-                    try:
-                        vote5 = votes[4]
-                    except:
-                        vote5 = np.nan
-                    try:
-                        vote6 = votes[5]
-                    except:
-                        vote6 = np.nan
-                    # Get invalid votes
-                    invalid = info[-1]
-                    # Get total votes
-                    total_votes = np.array(votes).astype(int).sum()
-                    summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
-                    # Check Error Type 4 (maximum votes)
-                    if total_votes > 300:
-                        message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
-                        error_type = 4
+                    # Check Error Type 3 (data completeness)
+                    if len(info) != number_candidates + 4:
+                        message = 'Data tidak sesuai, ' + template_error_msg
+                        error_type = 3
                     else:
-                        message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
-
-                        # Retrieve data with this UID from Bubble database
-                        filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid.upper()}]
-                        filter_json = json.dumps(filter_params)
-                        params = {"constraints": filter_json}
-                        res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-                        data = res.json()
-
-                        # Check if SCTO data exists
-                        scto = data['response']['results'][0]['SCTO']
-
-                        # If SCTO data exists, check if they are consistent
-                        if scto:
-                            if votes[:-1] == data['response']['results'][0]['SCTO Votes']:
-                                status = 'Verified'
-                            else:
-                                status = 'Not Verified'
-                                note = 'SMS vs SCTO not consistent'
-                        else:
-                            status = 'SMS Only'
-
-                        # Convert receive_date_str to datetime format
-                        tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-                        # Extract the hour as an integer
-                        hour = tmp.hour
-
-                        # if note is not yet defined
+                        # Get votes
+                        votes = info[3:]
+                        vote1 = votes[0]
+                        vote2 = votes[1]
                         try:
-                            note
+                            vote3 = votes[2]
                         except:
-                            note = ''
+                            vote3 = np.nan
+                        try:
+                            vote4 = votes[3]
+                        except:
+                            vote4 = np.nan
+                        try:
+                            vote5 = votes[4]
+                        except:
+                            vote5 = np.nan
+                        try:
+                            vote6 = votes[5]
+                        except:
+                            vote6 = np.nan
+                        # Get invalid votes
+                        invalid = info[-1]
+                        # Get total votes
+                        total_votes = np.array(votes).astype(int).sum()
+                        summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
+                        # Check Error Type 4 (maximum votes)
+                        if total_votes > 300:
+                            message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+                            error_type = 4
+                        else:
+                            message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
-                        # Payload
-                        payload = {
-                            'Active': True,
-                            'SMS': True,
-                            'UID': uid.upper(),
-                            'Gateway Port': port,
-                            'Gateway Number': gateway_number,
-                            'Phone': originator,
-                            'SMS Timestamp': receive_date,
-                            'SMS Hour': hour,
-                            'Event Name': event,
-                            'SMS Votes': votes[:-1],
-                            'SMS Invalid': invalid,
-                            'SMS Total Voters': total_votes, 
-                            'Vote1': vote1,
-                            'Vote2': vote2,
-                            'Vote3': vote3,
-                            'Vote4': vote4,
-                            'Vote5': vote5,
-                            'Vote6': vote6,
-                            'Final Votes': votes[:-1],
-                            'Invalid Votes': invalid,
-                            'Complete': scto,
-                            'Status': status,
-                            'Note': note
-                        }
+                            # Retrieve data with this UID from Bubble database
+                            filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid.upper()}]
+                            filter_json = json.dumps(filter_params)
+                            params = {"constraints": filter_json}
+                            res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+                            data = res.json()
 
-                        raw_sms_status = 'Accepted'
+                            # Check if SCTO data exists
+                            scto = data['response']['results'][0]['SCTO']
 
-                        # Load the JSON file into a dictionary
-                        with open(f'uid_{event}.json', 'r') as json_file:
-                            uid_dict = json.load(json_file)
+                            # If SCTO data exists, check if they are consistent
+                            if scto:
+                                if votes[:-1] == data['response']['results'][0]['SCTO Votes']:
+                                    status = 'Verified'
+                                else:
+                                    status = 'Not Verified'
+                                    note = 'SMS vs SCTO not consistent'
+                            else:
+                                status = 'SMS Only'
 
-                        # Forward data to Bubble database
-                        _id = uid_dict[uid.upper()]
-                        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+                            # Convert receive_date_str to datetime format
+                            tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
+                            # Extract the hour as an integer
+                            hour = tmp.hour
 
-            # # Return the message to the sender via SMS Gateway
-            # params = {
-            #     "user": "taufikadinugraha_api",
-            #     "password": "SekarangSeriusSMS@ku99",
-            #     "SMSText": message,
-            #     "GSM": originator,
-            #     "output": "json",
-            # }
-            # requests.get(url_send_sms, params=params)
+                            # if note is not yet defined
+                            try:
+                                note
+                            except:
+                                note = ''
 
-            # except:
-            #     error_type = 1
+                            # Payload
+                            payload = {
+                                'Active': True,
+                                'SMS': True,
+                                'UID': uid.upper(),
+                                'Gateway Port': port,
+                                'Gateway Number': gateway_number,
+                                'Phone': originator,
+                                'SMS Timestamp': receive_date,
+                                'SMS Hour': hour,
+                                'Event Name': event,
+                                'SMS Votes': votes[:-1],
+                                'SMS Invalid': invalid,
+                                'SMS Total Voters': total_votes, 
+                                'Vote1': vote1,
+                                'Vote2': vote2,
+                                'Vote3': vote3,
+                                'Vote4': vote4,
+                                'Vote5': vote5,
+                                'Vote6': vote6,
+                                'Final Votes': votes[:-1],
+                                'Invalid Votes': invalid,
+                                'Complete': scto,
+                                'Status': status,
+                                'Note': note
+                            }
+
+                            raw_sms_status = 'Accepted'
+
+                            # Load the JSON file into a dictionary
+                            with open(f'uid_{event}.json', 'r') as json_file:
+                                uid_dict = json.load(json_file)
+
+                            # Forward data to Bubble database
+                            _id = uid_dict[uid.upper()]
+                            requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+
+                # # Return the message to the sender via SMS Gateway
+                # params = {
+                #     "user": "taufikadinugraha_api",
+                #     "password": "SekarangSeriusSMS@ku99",
+                #     "SMSText": message,
+                #     "GSM": originator,
+                #     "output": "json",
+                # }
+                # requests.get(url_send_sms, params=params)
+
+            except:
+                error_type = 1
 
         else:
             error_type = 0
