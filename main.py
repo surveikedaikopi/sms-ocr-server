@@ -157,7 +157,7 @@ for port in range(1, num_endpoints + 1):
                             raw_sms_status = 'Accepted'
 
                             # Load the JSON file into a dictionary
-                            with open('uid_data.json', 'r') as json_file:
+                            with open(f'uid_{event}.json', 'r') as json_file:
                                 uid_dict = json.load(json_file)
 
                             # Forward data to Bubble database

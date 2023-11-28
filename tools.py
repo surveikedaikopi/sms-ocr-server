@@ -102,7 +102,7 @@ def create_xlsform_template(target_file, form_title, form_id):
                                  }, ignore_index=True)
 
     # Add image & geopoint question
-    for (t,n,l,r) in zip(['image', 'image', 'geopoint'], ['foto_formulir_c1', 'foto_jumlah_suara', 'lokasi'], ['Foto Formulir C1', 'Foto Jumlah Suara di Formulir C1', 'Lokasi'], ['yes', 'yes', 'yes']):
+    for (t,n,l,r) in zip(['text', 'image', 'image', 'geopoint'], ['no_tps', 'foto_formulir_c1', 'foto_jumlah_suara', 'lokasi'], ['No. TPS', 'Foto Formulir C1', 'Foto Jumlah Suara di Formulir C1', 'Lokasi'], ['yes', 'yes', 'yes', 'yes']):
         survey_df = survey_df.append({'type': t,
                                       'name': n,
                                       'label': l,
@@ -150,7 +150,8 @@ def create_xlsform_template(target_file, form_title, form_id):
 
         # Add kecamatan choices
         for kk in kab_kota:
-            kecamatan = nested_target[p][kk]
+            # kecamatan = nested_target[p][kk]
+            kecamatan = region_data[p][kk]
             kecamatan = sorted(kecamatan)
             choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kecamatan', 
                                                          'name': ['_'.join(i.split(' ')) for i in kecamatan],
