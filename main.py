@@ -1,3 +1,7 @@
+# Filter out the Python 3.7 deprecation warning from google.oauth2
+import warnings
+warnings.filterwarnings("ignore", module="google.oauth2")
+
 import os
 import time
 import json
@@ -5,6 +9,7 @@ import tools
 import requests
 import numpy as np
 import pandas as pd
+import concurrent.futures
 from fastapi import Request
 from dotenv import load_dotenv
 from pysurveycto import SurveyCTOObject
@@ -385,52 +390,43 @@ async def delete_event(
 # ================================================================================================================
 # Process SCTO data
 
-def scto_process(event, form_id, n_candidate):
-    # Retrieve event data from Bubble database
-    filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
-    filter_json = json.dumps(filter_params)
-    params = {"constraints": filter_json}
-    res = requests.get(f'{url_bubble}/Events', headers=headers, params=params)
-    data = res.json()
-
-    # Get paramaters
-    form_id = data['response']['results'][0]['SCTO']
-    n_candidate = data['response']['results'][0]['SCTO']
-
-    # Retrieve data from SCTO
-    res = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
+def scto_process(data, event, n_candidate, processor_id):
 
     # UID
-    uid = res[0]['UID']
+    uid = data['UID']
 
     # SCTO Timestamp
-    std_datetime = datetime.strptime(res[0]['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
+    std_datetime = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
     
     # GPS location
-    coordinate = np.array(res[0]['lokasi'].split(' ')[1::-1]).astype(float)
+    coordinate = np.array(data['koordinat'].split(' ')[1::-1]).astype(float)
     loc = tools.get_location(coordinate)
     
     # Survey Link
-    key = res[0]['KEY'].split('uuid:')[-1]
+    key = data['KEY'].split('uuid:')[-1]
     link = f"https://{SCTO_SERVER_NAME}.surveycto.com/view/submission.html?uuid=uuid%3A{key}"
     
     # OCR C1-Form
-    attachment_url = res[0]['foto_jumlah_suara']
-    ai_votes, ai_invalid = tools.process_document_sample(attachment_url, n_candidate)
+    if processor_id:
+        attachment_url = data['foto_jumlah_suara']
+        ai_votes, ai_invalid = tools.process_document_sample(attachment_url, n_candidate)
+    else:
+        ai_votes = [0]*n_candidate
+        ai_invalid = 0
 
     # Retrieve data with this UID from Bubble database
     filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
     res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-    data = res_bubble.json()
+    data_bubble = res_bubble.json()
 
     # Check if SMS data exists
-    sms = data['response']['results'][0]['SMS']
+    sms = data_bubble['response']['results'][0]['SMS']
 
     # If SMS data exists, check if they are consistent
     if sms:
-        if ai_votes == data['response']['results'][0]['SMS Votes']:
+        if ai_votes == data_bubble['response']['results'][0]['SMS Votes']:
             status = 'Verified'
         else:
             status = 'Not Verified'
@@ -449,15 +445,19 @@ def scto_process(event, form_id, n_candidate):
         'Active': True,
         'Complete': sms,
         'UID': uid,
-        'TPS': res[0]['no_tps'],
+        'SCTO TPS': data['no_tps'],
+        'SCTO Address': data['alamat'],
+        'SCTO RT': data['rt'],
+        'SCTO RW': data['rw'],
         'SCTO': True,
-        'SCTO Username': res[0]['username'],
+        'SCTO Enum Name': data['nama'],
+        'SCTO Enum Phone': data['no. hp'],
         'SCTO Timestamp': std_datetime,
         'SCTO Hour': std_datetime.hour,
-        'SCTO Provinsi': res[0]['selected_provinsi'].replace('-', ' '),
-        'SCTO Kab/Kota': res[0]['selected_kabupaten_kota'].replace('-', ' '),
-        'SCTO Kecamatan': res[0]['selected_kecamatan'].replace('-', ' '),
-        'SCTO Kelurahan': res[0]['selected_kelurahan'].replace('-', ' '),
+        'SCTO Provinsi': data['selected_provinsi'].replace('-', ' '),
+        'SCTO Kab/Kota': data['selected_kabkota'].replace('-', ' '),
+        'SCTO Kecamatan': data['selected_kecamatan'].replace('-', ' '),
+        'SCTO Kelurahan': data['selected_kelurahan'].replace('-', ' '),
         'SCTO Votes': ai_votes,
         'SCTO Invalid': ai_invalid,
         'SCTO Total Voters': np.sum(ai_votes) + ai_invalid,
@@ -479,9 +479,22 @@ def scto_process(event, form_id, n_candidate):
 
 
 
+# ================================================================================================================
+# Asynchronous process
+def process_data(event, form_id, n_candidate, date_obj, processor_id):
+    # Retrieve data from SCTO
+    data = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
+    # Loop over data
+    for i_scto in range(len(data)):
+        # Run 'scto_process' function asynchronously
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.submit(scto_process, data[i_scto], event, n_candidate, processor_id)
+
+
 
 # ================================================================================================================
 # Running All The Time
+
 
 # Build connection
 scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
@@ -492,19 +505,22 @@ while True:
     # Get the current time in the server's time zone
     current_time_server = tools.convert_to_server_timezone(datetime.now())
 
+    print(current_time_server)
+
     # Calculate the oldest completion date based on the current time
     date_obj = current_time_server - timedelta(minutes=minute_delta)
 
-    # Retrieve event from Bubble database
+    # Retrieve events from Bubble database
     res = requests.get(f'{url_bubble}/Events', headers=headers)
     data = res.json()
     events = [i['Event Name'] for i in data['response']['results']]
-    form_ids = [i['Event Name'] for i in data['response']['results']]
-    n_candidates = [i['Event Name'] for i in data['response']['results']]
+    form_ids = [i['SCTO FormID'] for i in data['response']['results']]
+    n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
+    processor_ids = [i['OCR Processor ID'] for i in data['response']['results']]
 
-    for (event, form_id, n_candidate) in zip(events, form_ids, n_candidates):
-        # Run 'scto_process' function asynchronously
-        scto_process(event, form_id, n_candidate)
+    # Process data asynchronously
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        executor.map(process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
 
     # Wait for 10 minutes before the next iteration
     time.sleep(minute_delta * 60)  # 5 minutes in seconds

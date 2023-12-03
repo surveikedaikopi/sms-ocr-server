@@ -167,7 +167,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                   'label': 'Wilayah',
                                  }, ignore_index=True)    
     regions = ['provinsi', 'kabkota', 'kecamatan', 'kelurahan']
-    labels = ['Provins', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
+    labels = ['Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
     for (r, l) in zip([regions, labels]):
         survey_df = survey_df.append({'type': f'select_one list_{r}',
                                     'name': f'selected_{r}',
@@ -208,12 +208,12 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 
     # Personal Info
     txt = 'Masukkan foto Anda yang sedang berada di TPS (diusahakan di samping tanda nomor TPS)'
-    for (t, n, l) in zip(['image', 'text', 'text'], ['selfie', 'nama', 'no. hp'], [txt, 'Nama Anda', 'No. HP Anda'])
-    survey_df = survey_df.append({'type': t,
-                                  'name': n,
-                                  'label': l,
-                                  'required': 'yes',
-                                 }, ignore_index=True)
+    for (t, n, l) in zip(['image', 'text', 'text'], ['selfie', 'nama', 'no. hp'], [txt, 'Nama Anda', 'No. HP Anda']):
+        survey_df = survey_df.append({'type': t,
+                                    'name': n,
+                                    'label': l,
+                                    'required': 'yes',
+                                    }, ignore_index=True)
 
     # Save choices to an Excel file
     with pd.ExcelWriter(f'xlsform_{form_id}.xlsx', engine='openpyxl') as writer:
