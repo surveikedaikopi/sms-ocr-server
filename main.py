@@ -505,14 +505,15 @@ while True:
     # Get the current time in the server's time zone
     current_time_server = tools.convert_to_server_timezone(datetime.now())
 
-    print(current_time_server)
-
     # Calculate the oldest completion date based on the current time
     date_obj = current_time_server - timedelta(minutes=minute_delta)
 
     # Retrieve events from Bubble database
     res = requests.get(f'{url_bubble}/Events', headers=headers)
     data = res.json()
+
+    print(data)
+
     events = [i['Event Name'] for i in data['response']['results']]
     form_ids = [i['SCTO FormID'] for i in data['response']['results']]
     n_candidates = [i['Number of Candidates'] for i in data['response']['results']]

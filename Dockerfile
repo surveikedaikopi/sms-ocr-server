@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . /app
 
 ########################
-COPY ../location.shp /app
+COPY location.shp /app
 ########################
 
 # Install any needed packages specified in requirements.txt
