@@ -9155,11 +9155,11 @@
         "Tambora",
         "Sori Tatanga"
       ],
-      "Hu'u": [
+      "Huu": [
         "Adu",
         "Cempi Jaya",
         "Daha",
-        "Hu'u",
+        "Huu",
         "Jala",
         "Merada",
         "Rasa Bou",
@@ -9192,7 +9192,7 @@
         "Mangge Nae",
         "Manggeasi",
         "Mbawi",
-        "O'o",
+        "Oo",
         "Potu",
         "Sori Sakolo"
       ],
@@ -9219,7 +9219,7 @@
         "Songgaja",
         "Soro",
         "Soro Barat",
-        "Ta'a",
+        "Taa",
         "Tolo Kalo"
       ],
       "Pajo": [
@@ -9266,13 +9266,13 @@
         "Jia",
         "Kowo",
         "Lamera",
-        "Na'e",
+        "Nae",
         "Naru",
         "Naru Barat",
         "Oi Maci",
         "Parangina",
         "Poja",
-        "Rai O'i",
+        "Rai Oi",
         "Rasabou",
         "Sangia",
         "Sari",
@@ -9367,8 +9367,8 @@
         "Kala",
         "Mbawa",
         "Mpili",
-        "Ndano Na'e",
-        "O'o",
+        "Ndano Nae",
+        "Oo",
         "Palama",
         "Rora"
       ],
@@ -9401,7 +9401,7 @@
         "Waduwani"
       ],
       "Langgudu": [
-        "Doro O'o",
+        "Doro Oo",
         "Dumu",
         "Kalodu",
         "Kangga",
@@ -9434,7 +9434,7 @@
         "Sumi"
       ],
       "Lambitu": [
-        "Ka'owa",
+        "Kaowa",
         "Kabaro",
         "Kuta",
         "Londu",
@@ -9489,7 +9489,7 @@
         "Lampe",
         "Lelamase",
         "Nungga",
-        "Oi Fo'o",
+        "Oi Foo",
         "Oimbo"
       ],
       "Asakota": [
@@ -19313,7 +19313,7 @@
       ]
     }
   },
-  "Daerah Istimewa Yogyakarta": {
+  "DI Yogyakarta": {
     "Bantul": {
       "Sedayu": [
         "Argodadi",
@@ -20019,12 +20019,12 @@
         "Bulangan",
         "Dukuh Kembar",
         "Dukunanyar",
-        "Gedongkedo'an",
+        "Gedongkedoan",
         "Sawo",
         "Sekargadung",
         "Sembungan Kidul",
         "Sembunganyar",
-        "Ima'an",
+        "Imaan",
         "Jrebeng",
         "Kalirejo",
         "Karangcangkring",
@@ -20777,7 +20777,7 @@
         "Tanamerah",
         "Tanjung"
       ],
-      "Ra'as": [
+      "Raas": [
         "Alas Malang",
         "Brakas",
         "Guwa-Guwa",
@@ -20803,7 +20803,7 @@
         "Karangbudi",
         "Longos",
         "Mandala",
-        "Palo'lo'an",
+        "Paloloan",
         "Panagan",
         "Poja"
       ],
@@ -20867,7 +20867,7 @@
       ],
       "Dungkek": [
         "Bancamara",
-        "Banra'as",
+        "Banraas",
         "Bicabbi",
         "Candi",
         "Dungkek",
@@ -20999,7 +20999,7 @@
         "Tenonan",
         "Gadding",
         "Giring",
-        "Jaba'an",
+        "Jabaan",
         "Manding Laok",
         "Manding Daya",
         "Manding Timur"
@@ -21082,7 +21082,7 @@
       "Batuputih": [
         "Batuputih Kenek",
         "Batuputih Laok",
-        "Bulla'an",
+        "Bullaan",
         "Gedang-Gedang",
         "Juruan Laok",
         "Larangan Barma",
@@ -21132,12 +21132,12 @@
         "Dharma Tanjung",
         "Sejati",
         "Madupat",
-        "Pamola'an",
-        "Plampa'an",
+        "Pamolaan",
+        "Plampaan",
         "Prajjan",
         "Rabasan",
         "Taddan",
-        "Tamba'an"
+        "Tambaan"
       ],
       "Omben": [
         "Angsokah",
@@ -21283,7 +21283,7 @@
         "Nepa",
         "Trapang",
         "Nagasareh",
-        "Tapa'an",
+        "Tapaan",
         "Terosan",
         "Tlagah"
       ],
@@ -22049,7 +22049,7 @@
         "Larangan Tokol",
         "Mangar",
         "Panglegur",
-        "Taro'an",
+        "Taroan",
         "Terrak",
         "Tlanakan",
         "Tlesah"
@@ -22100,7 +22100,7 @@
         "Pademawu Timur",
         "Pagagan",
         "Prekbun",
-        "Sopa'ah",
+        "Sopaah",
         "Sumedangan",
         "Tambung",
         "Tanjung"
@@ -22109,10 +22109,10 @@
         "Badung",
         "Banyubulu",
         "Batu Kalangan",
-        "Billa'an",
+        "Billaan",
         "Campor",
         "Candi Burung",
-        "Gro'om",
+        "Groom",
         "Jambringin",
         "Karang Anyar",
         "Klampar",
@@ -22596,7 +22596,7 @@
         "Duko Tambin",
         "Soket Dajah",
         "Soket Laok",
-        "Ja'ah",
+        "Jaah",
         "Jaddung",
         "Karang Leman",
         "Kemoning",
@@ -22615,7 +22615,7 @@
         "Karang Anyar",
         "Kolla",
         "Langpanggang",
-        "Mangga'an",
+        "Manggaan",
         "Modung",
         "Neroh",
         "Paeng",
@@ -22625,7 +22625,7 @@
         "Patereman",
         "Srabi Barat",
         "Srabi Timur",
-        "Suwa'an"
+        "Suwaan"
       ],
       "Blega": [
         "Alas Rajah",
@@ -22639,7 +22639,7 @@
         "Karang Nangkah",
         "Karang Panasan",
         "Karpote",
-        "Ko'olan",
+        "Koolan",
         "Lomaer",
         "Lombang Dajah",
         "Lombang Laok",
@@ -22663,12 +22663,12 @@
         "Tunjung"
       ],
       "Kokop": [
-        "Ampara'an",
+        "Amparaan",
         "Durjan",
         "Katol Timur",
         "Kokop",
         "Lembung Gunong",
-        "Mano'an",
+        "Manoan",
         "Tlokoh",
         "Tramok",
         "Batokorogan",
@@ -22678,7 +22678,7 @@
         "Mandung"
       ],
       "Labang": [
-        "Ba'engas",
+        "Baengas",
         "Bringen",
         "Bunajih",
         "Sendang Dajah",
@@ -22781,8 +22781,8 @@
         "Lantek Barat",
         "Lantek Timor",
         "Longkek",
-        "Paka'an Dajah",
-        "Paka'an Laok",
+        "Pakaan Dajah",
+        "Pakaan Laok",
         "Paterongan",
         "Pekadan",
         "Sadah",
@@ -22868,9 +22868,9 @@
       "Klampis": [
         "Karang Asem",
         "Moarah",
-        "Ra'as",
+        "Raas",
         "Bulung",
-        "Ko'ol",
+        "Kool",
         "Larangan Glintong",
         "Manonggal",
         "Tobaddung",
@@ -24606,7 +24606,7 @@
         "Gemito",
         "Ledokombo",
         "Pandansari",
-        "Remba'an",
+        "Rembaan",
         "Sumber",
         "Sumberanom",
         "Tukul",
@@ -24660,7 +24660,7 @@
         "Gebangan",
         "Seboro",
         "Sentong",
-        "Soka'an",
+        "Sokaan",
         "Jatiurip",
         "Kamalkuning",
         "Karangren",
@@ -27913,7 +27913,7 @@
         "Gondangkulon",
         "Senggowar",
         "Senjayan",
-        "Ja'an",
+        "Jaan",
         "Karangsemi",
         "Kedungglugu",
         "Ketawang",
@@ -28949,7 +28949,7 @@
         "Bugul Kidul",
         "Kepel",
         "Krampyangan",
-        "Tapa'an"
+        "Tapaan"
       ],
       "Panggungrejo": [
         "Bangilan",
@@ -28963,7 +28963,7 @@
         "Panggungrejo",
         "Pekuncen",
         "Petamanan",
-        "Tamba'an",
+        "Tambaan",
         "Trajeng"
       ],
       "Gadingrejo": [
@@ -29880,7 +29880,7 @@
         "Boddie",
         "Coppo Tompong",
         "Manggalung",
-        "Tama'rupa",
+        "Tamarupa",
         "Mandalle"
       ],
       "Bungoro": [
@@ -30333,7 +30333,7 @@
       ],
       "Polombangkeng Utara": [
         "Barugaya",
-        "Kale Ko'mara",
+        "Kale Komara",
         "Kampung Beru",
         "Malewang",
         "Manongkoki",
@@ -30341,11 +30341,11 @@
         "Palleko",
         "Panrannuangku",
         "Parang Luara",
-        "Ko'mara",
+        "Komara",
         "Lassang",
         "Lassang Barat",
         "Massamaturu",
-        "Pa'rappunganta",
+        "Parappunganta",
         "Parang Baddo",
         "Timbuseng",
         "Towata",
@@ -30361,8 +30361,8 @@
         "Kalenna Bontongape",
         "Kalukuang",
         "Mappakalompo",
-        "Pa'lalakkang",
-        "Pa'rasangang Beru",
+        "Palalakkang",
+        "Parasangang Beru",
         "Parambambe",
         "Parangmata",
         "Pattinoang"
@@ -30398,12 +30398,12 @@
         "Bontokadatto",
         "Bulukunyi",
         "Canrego",
-        "Pa'bundukang",
+        "Pabundukang",
         "Pattene",
         "Rajaya",
         "Lantang",
         "Moncongkomba",
-        "Su'rulangi"
+        "Surulangi"
       ],
       "Pattallassang": [
         "Bajeng",
@@ -30420,7 +30420,7 @@
         "Takalar",
         "Patani",
         "Soreang",
-        "Pa'batangang"
+        "Pabatangang"
       ],
       "Kepulauan Tanakeke": [
         "Maccini Baji",
@@ -30636,7 +30636,7 @@
         "Bontosaile",
         "Kembang Ragi",
         "Labuang Pamajang",
-        "Ma'minasa",
+        "Maminasa",
         "Masungke",
         "Tanamalala",
         "Teluk Kampe"
@@ -30676,7 +30676,7 @@
         "Barana"
       ],
       "Turatea": [
-        "Bonto Mate'ne",
+        "Bonto Matene",
         "Bululoe",
         "Bungungloe",
         "Jombe",
@@ -30866,7 +30866,7 @@
         "Bissoloro",
         "Bontomanai",
         "Buakkang",
-        "Je'nebatu",
+        "Jenebatu",
         "Sapaya",
         "Mangempang",
         "Rannaloe"
@@ -30878,7 +30878,7 @@
         "Tamaona",
         "Mamampang",
         "Pao",
-        "Ta'binjai",
+        "Tabinjai",
         "Tonasa",
         "Balassuka"
       ],
@@ -30892,7 +30892,7 @@
         "Lempangang",
         "Maccinibaji",
         "Maradekaya",
-        "Pa'bentengang",
+        "Pabentengang",
         "Panciro",
         "Pannyangkalang",
         "Paraikatte",
@@ -30902,10 +30902,10 @@
         "Bontoala",
         "Bontoramba",
         "Bungaejaya",
-        "Jene'tallasa",
+        "Jenetallasa",
         "Julubori",
         "Julukanaya",
-        "Julupa'mai",
+        "Julupamai",
         "Kampili",
         "Mangalli",
         "Pangkabinanga",
@@ -30930,9 +30930,9 @@
         "Bontolempangang",
         "Bontoloe",
         "Bontotangnga",
-        "Julumate'ne",
+        "Julumatene",
         "Lassa-Lassa",
-        "Pa'ladingang",
+        "Paladingang",
         "Paranglompoa",
         "Ulujangang"
       ],
@@ -30949,7 +30949,7 @@
         "Bontosunggu",
         "Jipang",
         "Bontoramba",
-        "Pa'bundukang",
+        "Pabundukang",
         "Salajangki",
         "Salajo",
         "Sengka",
@@ -30957,8 +30957,8 @@
         "Tindang"
       ],
       "Pattalasang": [
-        "Borongpala'la",
-        "Je'nemadinging",
+        "Borongpalala",
+        "Jenemadinging",
         "Paccellekang",
         "Pallantikang",
         "Panaikang",
@@ -31121,7 +31121,7 @@
         "Banua"
       ],
       "Masalle": [
-        "Batu Ke'de",
+        "Batu Kede",
         "Buntu Sarong",
         "Masalle",
         "Mundan",
@@ -31422,8 +31422,8 @@
         "Paccerakkang",
         "Pattedong Selatan",
         "Tarramatekkeng",
-        "To'balo",
-        "To'bia",
+        "Tobalo",
+        "Tobia",
         "Bakti"
       ],
       "Basse Sangtempe": [
@@ -31437,7 +31437,7 @@
         "Mappetajang",
         "Sinaji",
         "Tabi",
-        "To'long",
+        "Tolong",
         "Andulan"
       ],
       "Bajo Barat": [
@@ -31461,8 +31461,8 @@
         "Rante Balla",
         "Tabang",
         "Tibussan",
-        "To'barru",
-        "To'lajuk",
+        "Tobarru",
+        "Tolajuk",
         "Ulusalu"
       ],
       "Basse Sangtempe Utara": [
@@ -31472,7 +31472,7 @@
         "Maindo",
         "Pantilang",
         "Salubua",
-        "Ta'ba",
+        "Taba",
         "Tasangtongkonan",
         "Tede",
         "Uraso",
@@ -31507,7 +31507,7 @@
         "Buntu Batu",
         "Noling",
         "Malenggang",
-        "Padang Ma'Bud",
+        "Padang MaBud",
         "Padang Tuju",
         "Saluinduk",
         "Tampumia",
@@ -31528,14 +31528,14 @@
         "Tumale"
       ],
       "Lamasi": [
-        "Awo' Gading",
+        "Awo Gading",
         "Lamasi",
         "Padang Kalua",
         "Pongsamelung",
         "Salujambu",
-        "Se'pon",
+        "Sepon",
         "Setiarejo",
-        "To'pongo",
+        "Topongo",
         "Wiwitan",
         "Wiwitan Timur"
       ],
@@ -31545,7 +31545,7 @@
         "Bone Pute",
         "Dadeko",
         "Gandang Batu",
-        "La'loa",
+        "Laloa",
         "Malewong",
         "Salusana",
         "Sampano",
@@ -31577,7 +31577,7 @@
         "Basso",
         "Bolong",
         "Bosso Timur",
-        "Buntu Awo'",
+        "Buntu Awo",
         "Limbong",
         "Marabuana",
         "Pongko",
@@ -31625,7 +31625,7 @@
         "Pompengan Utara",
         "Salupao",
         "Seriti",
-        "To'lemo"
+        "Tolemo"
       ],
       "Kamanre": [
         "Bunga Eja",
@@ -31673,8 +31673,8 @@
         "Lonrong",
         "Mamampang",
         "Mappilawing",
-        "Pa'bentengan",
-        "Pa'bumbungang",
+        "Pabentengan",
+        "Pabumbungang",
         "Parang Loe",
         "Ulu Galung"
       ],
@@ -31686,7 +31686,7 @@
         "Borong Loe",
         "Lumpangan",
         "Nipa-nipa",
-        "Pa'jukukang",
+        "Pajukukang",
         "Papan Loe",
         "Rappoa"
       ],
@@ -31707,7 +31707,7 @@
         "Bonto Karaeng",
         "Bonto Maccini",
         "Bonto Majannang",
-        "Bonto Mate'ne",
+        "Bonto Matene",
         "Bonto Tiro"
       ],
       "Bissappu": [
@@ -31823,7 +31823,7 @@
         "Marannu"
       ],
       "Mandai": [
-        "Bonto Mate'ne",
+        "Bonto Matene",
         "Bontoa",
         "Hasanuddin",
         "Pattontongang",
@@ -31831,13 +31831,13 @@
         "Baji Mangngai"
       ],
       "Marusu": [
-        "Bonto Mate'ne",
-        "Ma'rumpa",
+        "Bonto Matene",
+        "Marumpa",
         "Nisombalia",
         "Tellumpoccoe",
         "Temmapaduae",
         "Abulosibatang",
-        "Pa'bentengang"
+        "Pabentengang"
       ],
       "Simbang": [
         "Bonto Tallasa",
@@ -31863,7 +31863,7 @@
         "Lebbotengae",
         "Limapoccoe",
         "Rompegading",
-        "Baji pa'mai"
+        "Baji pamai"
       ],
       "Tanralili": [
         "Damai",
@@ -32244,9 +32244,9 @@
       "Saluputi": [
         "Batu Tiakka",
         "Pattan Ulusalu",
-        "Ra'bung",
+        "Rabung",
         "Ratte Talonge",
-        "Sa'tandung",
+        "Satandung",
         "Salu Boronan",
         "Salutapokko",
         "Salutandung",
@@ -32256,16 +32256,16 @@
         "Bau",
         "Burasia",
         "Buttu Limbong",
-        "Kandua'",
+        "Kandua",
         "Bittuang",
         "Kole Palian",
-        "Le'tek",
-        "Pali'",
+        "Letek",
+        "Pali",
         "Patongloan",
         "Rembo Rembo",
         "Sandana",
         "Sasak",
-        "Se'seng",
+        "Seseng",
         "Tiroan",
         "Balla"
       ],
@@ -32275,7 +32275,7 @@
         "Kadundung",
         "Paku",
         "Paliorong",
-        "Pondingao'",
+        "Pondingao",
         "Ratte",
         "Sesesalu"
       ],
@@ -32309,7 +32309,7 @@
         "Ratte Buttu",
         "Buakayu",
         "Poton",
-        "Mappa'"
+        "Mappa"
       ],
       "Gandangbatu Sillanan": [
         "Salubarani",
@@ -32329,15 +32329,15 @@
         "Uluway",
         "Uluway Barat",
         "Buntudatu",
-        "Pa'tengko",
+        "Patengko",
         "Pakala",
         "Rantedada",
         "Tampo",
         "Simbuang",
-        "Rante Kalua'",
+        "Rante Kalua",
         "Buntu Tangti",
         "Gasing",
-        "Ke'pe Tinoring",
+        "Kepe Tinoring",
         "Randanan",
         "Marinding",
         "Tengan",
@@ -32352,8 +32352,8 @@
         "Rano Utara"
       ],
       "Makale Selatan": [
-        "Pa'buaran",
-        "Bo'ne Buntu Sisong",
+        "Pabuaran",
+        "Bone Buntu Sisong",
         "Patekke",
         "Randan Batu",
         "Pasang",
@@ -32370,17 +32370,17 @@
       ],
       "Rembon": [
         "Palesan",
-        "To'pao",
+        "Topao",
         "Kayuosing",
-        "Batusura'",
+        "Batusura",
         "Limbong",
-        "Bua ' Tarrung",
+        "Bua  Tarrung",
         "Talion",
         "Sarapeang",
         "Rembon",
         "Banga",
         "Maroson",
-        "Buri'",
+        "Buri",
         "Ullin"
       ],
       "Makale": [
@@ -32405,13 +32405,13 @@
         "Buntu Masakke",
         "Turunan",
         "Tongko Sarapung",
-        "Bulian Massa'bu"
+        "Bulian Massabu"
       ],
       "Sangalla Utara": [
-        "Rantela'bi Kambisa",
+        "Rantelabi Kambisa",
         "Saluallo",
         "Leatung Matallo",
-        "Bebo'",
+        "Bebo",
         "Leatung",
         "Tumbang Datu"
       ],
@@ -32421,7 +32421,7 @@
         "Kole Barebatu",
         "Leppan",
         "Lemo Menduruk",
-        "Balepe'"
+        "Balepe"
       ],
       "Makale Utara": [
         "Tambunan",
@@ -32661,7 +32661,7 @@
         "Mamajang Luar",
         "Mandala",
         "Maricaya Selatan",
-        "Pa'Batang",
+        "PaBatang",
         "Parang",
         "Sambung Jawa",
         "Tamparang Keke"
@@ -32688,7 +32688,7 @@
         "Maccini Sombala",
         "Mangasa",
         "Mannuruki",
-        "Pa'Baeng-Baeng",
+        "PaBaeng-Baeng",
         "Parang Tambung",
         "Tanjung Merdeka"
       ],
@@ -32778,7 +32778,7 @@
         "Bunga Eja Beru",
         "Kaluku Bodoa",
         "Kalukuang",
-        "La'Latang",
+        "LaLatang",
         "Lakkang",
         "Lembo",
         "Pannampu",
@@ -32928,29 +32928,29 @@
     },
     "Toraja Utara": {
       "Rantebua": [
-        "Rantebua Sanggalangi'",
+        "Rantebua Sanggalangi",
         "Rantebua Sumalu",
         "Rantebua",
         "Buangin",
-        "Ma'kuan Pare",
+        "Makuan Pare",
         "Pitung Penanian",
         "Bokin"
       ],
       "Buntao": [
         "Tongkonan Bassae",
-        "Issong Kalua'",
-        "Tullang' Sura",
-        "Rindingkila'",
-        "Misa'ba'bana",
+        "Issong Kalua",
+        "Tullang Sura",
+        "Rindingkila",
+        "Misababana",
         "Sapan Kua-kua"
       ],
       "Sanggalangi": [
         "Tallung Penanian",
-        "Pata'padang",
-        "Buntu La'bo'",
+        "Patapadang",
+        "Buntu Labo",
         "Paepalean",
-        "La'bo'",
-        "Tandung La'bo'"
+        "Labo",
+        "Tandung Labo"
       ],
       "Sopai": [
         "Tombang Langda",
@@ -32964,19 +32964,19 @@
       ],
       "Kesu": [
         "Tadongkon",
-        "Sangbua'",
+        "Sangbua",
         "Angin-angin",
         "Tallu Lolo",
         "Rinding Batu",
         "Pantanakan Lolo",
-        "Ba'tan"
+        "Batan"
       ],
-      "Dende' Piongan Napo": [
+      "Dende Piongan Napo": [
         "Kapolang",
         "Pasang",
         "Piongan",
         "Paku",
-        "Dende'",
+        "Dende",
         "Madong",
         "Parinding",
         "Buntu Tagari"
@@ -32985,19 +32985,19 @@
         "Karre Pananian",
         "Karre Limbong",
         "Basokan",
-        "Nanna' Nanggala",
+        "Nanna Nanggala",
         "Nanggala",
         "Nanggala Sanpiak Salu",
         "Rante",
         "Tandung Nanggala",
-        "Lili'kira'"
+        "Lilikira"
       ],
       "Rantepao": [
         "Karassik",
         "Rantepao",
         "Rante Pasele",
         "Saloso",
-        "Singki'",
+        "Singki",
         "Laang Tanduk",
         "Pasale",
         "Penanian",
@@ -33017,16 +33017,16 @@
       "Tondon": [
         "Tondon Matallo",
         "Tondon",
-        "Tondon Langi'",
+        "Tondon Langi",
         "Tondon Sibata"
       ],
       "Kapala Pitu": [
         "Bontong Mamullu",
         "Kapala Pitu",
         "Polo Padang",
-        "Sikuku'",
+        "Sikuku",
         "Kantun Poya",
-        "Benteng Ka'do"
+        "Benteng Kado"
       ],
       "Tikala": [
         "Buntu Barana",
@@ -33034,19 +33034,19 @@
         "Tikala",
         "Buntu Batu",
         "Embatau",
-        "Benteng Ka'do To'rea",
+        "Benteng Kado Torea",
         "Pangden"
       ],
       "Sesean": [
         "Pangli Selatan",
         "Parinding",
-        "Bori' Lombongan",
+        "Bori Lombongan",
         "Pangli",
         "Bori",
-        "Buntu Lobo'",
-        "Deri'",
-        "Bori' Ranteletok",
-        "Palawa'"
+        "Buntu Lobo",
+        "Deri",
+        "Bori Ranteletok",
+        "Palawa"
       ],
       "Awan Rante Karua": [
         "Batu Lotong",
@@ -33056,8 +33056,8 @@
       ],
       "Balusu": [
         "Karua",
-        "Palangi'",
-        "Awa' Kawasik",
+        "Palangi",
+        "Awa Kawasik",
         "Tagari",
         "Balusu Ao Gading",
         "Balusu",
@@ -33066,38 +33066,38 @@
       "Rindingallo": [
         "Ampang Batu",
         "Rindingallo",
-        "Pangala'",
-        "Pangala' Utara",
+        "Pangala",
+        "Pangala Utara",
         "Lempo Poton",
-        "Mai'ting",
+        "Maiting",
         "Buntu Batu",
         "Limbong Malting",
-        "Lo'ko' Uru"
+        "Loko Uru"
       ],
       "Sesean Suloara": [
         "Lempo",
         "Landorundun",
         "Tonga Riu",
-        "Suloara'",
+        "Suloara",
         "Sesean Matallo"
       ],
       "Bangkelekila": [
         "Tampan Bonga",
-        "Bangkelekila'",
-        "To'yasa Akung",
+        "Bangkelekila",
+        "Toyasa Akung",
         "Batu Limbong"
       ],
-      "Sa'Dan": [
-        "Sa'dan Andulan",
-        "Sa'dan Malimbong",
-        "Sa'dan Pebulian",
-        "Sa'dan Tiroallo",
-        "Sa'dan Ballo Pasange'",
-        "Sa'dan Matalo",
-        "Sa'dan Luku Lambe'na",
+      "SaDan": [
+        "Sadan Andulan",
+        "Sadan Malimbong",
+        "Sadan Pebulian",
+        "Sadan Tiroallo",
+        "Sadan Ballo Pasange",
+        "Sadan Matalo",
+        "Sadan Luku Lambena",
         "Sangkaropi",
-        "Sa'dan Pesondongan",
-        "Sa'dan Ulusalu"
+        "Sadan Pesondongan",
+        "Sadan Ulusalu"
       ],
       "Buntu Pepasan": [
         "Batu Busa",
@@ -33107,25 +33107,25 @@
         "Pangkung Batu",
         "Ponglu",
         "Paonganan",
-        "Roroan Barra'-Barra'",
+        "Roroan Barra-Barra",
         "Sarambu",
         "Sapan",
         "Rante Uma",
         "Talimbangan",
-        "Pulu' Pulu'"
+        "Pulu Pulu"
       ],
       "Baruppu": [
         "Baruppu Selatan",
         "Baruppu Benteng Batu",
-        "Baruppu' Utara",
-        "Baruppu' Parodo"
+        "Baruppu Utara",
+        "Baruppu Parodo"
       ]
     },
     "Bone": {
       "Awangpone": [
         "Abbanuang",
         "Awolagading",
-        "Bulumpare'e",
+        "Bulumparee",
         "Cakke Bone",
         "Carebbu",
         "Carigading",
@@ -36602,7 +36602,7 @@
         "Baru Pusat Jalo",
         "Bedaro",
         "Datar",
-        "Pekan Jum'at",
+        "Pekan Jumat",
         "Suka Jaya",
         "Tanjung Agung",
         "Tebat",
@@ -40503,7 +40503,7 @@
         "Bantunan",
         "Benua Raja",
         "Gelung Sakti",
-        "Jenti'an",
+        "Jentian",
         "Kota Raya Darat",
         "Kota Raya Lembak",
         "Pajar Bulan",
@@ -41483,7 +41483,7 @@
         "Kepayang",
         "Kota Baru",
         "Kota Dalam",
-        "Pere'an",
+        "Perean",
         "Pulau Duku",
         "Selabung Belimbing Jaya",
         "Sinar Marga",
@@ -44539,7 +44539,7 @@
         "Lubuk Sirih Ilir",
         "Lubuk Sirih Ulu",
         "Manggul",
-        "Mela'o",
+        "Melao",
         "Padang Manis",
         "Padang Pandan",
         "Tambangan",
@@ -44574,8 +44574,8 @@
         "Taba Padang Kol",
         "Taba Padang R",
         "Talang Rendah",
-        "Air Ba'us I",
-        "Air Ba'us II",
+        "Air Baus I",
+        "Air Baus II",
         "Air Banai"
       ],
       "Batik Nau": [
@@ -44828,7 +44828,7 @@
         "Merpas",
         "Muara Dua",
         "Pasar Baru",
-        "Pasar Jum'at",
+        "Pasar Jumat",
         "Sinar Banten",
         "Suka Jaya",
         "Suku Tiga",
@@ -45203,7 +45203,7 @@
       ],
       "Talang Empat": [
         "Jayakarta",
-        "Jum'at",
+        "Jumat",
         "Kembang Seri",
         "Nakau",
         "Padang Ulak Tanjung",
@@ -45279,7 +45279,7 @@
         "Talang Giring",
         "Talang Kebun",
         "Tanjung Kuaw",
-        "Tumbu'an",
+        "Tumbuan",
         "Arang Sapat"
       ],
       "Semidang Alas": [
@@ -48666,7 +48666,7 @@
       "Pengaron": [
         "Alimukim",
         "Antaraku",
-        "Ati'im",
+        "Atiim",
         "Benteng",
         "Kertak Empat",
         "Lobang Baru",
@@ -48727,7 +48727,7 @@
         "Benua Riam",
         "Bunglai",
         "Kalaan",
-        "Pa'au",
+        "Paau",
         "Rantau Balai",
         "Rantau Bujur",
         "Tiwingan Baru",
@@ -49048,13 +49048,13 @@
         "Jamil",
         "Mahang Baru",
         "Mundar",
-        "Murung Ta'al",
+        "Murung Taal",
         "Panggang Marak",
         "Pantai Hambawang Barat",
         "Pantai Hambawang Timur",
         "Sungai Jaranih",
         "Sungai Rangas",
-        "Ta'al",
+        "Taal",
         "Tabudarat Hilir",
         "Tabudarat Hulu",
         "Taras Padang"
@@ -49202,7 +49202,7 @@
         "Dadap Kusan Raya",
         "Darasan Binjai",
         "Guntung",
-        "Hati'if",
+        "Hatiif",
         "Mangkalapi",
         "Tamunih",
         "Tapus",
@@ -50442,7 +50442,7 @@
         "Auh",
         "Dayak Pitap",
         "Gunung Batu",
-        "Ju'uh"
+        "Juuh"
       ],
       "Awayan": [
         "Sikontan",
@@ -50639,7 +50639,7 @@
         "Kapar",
         "Kasiau",
         "Kasiau Raya",
-        "Mabu'un",
+        "Mabuun",
         "Maburai",
         "Masukau",
         "Pembataan"
@@ -50726,7 +50726,7 @@
         "Padangin",
         "Pamarangan Kanan",
         "Puain Kanan",
-        "Pulau Ku'u",
+        "Pulau Kuu",
         "Tanta",
         "Tanta Hulu",
         "Walangkir",
@@ -51340,7 +51340,7 @@
       ],
       "Sajingan Besar": [
         "Sungai Bening",
-        "Kaliau'",
+        "Kaliau",
         "Santaban",
         "Sebunga",
         "Sanatab"
@@ -51360,7 +51360,7 @@
       ],
       "Subah": [
         "Sungai Deden",
-        "Sungai Sapa'",
+        "Sungai Sapa",
         "Balai Gemuruh",
         "Bukit Mulya",
         "Karaban Jaya",
@@ -51560,7 +51560,7 @@
         "Bukit Serayan",
         "Marunsu",
         "Pasti Jaya",
-        "Saba'u",
+        "Sabau",
         "Samalantan",
         "Tumiang"
       ],
@@ -51745,7 +51745,7 @@
         "Sungai Ajung",
         "Sungai Senunuk",
         "Labian",
-        "Labian Ira'ang",
+        "Labian Iraang",
         "Lanjak Deras",
         "Melemba",
         "Mensiau",
@@ -51841,7 +51841,7 @@
         "Beringin Jaya",
         "Bungan Jaya",
         "Cempaka Baru",
-        "Ingko' Tambe",
+        "Ingko Tambe",
         "Jaras",
         "Kedamin Darat",
         "Kedamin Hilir",
@@ -51957,7 +51957,7 @@
         "Ribang Kadeng",
         "Segiam",
         "Semerantau",
-        "Tapang Da'an",
+        "Tapang Daan",
         "Tekudak"
       ],
       "Empanang": [
@@ -52065,7 +52065,7 @@
         "Sekedau",
         "Semitau Hilir",
         "Semitau Hulu",
-        "Tua' Abang"
+        "Tua Abang"
       ]
     },
     "Sintang": {
@@ -52552,7 +52552,7 @@
         "Sidan",
         "Songga",
         "Sungai Lubang",
-        "Ta'as",
+        "Taas",
         "Angkaras",
         "Anik Dingir",
         "Ansang",
@@ -52621,7 +52621,7 @@
         "Engkadu",
         "Hilir Kantor",
         "Hilir Tengah",
-        "Mu'un",
+        "Muun",
         "Mungguk",
         "Pak Mayam",
         "Penyaho Dangku",
@@ -52644,7 +52644,7 @@
         "Parigi",
         "Sabaka",
         "Sailo",
-        "Sala'as",
+        "Salaas",
         "Salumang",
         "Sampuro",
         "Tiang Tanjung",
@@ -52673,7 +52673,7 @@
         "Kayu Ara",
         "Kersik Belantian",
         "Mandor Kiru",
-        "Nyi'in",
+        "Nyiin",
         "Papung",
         "Pawis Hilir",
         "Sekais",
@@ -52699,7 +52699,7 @@
         "Menjalin",
         "Nangka",
         "Raba",
-        "Re'es",
+        "Rees",
         "Sepahat",
         "Tempoak"
       ],
@@ -53527,7 +53527,7 @@
       ],
       "Mandau Talawang": [
         "Jakatan Masaha",
-        "Karetau Manta'a",
+        "Karetau Mantaa",
         "Lawang Tamang",
         "Masaha",
         "Masupa Ria",
@@ -55061,10 +55061,10 @@
         "Malasan",
         "Mangkahui",
         "Muara Bumban",
-        "Muara Ja'an",
+        "Muara Jaan",
         "Muara Sumpoi",
         "Muara Untu",
-        "Panu'ut",
+        "Panuut",
         "Penyang",
         "Puruk Cahu"
       ],
@@ -55248,7 +55248,7 @@
         "Ternate Selatan",
         "Adang",
         "Aimoli",
-        "Ala'ang",
+        "Alaang",
         "Alila",
         "Alila Selatan",
         "Alor Besar",
@@ -55260,7 +55260,7 @@
         "Hulnani",
         "Lefokisu",
         "Lewalu",
-        "O'a Mate",
+        "Oa Mate",
         "Otvai",
         "Pulau Buaya"
       ],
@@ -55366,7 +55366,7 @@
         "Umaklaran",
         "Bauho",
         "Dafala",
-        "Fatuba'a",
+        "Fatubaa",
         "Halimodok",
         "Manleten",
         "Sadi",
@@ -55674,8 +55674,8 @@
         "Leloboko",
         "Lelogama",
         "Oelbanu",
-        "Oh'aem",
-        "Oh'aem II"
+        "Ohaem",
+        "Ohaem II"
       ],
       "Amfoang Timur": [
         "Kifu",
@@ -55695,7 +55695,7 @@
       "Fautmolo": [
         "Sillu",
         "Tunis",
-        "Besle'u",
+        "Besleu",
         "Bileon",
         "Kaeneno",
         "Nunukhniti",
@@ -55709,7 +55709,7 @@
         "Mauleum",
         "Mnelaanen",
         "Nifukiu",
-        "Oe'Ekam",
+        "OeEkam",
         "Oelet",
         "Pisan"
       ],
@@ -55761,7 +55761,7 @@
         "Niki-Niki",
         "Nobi-Nobi",
         "Noebesa",
-        "Oe'ekam"
+        "Oeekam"
       ],
       "Kolbano": [
         "Spaha",
@@ -55775,7 +55775,7 @@
         "Ofu",
         "Pana",
         "Pene Selatan",
-        "Se'i"
+        "Sei"
       ],
       "Noebana": [
         "Suni",
@@ -55786,17 +55786,17 @@
       ],
       "Amanatun Selatan": [
         "Sunu",
-        "To'i",
+        "Toi",
         "Anin",
         "Fae",
         "Fatulunu",
         "Fenun",
         "Kokoi",
-        "Kuale'u",
+        "Kualeu",
         "Lanu",
         "Netutnana",
         "Nifuleo",
-        "Nunle'u",
+        "Nunleu",
         "Oinlasi"
       ],
       "Kuatnana": [
@@ -55806,7 +55806,7 @@
         "Enoneontes",
         "Lakat",
         "Naukae",
-        "O'of",
+        "Oof",
         "Oe Oe"
       ],
       "Fatukopa": [
@@ -55820,8 +55820,8 @@
       ],
       "Mollo Utara": [
         "Taiftob",
-        "To'fen",
-        "To'manat",
+        "Tofen",
+        "Tomanat",
         "Tunua",
         "Ajaobaki",
         "Bijaepunu",
@@ -55830,12 +55830,12 @@
         "Fatukoto",
         "Halmei",
         "Iusmolo",
-        "Kokfe'u",
+        "Kokfeu",
         "Lelobatan",
         "Leloboko",
         "Nefokoko",
         "Netpala",
-        "O'besi",
+        "Obesi",
         "Sebot"
       ],
       "Nunbena": [
@@ -55866,11 +55866,11 @@
         "Eno Nabuasa",
         "Fatutnana",
         "Naip",
-        "Oe'ekam",
+        "Oeekam",
         "Oebaki",
         "Oepliki"
       ],
-      "KI'E": [
+      "KIE": [
         "Tesiayofanu",
         "Belle",
         "Boti",
@@ -55878,7 +55878,7 @@
         "Falas",
         "Fatukusi",
         "Fatuulan",
-        "Naile'u",
+        "Naileu",
         "Napi",
         "Nekmese",
         "Oenai",
@@ -55995,7 +55995,7 @@
         "Binaus",
         "Kualeu",
         "Nekemunifeto",
-        "Oel'Ekam",
+        "OelEkam",
         "Oelbubuk",
         "Pika"
       ],
@@ -56003,10 +56003,10 @@
         "Binenok",
         "Fatuat",
         "Hoibeti",
-        "Kot'olin",
+        "Kotolin",
         "Nualunat",
         "Nunbena",
-        "O'obibi",
+        "Oobibi",
         "Ponite"
       ],
       "Nunkolo": [
@@ -56459,7 +56459,7 @@
         "Sanggandolu"
       ],
       "Rote Barat": [
-        "Bo'a",
+        "Boa",
         "Mbueain",
         "Nemberala",
         "Oelolok",
@@ -56704,12 +56704,12 @@
         "Roga"
       ],
       "Wolowaru": [
-        "Tana Lo'o",
+        "Tana Loo",
         "Bokasape",
         "Bokasape Timur",
         "Jopu",
         "Likanaka",
-        "Lise Pu'u",
+        "Lise Puu",
         "Lisedetu",
         "Liselowobora",
         "Mbuliloo",
@@ -56731,7 +56731,7 @@
         "Kurusare",
         "Lisekuru",
         "Mukureku",
-        "Mukureku Sa'ate",
+        "Mukureku Saate",
         "Ndenggarongge",
         "Ndikosapu",
         "Nggumbelaka",
@@ -56899,7 +56899,7 @@
         "Unggu",
         "Detukeli",
         "Detumbewa",
-        "Jeo Du'a",
+        "Jeo Dua",
         "Kanganara",
         "Kebesani",
         "Maurole Selatan",
@@ -57029,7 +57029,7 @@
         "Coal",
         "Compang Suka",
         "Golo Pua",
-        "Golo Ru'u",
+        "Golo Ruu",
         "Lawi",
         "Lewur",
         "Nantal",
@@ -57090,7 +57090,7 @@
         "Waning",
         "Golo Bore",
         "Golo Keli",
-        "Golo Ru'a",
+        "Golo Rua",
         "Kasong",
         "Lumut",
         "Momol",
@@ -57831,7 +57831,7 @@
         "Manusasi",
         "Neotoko",
         "Noepesu",
-        "Sa'tab",
+        "Satab",
         "Saenam",
         "Sallu"
       ],
@@ -57880,7 +57880,7 @@
         "Bitauni",
         "Botof",
         "Fatoin",
-        "Fatu'Ana",
+        "FatuAna",
         "Keun",
         "Loeram",
         "Manunain A",
@@ -57893,7 +57893,7 @@
         "Susulaku B"
       ],
       "Biboki Tan Pah": [
-        "T'Eba Timur",
+        "TEba Timur",
         "Teba",
         "Oekopa",
         "Oerinbesi"
@@ -58474,7 +58474,7 @@
         "Tobotani",
         "Tubung Walang",
         "Umaleu",
-        "Atu Wa'lupang",
+        "Atu Walupang",
         "Atulaleng",
         "Bareng",
         "Bean",
@@ -61686,7 +61686,7 @@
         "Botteng Utara",
         "Rangas",
         "Simboro",
-        "Pati'Di",
+        "PatiDi",
         "Saletto",
         "Sumare",
         "Tapandullu"
@@ -61694,7 +61694,7 @@
       "Kalumpang": [
         "Karataun",
         "Kondo Bulo",
-        "Lasa'",
+        "Lasa",
         "Makkaliki",
         "Salumakki",
         "Siraun",
@@ -61928,7 +61928,7 @@
         "Taloba"
       ],
       "Matangnga": [
-        "Ba'ba Tapua",
+        "Baba Tapua",
         "Mambu Tapua",
         "Tapua",
         "Lilli",
@@ -62112,7 +62112,7 @@
         "Malatiro",
         "Pangandaran",
         "Periangan",
-        "Peu'",
+        "Peu",
         "Salubakka",
         "Saluleang",
         "Tabulahan",
@@ -62392,7 +62392,7 @@
         "Meningimponogama",
         "Noselanop",
         "Opitawak",
-        "T'Singa",
+        "TSinga",
         "Tembagapura",
         "Waa",
         "Doliningokngin",
@@ -62895,7 +62895,7 @@
         "Kuleme",
         "Kunga"
       ],
-      "Mage'abume": [
+      "Mageabume": [
         "Amuleme",
         "Nigilome",
         "Rumagi",
@@ -62941,11 +62941,11 @@
       "Agandugume": [
         "Ayume",
         "Agandugume",
-        "Ogobak'pelenak",
+        "Ogobakpelenak",
         "Terowi",
         "Dolinggu",
         "Dugunale",
-        "Gut'Yenggenak"
+        "GutYenggenak"
       ],
       "Beoga Barat": [
         "Babe",
@@ -62990,7 +62990,7 @@
         "Oknanim",
         "Kabuki",
         "Kalemogom",
-        "Ko'Eao"
+        "KoEao"
       ],
       "Yugumuak": [
         "Agenggen",
@@ -63086,7 +63086,7 @@
         "Tuput",
         "Wamiru",
         "Wanombut",
-        "Wenggen'ambut"
+        "Wenggenambut"
       ],
       "Pogoma": [
         "Pogoma",
@@ -69279,7 +69279,7 @@
         "Pado-Pado",
         "Paku",
         "Panimbawang",
-        "Po'o",
+        "Poo",
         "Poaro",
         "Polewali",
         "Pulau Dua",
@@ -69299,7 +69299,7 @@
         "Mbokitta",
         "Morompaitonga",
         "Ngapaea",
-        "Padala'a",
+        "Padalaa",
         "Padei Darat",
         "Padei Laut",
         "Pulau Tengah",
@@ -69326,7 +69326,7 @@
         "Puungkeu",
         "Sambalagi",
         "Tandaoleo",
-        "Were'a"
+        "Werea"
       ],
       "Bungku Barat": [
         "Tondo",
@@ -69397,7 +69397,7 @@
         "Lawua",
         "Lempelero",
         "Moa",
-        "O'o Parese",
+        "Oo Parese",
         "Palamaki",
         "Pilimakujawa",
         "Salutome"
@@ -69630,7 +69630,7 @@
         "Tadaku Jaya"
       ],
       "Mori Utara": [
-        "Tiwa'a",
+        "Tiwaa",
         "Wawondula",
         "Tamonjengi",
         "Era",
@@ -69688,7 +69688,7 @@
         "Kolo Atas",
         "Kolo Bawah",
         "Lijo",
-        "Menyo'e",
+        "Menyoe",
         "Momo",
         "Pandauke",
         "Parangisi",
@@ -69700,11 +69700,11 @@
       "Lembo Raya": [
         "Dolupo Karya",
         "Lembobelala",
-        "Po'ona",
+        "Poona",
         "Bintangor Mukti",
         "Jamor Jaya",
         "Mandula",
-        "Pa'awaru",
+        "Paawaru",
         "Petumbea",
         "Pontangoa",
         "Ronta"
@@ -69734,7 +69734,7 @@
         "Salinggoha"
       ],
       "Togean": [
-        "Titiri'i",
+        "Titirii",
         "Tobil",
         "Tongkabo",
         "Urulepe",
@@ -69909,7 +69909,7 @@
         "Ogotumubu Barat",
         "Sipontan",
         "Supilopong",
-        "Ta'aniuge",
+        "Taaniuge",
         "Tilung"
       ],
       "Ongka Malino": [
@@ -70125,7 +70125,7 @@
         "Jono Kalora",
         "Kayuboko",
         "Lobu Mandiri",
-        "Parigimpu'u"
+        "Parigimpuu"
       ],
       "Sidoan": [
         "Bainaa Selatan",
@@ -70686,7 +70686,7 @@
         "Luok",
         "Mamping",
         "Padang",
-        "Ra'u",
+        "Rau",
         "Talang Batu",
         "Talima A",
         "Talima B",
@@ -70910,7 +70910,7 @@
         "Malei",
         "Maliwuko",
         "Pandiri",
-        "Rato'ombu",
+        "Ratoombu",
         "Sepe",
         "Silanca",
         "Sintuwulemba",
@@ -71080,7 +71080,7 @@
         "Bambakaenu",
         "Karavia",
         "Bambakanini",
-        "Dangara'a",
+        "Dangaraa",
         "Gimpubia",
         "Kanagalongga",
         "Tavanggeli"
@@ -71184,7 +71184,7 @@
       ],
       "Sindue Tombusabora": [
         "Batusuya",
-        "Batusuya Go'o",
+        "Batusuya Goo",
         "Kaliburu",
         "Kaliburu Kata",
         "Saloya",
@@ -71220,7 +71220,7 @@
         "Lembah Mukti",
         "Long",
         "Malonas",
-        "Pani'i",
+        "Panii",
         "Parisan Agung",
         "Ponggerang",
         "Rerang",
@@ -72994,7 +72994,7 @@
         "Powalaa",
         "Salulotong",
         "Tarengga",
-        "To'Lemo"
+        "ToLemo"
       ],
       "Katoi": [
         "Katoi",
@@ -73213,7 +73213,7 @@
         "Lora",
         "Mawar",
         "Pomontoro",
-        "Pu'u Waeya",
+        "Puu Waeya",
         "Pulau Tambako",
         "Tajuncu",
         "Toli-Toli"
@@ -74134,14 +74134,14 @@
       ],
       "Kulisusu Utara": [
         "Bira",
-        "E'erinere",
+        "Eerinere",
         "Kurolabu",
         "Labelete",
         "Lamoahi",
         "Lanosangia",
         "Lelamo",
         "Pebaoa",
-        "Petetea'A",
+        "PeteteaA",
         "Torombia",
         "Ulunambo",
         "Wamboule",
@@ -74174,7 +74174,7 @@
         "Koepisino",
         "Laano Ipi",
         "Langere",
-        "Ngapa'ea",
+        "Ngapaea",
         "Rante Gola",
         "Ronta",
         "Tatombuli",
@@ -74191,7 +74191,7 @@
         "Lakonea",
         "Lemo",
         "Lipu",
-        "Sara'Ea",
+        "SaraEa",
         "Wandaka",
         "Laangke",
         "Lantagi",
@@ -74771,6 +74771,82 @@
         "Kampung Bugis"
       ]
     },
+    "Kepulauan Anambas": {
+      "Jemaja": [
+        "Air Biru",
+        "Landak",
+        "Letung",
+        "Mampok",
+        "Rewak",
+        "Batu Berapit"
+      ],
+      "Jemaja Timur": [
+        "Bukit Padi",
+        "Genting Pulur",
+        "Kuala Maras",
+        "Ulu Maras"
+      ],
+      "Jemaja Barat": [
+        "Impol",
+        "Keramut",
+        "Sunggak"
+      ],
+      "Siantan Tengah": [
+        "Air Asuk",
+        "Air Sena",
+        "Lidi",
+        "Liuk",
+        "Teluk Siantan",
+        "Teluk Sunting"
+      ],
+      "Siantan Selatan": [
+        "Air Bini",
+        "Lingai",
+        "Mengkait",
+        "Telaga",
+        "Telaga Kecil",
+        "Tiangau",
+        "Kiabu"
+      ],
+      "Siantan Timur": [
+        "Air Putih",
+        "Batu Belah",
+        "Munjan",
+        "Nyamuk",
+        "Serat",
+        "Temburun"
+      ],
+      "Kute Siantan": [
+        "Batu Ampar",
+        "Matak",
+        "Payalaman",
+        "Payamaram",
+        "Teluk Bayur"
+      ],
+      "Siantan Utara": [
+        "Bayat",
+        "Mubur",
+        "Piasan"
+      ],
+      "Palmatak": [
+        "Belibak",
+        "Candi",
+        "Ladan",
+        "Langir",
+        "Piabung",
+        "Putik",
+        "Tebang"
+      ],
+      "Siantan": [
+        "Pesisir Timur",
+        "Sri Tanjung",
+        "Tarempa Barat Daya",
+        "Tarempa Selatan",
+        "Tarempa Timur",
+        "Terempa",
+        "Terempa Barat"
+      ]
+    },
     "Natuna": {
       "Suak Midai": [
         "Air Kumpai",
@@ -74878,82 +74954,6 @@
         "Serantas",
         "Tanjung Batang",
         "Teluk Labuh"
-      ]
-    },
-    "Kepulauan Anambas": {
-      "Jemaja": [
-        "Air Biru",
-        "Landak",
-        "Letung",
-        "Mampok",
-        "Rewak",
-        "Batu Berapit"
-      ],
-      "Jemaja Timur": [
-        "Bukit Padi",
-        "Genting Pulur",
-        "Kuala Maras",
-        "Ulu Maras"
-      ],
-      "Jemaja Barat": [
-        "Impol",
-        "Keramut",
-        "Sunggak"
-      ],
-      "Siantan Tengah": [
-        "Air Asuk",
-        "Air Sena",
-        "Lidi",
-        "Liuk",
-        "Teluk Siantan",
-        "Teluk Sunting"
-      ],
-      "Siantan Selatan": [
-        "Air Bini",
-        "Lingai",
-        "Mengkait",
-        "Telaga",
-        "Telaga Kecil",
-        "Tiangau",
-        "Kiabu"
-      ],
-      "Siantan Timur": [
-        "Air Putih",
-        "Batu Belah",
-        "Munjan",
-        "Nyamuk",
-        "Serat",
-        "Temburun"
-      ],
-      "Kute Siantan": [
-        "Batu Ampar",
-        "Matak",
-        "Payalaman",
-        "Payamaram",
-        "Teluk Bayur"
-      ],
-      "Siantan Utara": [
-        "Bayat",
-        "Mubur",
-        "Piasan"
-      ],
-      "Palmatak": [
-        "Belibak",
-        "Candi",
-        "Ladan",
-        "Langir",
-        "Piabung",
-        "Putik",
-        "Tebang"
-      ],
-      "Siantan": [
-        "Pesisir Timur",
-        "Sri Tanjung",
-        "Tarempa Barat Daya",
-        "Tarempa Selatan",
-        "Tarempa Timur",
-        "Terempa",
-        "Terempa Barat"
       ]
     }
   },
@@ -76373,7 +76373,7 @@
         "Kuala Cenaku",
         "Kuala Mulya",
         "Pulau Gelang",
-        "Pulau Jum'At",
+        "Pulau JumAt",
         "Rawa Asri",
         "Rawa Sekip",
         "Suka Jadi",
@@ -77197,12 +77197,12 @@
         "Orahili Huruna",
         "Sisarahili Oyo",
         "Sisobahili Huruna",
-        "Soroma'Asi",
+        "SoromaAsi",
         "Tetehosi",
         "Fadoro Ewo"
       ],
       "Toma": [
-        "Hili'Alawa",
+        "HiliAlawa",
         "Hiliamaetaluo",
         "Hiliasi",
         "Hilimagari",
@@ -77236,7 +77236,7 @@
         "Sobawagoli",
         "Tetezou",
         "Angorudua Balaekha",
-        "Bawo'Otalua",
+        "BawoOtalua",
         "Bawolato",
         "Bawozihono",
         "Golambanua I",
@@ -77270,11 +77270,11 @@
         "Soledua Ii",
         "Togizita",
         "Togizita I",
-        "Tuho'Owo",
-        "Bawosalo'O Dao-Dao",
+        "TuhoOwo",
+        "BawosaloO Dao-Dao",
         "Dao-Dao Sowo"
       ],
-      "Hilisalawa'Ahe": [
+      "HilisalawaAhe": [
         "Hiliadulo",
         "Maluo",
         "Manawadano",
@@ -77289,7 +77289,7 @@
       ],
       "Susua": [
         "Hiliadulosoi",
-        "Hiliana'A Susua",
+        "HilianaA Susua",
         "Hilidanayao",
         "Hilimboe",
         "Hilimboho",
@@ -77299,7 +77299,7 @@
         "Hilitobara Susua",
         "Hiliwaebu",
         "Hilizamurugo",
-        "Orahili Bo'E",
+        "Orahili BoE",
         "Orahili Susua",
         "Orahua Uluzoi",
         "Sifalago Susua",
@@ -77313,7 +77313,7 @@
         "Mehaga",
         "Oladano",
         "Sifitubanua",
-        "Sihare'O",
+        "SihareO",
         "Silima Banua",
         "Sinar Susua",
         "Sitolu Banua",
@@ -77336,7 +77336,7 @@
         "Hilisanekhehosi"
       ],
       "Ulu Idanotae": [
-        "Hilialo'Oa",
+        "HilialoOa",
         "Lawa-Lawa Luo Idanotae",
         "Lolozukhu",
         "Silima Banua Umbunasi",
@@ -77357,7 +77357,7 @@
         "Bawomaenamolo",
         "Botohili Silambo",
         "Botohili Sorake",
-        "Botohilisalo'O",
+        "BotohilisaloO",
         "Botohilitano"
       ],
       "Pulau-Pulau Batu": [
@@ -77380,18 +77380,18 @@
         "Sisarahili",
         "Balogia",
         "Baruyu Lasara",
-        "Bawo'Amahelato",
-        "Bawo'Omasio",
+        "BawoAmahelato",
+        "BawoOmasio",
         "Bawodobara"
       ],
       "Teluk Dalam": [
         "Hiliamuri",
-        "Hiliana'A",
+        "HilianaA",
         "Hiliganowo",
-        "Hiliganowo Salo'O",
+        "Hiliganowo SaloO",
         "Hiligeho",
         "Hililaza",
-        "Hilisao'Otoniha",
+        "HilisaoOtoniha",
         "Hilisondrekha",
         "Hilitobara",
         "Nanowa",
@@ -77403,14 +77403,14 @@
         "Ganowo Saua"
       ],
       "Gomo": [
-        "Hiliana'A Gomo",
+        "HilianaA Gomo",
         "Lawa-Lawa Luo Gomo",
         "Lolosoni",
         "Orahili Gomo",
         "Orahili Sibohou",
-        "Sifaoro'Asi Gomo",
+        "SifaoroAsi Gomo",
         "Suka Maju Mohili",
-        "Tanoniko'O",
+        "TanonikoO",
         "Umbu Orahua",
         "Doli-doli Idanotae",
         "Gunung Gabungan"
@@ -77442,7 +77442,7 @@
         "Ndraso Hilisimaetano",
         "Pekan Hilisimaetano",
         "Samadaya Hilisimaetano",
-        "Soto'O Hilisimaetano",
+        "SotoO Hilisimaetano",
         "Bawogosali",
         "Bawohosi Maniamolo",
         "Bawosaodano",
@@ -77456,21 +77456,21 @@
         "Lawindra",
         "Orahili Mola",
         "Orlin",
-        "Sifaoro'Asi Mola",
+        "SifaoroAsi Mola",
         "Tobualo",
         "Umbunasi",
         "Ambukha",
         "Balohili Mola",
         "Foikhugaga"
       ],
-      "Sidua'Ori": [
+      "SiduaOri": [
         "Hilidohona",
         "Hililaora",
-        "Hilisao'Oto",
+        "HilisaoOto",
         "Hilizanuwo",
         "Hoya",
         "Mondrowe",
-        "Na'Ai",
+        "NaAi",
         "Olanori",
         "Taluzusua",
         "Uluidanoduo",
@@ -77483,14 +77483,14 @@
         "Hilimbowo",
         "Hilimbulawa",
         "Hilindraso",
-        "Hilisalo'O",
+        "HilisaloO",
         "Loloabolo",
         "Lolomoyo",
         "Lolozaria",
         "Mohili",
         "Orahili Eho",
         "Sifaoroasi",
-        "Sinar Ino'O",
+        "Sinar InoO",
         "Sirofi",
         "Sisobahili",
         "Tuhemberua Amandraya",
@@ -77512,14 +77512,14 @@
         "Sisarahili Ekholo",
         "Tuhegafoa",
         "Amuri",
-        "Bawosalo'O Siwalawa",
+        "BawosaloO Siwalawa",
         "Botohili"
       ],
       "Ulunoyo": [
         "Hilifakhe",
         "Hilimaera",
         "Hiliwaebu",
-        "Loloana'A",
+        "LoloanaA",
         "Marao",
         "Orahili Ulunoyo",
         "Puncak Lolomatua",
@@ -77553,7 +77553,7 @@
         "Hilifaondrato",
         "Hiliotalua",
         "Hilisangowola",
-        "Ko'Olotano",
+        "KoOlotano",
         "Koendrafo",
         "Lawa-Lawa Luo",
         "Orudua Lawa-Lawa Luo",
@@ -77587,9 +77587,9 @@
         "Hilifondege Hilizoroilawa",
         "Hililaza Hilinawalo Mazino",
         "Hilinawalo Mazino",
-        "Hilizalo'Otano",
-        "Hilizalo'Otano Laowo",
-        "Hilizalo'Otano Larono",
+        "HilizaloOtano",
+        "HilizaloOtano Laowo",
+        "HilizaloOtano Larono",
         "Hilizoroi Lawa",
         "Lawindra",
         "Lolomboli",
@@ -77599,7 +77599,7 @@
       "Idanotae": [
         "Hiligabungan",
         "Hilimbowo Idanotae",
-        "Hilisalo'O",
+        "HilisaloO",
         "Hiliserangkai",
         "Lahusa Idanotae",
         "Orahua",
@@ -77631,12 +77631,12 @@
         "Orahuahili",
         "Siofabanua",
         "Tafulu",
-        "Tetegawa'Ai",
-        "Tetegawa'Ai Ehomo",
+        "TetegawaAi",
+        "TetegawaAi Ehomo",
         "Ulu Mazo",
         "Guigui"
       ],
-      "O'O'U": [
+      "OOU": [
         "Hilimbowo",
         "Hilimbuasi",
         "Hilinamazihono",
@@ -77644,10 +77644,10 @@
         "Hiliorudua",
         "Lolomaya",
         "Simandraolo",
-        "Simandraolo O'O'U",
+        "Simandraolo OOU",
         "Suka Maju",
-        "Balohili O'O'U",
-        "Bawosalo'O Bawoluo"
+        "Balohili OOU",
+        "BawosaloO Bawoluo"
       ],
       "Ulususua": [
         "Hilinifaoso",
@@ -77730,7 +77730,7 @@
         "Humene",
         "Idanotae",
         "Lewuoguru Idanoi",
-        "Lolo'Ana'A Idanoi",
+        "LoloAnaA Idanoi",
         "Ombolata",
         "Onowaembo",
         "Samasi",
@@ -77741,7 +77741,7 @@
         "Tetehosi Ii",
         "Tuhegeo I",
         "Tuhegeo Ii",
-        "Awa'Ai",
+        "AwaAi",
         "Bawodesolo",
         "Binaka",
         "Dahana",
@@ -77761,8 +77761,8 @@
         "Ombolata Simenari",
         "Ononamolo I Lot",
         "Onozitoli Tabaloho",
-        "Sihare'O I Tabaloho",
-        "Sisobahili Ii Tanose'O",
+        "SihareO I Tabaloho",
+        "Sisobahili Ii TanoseO",
         "Tetehosi Ombolata",
         "Faekhu",
         "Fodo"
@@ -77771,26 +77771,26 @@
         "Hiligodu Ulu",
         "Hilimbowo Olora",
         "Lasara Sowu",
-        "Lolo'Ana'A Lolomoyo",
+        "LoloAnaA Lolomoyo",
         "Olora",
         "Telukbelukar",
         "Tetehosi Afia",
         "Hambawa",
         "Afia",
-        "Gawu-Gawu Bo'Uso"
+        "Gawu-Gawu BoUso"
       ],
       "Gunungsitoli": [
         "Hilihao",
         "Hilimbaruzo",
-        "Hilina'A",
+        "HilinaA",
         "Ilir",
         "Iraonogeba",
         "Lasara Bahili",
-        "Lolowonu Niko'Otano",
+        "Lolowonu NikoOtano",
         "Madolaoli",
         "Madula",
         "Miga",
-        "Mo'Awo",
+        "MoAwo",
         "Mudik",
         "Ombolata Ulu",
         "Onowaembo",
@@ -77801,7 +77801,7 @@
         "Saombo",
         "Sifalaete Tabaloho",
         "Sifalaete Ulu",
-        "Sihare'O Ii Tabaloho",
+        "SihareO Ii Tabaloho",
         "Simandraolo",
         "Sisarahili Sisambualahe",
         "Sisarahiligamo",
@@ -77818,18 +77818,18 @@
         "Ononamolo Ii Lot",
         "Onozikho",
         "Orahili Tumori",
-        "Sihare'O Siwahili",
+        "SihareO Siwahili",
         "Tumori",
         "Tumori Balohili",
         "Lolomoyo Tuhemberua",
         "Gada"
       ],
-      "Gunungsitoli Alo'Oa": [
+      "Gunungsitoli AloOa": [
         "Iraonolase",
         "Lololawa",
-        "Nazalou Alo'Oa",
-        "Niko'Otano Dao",
-        "Orahili Tanose'O",
+        "Nazalou AloOa",
+        "NikoOtano Dao",
+        "Orahili TanoseO",
         "Tarakhaini",
         "Nazalou Lolowua",
         "Fadoro Hilimbowo",
@@ -77847,47 +77847,47 @@
         "Lahemo",
         "Lasela",
         "Lazara Idanoi",
-        "Loloana'A Gido",
+        "LoloanaA Gido",
         "Lolozasai",
-        "Nifolo'O Lauru",
+        "NifoloO Lauru",
         "Olindrawa Sisarahili",
         "Sirete",
         "Sisobahili",
         "Soewe",
         "Somi",
-        "Somi Botogo'O",
-        "Tulumbaho Salo'O",
+        "Somi BotogoO",
+        "Tulumbaho SaloO",
         "Umbu",
         "Akhelauwe"
       ],
       "Idanogawo": [
-        "Hili'Adulo",
-        "Hiligogowaya Maliwa'A",
+        "HiliAdulo",
+        "Hiligogowaya MaliwaA",
         "Hililawae",
         "Hilimoasio",
         "Hilimoasio Dua",
-        "Hilina'A Tafuo",
+        "HilinaA Tafuo",
         "Hiliono Zega",
         "Laira",
         "Laowo Hilimbaruzo",
-        "Maliwa'A",
+        "MaliwaA",
         "Mondrali",
         "Oladano",
         "Orahili Zuzundrao",
         "Otalua",
-        "Saiwahili Hili'Adulo",
+        "Saiwahili HiliAdulo",
         "Sandruta",
         "Sisobahili Iraono Hura",
-        "Tetegeona'Ai",
+        "TetegeonaAi",
         "Tetehosi",
-        "Tiga Serangkai Maliwa'A",
+        "Tiga Serangkai MaliwaA",
         "Tuhewaebu",
         "Ahedano",
         "Awoni Lauso",
         "Baruzo",
         "Biouti",
         "Biouti Timur",
-        "Bobozioli Loloana'A",
+        "Bobozioli LoloanaA",
         "Bozihona"
       ],
       "Bawolato": [
@@ -77902,7 +77902,7 @@
         "Orahili",
         "Orahua",
         "Orahua Faondrato",
-        "Si'Ofaewali Selatan",
+        "SiOfaewali Selatan",
         "Sifaoroasi Ulu Hou",
         "Sindrondro",
         "Siofabanua",
@@ -77911,7 +77911,7 @@
         "Sitolu Banua",
         "Sohoya",
         "Tagaule",
-        "Balale Toba'A",
+        "Balale TobaA",
         "Banua Sibohou Silima Ewali",
         "Botohaenga",
         "Dahana",
@@ -77927,42 +77927,42 @@
         "Mohili",
         "Onodalinga",
         "Orahili",
-        "Sifaro'Asi Ulu Gawo",
-        "Sisarahili Soroma'Asi",
+        "SifaroAsi Ulu Gawo",
+        "Sisarahili SoromaAsi",
         "Sisobahili Ulu Gawo",
         "Fahandrona",
         "Fatodano"
       ],
-      "Sogae'Adu": [
+      "SogaeAdu": [
         "Hilibadalu",
         "Hilimbana",
-        "La'Uri",
+        "LaUri",
         "Saitagaramba",
-        "Sihare'O Sogae'Adu",
-        "Sisarahili Sogae'Adu",
-        "Sogae'Adu",
+        "SihareO SogaeAdu",
+        "Sisarahili SogaeAdu",
+        "SogaeAdu",
         "Tuhembuasi",
         "Tulumbaho",
-        "We'A-We'A",
+        "WeA-WeA",
         "Baruzo"
       ],
       "Somolo-Molo": [
         "Hiliborodano",
         "Hiligodu Somolo-Molo",
         "Huno",
-        "I'Odano",
+        "IOdano",
         "Lewuoguru I",
         "Lewuombanua",
         "Sifaoro Asi",
         "Sisaratandrawa",
         "Sisobawino I",
-        "So'Ewali",
+        "SoEwali",
         "Somolo Molo"
       ],
       "Hiliduho": [
         "Hiliduho",
-        "Lasara Tanose'O",
-        "Ombolata Salo'O",
+        "Lasara TanoseO",
+        "Ombolata SaloO",
         "Ombolata Sisarahili",
         "Ononamolo I Bot",
         "Onowaembo Hiligara",
@@ -77973,7 +77973,7 @@
         "Sisobalauru",
         "Tuhegafoa Ii",
         "Dima",
-        "Mazingo Tanose'O",
+        "Mazingo TanoseO",
         "Hiligodu Tanoseo",
         "Fadoro Lauru"
       ],
@@ -77984,7 +77984,7 @@
         "Hiliwaele I",
         "Hiliwaele Ii",
         "Lasara Botomuzoi",
-        "Loloana'A",
+        "LoloanaA",
         "Mohili Berua Botomuzoi",
         "Ola Nori",
         "Ononamolo Talafu",
@@ -78014,14 +78014,14 @@
         "Fadoro Lalai",
         "Fulolo Lalai"
       ],
-      "Ma'U": [
+      "MaU": [
         "Lasara Siwalu Banua",
         "Lewa Lewa",
         "Lewuoguru Ii",
-        "Sihare'O Iii",
-        "Sihare'O Iii Bawosalo'O Berua",
-        "Sihare'O Iii Hilibadalu",
-        "Sisarahilima'U",
+        "SihareO Iii",
+        "SihareO Iii BawosaloO Berua",
+        "SihareO Iii Hilibadalu",
+        "SisarahilimaU",
         "Tuhemberua",
         "Atualuo",
         "Balodano",
@@ -78043,7 +78043,7 @@
         "Tarahoso",
         "Balodano"
       ],
-      "Ulu Moro'O": [
+      "Ulu MoroO": [
         "Hilibadalu",
         "Hilisangawola",
         "Lawelu",
@@ -78087,7 +78087,7 @@
         "Ambukha",
         "Duria"
       ],
-      "Moro'O": [
+      "MoroO": [
         "Hilisoromi",
         "Hiliwaele",
         "Hiliwaloo Ii",
@@ -78174,7 +78174,7 @@
         "Lawira Satua",
         "Lolofaoso",
         "Lolomboli",
-        "Lombuza'Ua",
+        "LombuzaUa",
         "Maziaya",
         "Baho",
         "Dahadano",
@@ -78187,7 +78187,7 @@
         "Onozitoli Sawo",
         "Sanawuyu",
         "Sawo",
-        "Seriwa'U",
+        "SeriwaU",
         "Sifahandro",
         "Sisarahili Teluk Siabang",
         "Teluk Bengkuang"
@@ -78196,7 +78196,7 @@
         "Hiligawolo",
         "Hiligodu Hoya",
         "Hilihati",
-        "Hilina'A",
+        "HilinaA",
         "Hilizukhu",
         "Holi",
         "Iraono Lase",
@@ -78206,8 +78206,8 @@
         "Ombolata",
         "Onozalukhu",
         "Pasar Lahewa",
-        "Sifaoro'Asi",
-        "Sihene'Asi",
+        "SifaoroAsi",
+        "SiheneAsi",
         "Sitolubanua",
         "Afia",
         "Balefadoro Tuho",
@@ -78219,7 +78219,7 @@
         "Hiligawoni",
         "Hilisebua Siwalubanua",
         "Lahemboho",
-        "Loloana'A",
+        "LoloanaA",
         "Ombolata",
         "Ononamolo Alasa",
         "Ononamolo Tumula",
@@ -78233,15 +78233,15 @@
       ],
       "Sitolu Ori": [
         "Hilimbosi",
-        "Hilisalo'O",
+        "HilisaloO",
         "Tetehosi Maziaya",
         "Umbubalodano",
         "Botombawo",
-        "Fulolo Salo'O"
+        "Fulolo SaloO"
       ],
       "Alasa Talumuzoi": [
         "Hilimbowo Kare",
-        "Hilina'A",
+        "HilinaA",
         "Laehuwa",
         "Mazingo",
         "Banua Sibohou Iii",
@@ -78251,18 +78251,18 @@
         "Humene Siheneasi",
         "Ononazara",
         "Siwawo",
-        "Te'Olo",
-        "Botona'Ai",
+        "TeOlo",
+        "BotonaAi",
         "Fabaliwa Oyo",
         "Gunung Tua",
         "Harefa"
       ],
       "Tuhemberua": [
-        "La'Aya",
+        "LaAya",
         "Ladara",
         "Silima Banua",
         "Siofa Banua",
-        "Alo'Oa",
+        "AloOa",
         "Banua Gea",
         "Botolakha",
         "Fino"
@@ -78272,7 +78272,7 @@
         "Lukhu Lase",
         "Meafu",
         "Muzoi",
-        "Tefa'O",
+        "TefaO",
         "Tetehosi Sorowi",
         "Tugala Lauru"
       ],
@@ -78281,10 +78281,10 @@
         "Lauru I",
         "Lauru Lahewa",
         "Ombolata Afulu",
-        "Sifaoro'Asi",
+        "SifaoroAsi",
         "Sisobahili",
         "Afulu",
-        "Faekhuna'A",
+        "FaekhunaA",
         "Harewakhe"
       ]
     },
@@ -84422,7 +84422,7 @@
         "Gunung Sari",
         "Long Ayan",
         "Long Ayap",
-        "Long La'ai",
+        "Long Laai",
         "Siduung Indah"
       ],
       "Pulau Derawan": [
@@ -85133,7 +85133,7 @@
         "Intu Lingau",
         "Jontai",
         "Lakan Bilem",
-        "Mu'ut",
+        "Muut",
         "Sembuan",
         "Sentalar",
         "Temula",
@@ -85301,7 +85301,7 @@
         "Naha Buan",
         "Naha Silat",
         "Naha Tifab",
-        "Tiong Bu'u",
+        "Tiong Buu",
         "Tiong Ohang"
       ]
     },
@@ -85717,15 +85717,15 @@
         "Tujung"
       ],
       "Krayan Tengah": [
-        "Ba' Liku",
+        "Ba Liku",
         "Binuang",
         "Long Kelupan",
         "Long Mutan",
         "Long Padi",
         "Long Rian",
         "Long Rungan",
-        "Pa' Milau",
-        "Pa' Yalau",
+        "Pa Milau",
+        "Pa Yalau",
         "Tang Badui",
         "Tang Paye"
       ],
@@ -85743,16 +85743,16 @@
         "Long Matung",
         "Long Nawang",
         "Long Rupan",
-        "Pa' Api",
-        "Pa' Matung",
-        "Pa' Nado",
-        "Pa' Padi",
-        "Pa' Putuk",
-        "Pa' Rupai",
-        "Pa' Sire",
-        "Pa' Terutun",
-        "Wa' Laya",
-        "Wa' Yanud"
+        "Pa Api",
+        "Pa Matung",
+        "Pa Nado",
+        "Pa Padi",
+        "Pa Putuk",
+        "Pa Rupai",
+        "Pa Sire",
+        "Pa Terutun",
+        "Wa Laya",
+        "Wa Yanud"
       ],
       "Sebatik": [
         "Balansiku",
@@ -85854,19 +85854,19 @@
         "Long Mangan",
         "Long Puak",
         "Long Tugul",
-        "Ma' Libu",
-        "Pa' Butal",
-        "Pa' Delung",
-        "Pa' Inan",
-        "Pa' Kemut",
-        "Pa' Kidang",
-        "Pa' Lutut",
-        "Pa' Mering",
-        "Pa' Mulak",
-        "Pa' Pani",
-        "Pa' Payak",
-        "Pa' Pirit",
-        "Pa' Urud",
+        "Ma Libu",
+        "Pa Butal",
+        "Pa Delung",
+        "Pa Inan",
+        "Pa Kemut",
+        "Pa Kidang",
+        "Pa Lutut",
+        "Pa Mering",
+        "Pa Mulak",
+        "Pa Pani",
+        "Pa Payak",
+        "Pa Pirit",
+        "Pa Urud",
         "Sembudud"
       ],
       "Sebatik Timur": [
@@ -85886,8 +85886,8 @@
         "Lintong",
         "Mansalong",
         "Nainsid",
-        "Pa'lemumut",
-        "Pa'loo",
+        "Palemumut",
+        "Paloo",
         "Patal I",
         "Patal II",
         "Podong",
@@ -85924,17 +85924,17 @@
         "Long Sepayang",
         "Long Tenem",
         "Long Umung",
-        "Pa' Betung",
-        "Pa' Kebuan",
-        "Pa' Lidung",
-        "Pa' Melade",
-        "Pa' Pala",
-        "Pa' Pawan",
-        "Pa' Rangeb",
-        "Pa' Raye",
-        "Pa' Umung",
+        "Pa Betung",
+        "Pa Kebuan",
+        "Pa Lidung",
+        "Pa Melade",
+        "Pa Pala",
+        "Pa Pawan",
+        "Pa Rangeb",
+        "Pa Raye",
+        "Pa Umung",
         "Sinar Baru",
-        "Wa' Yagung"
+        "Wa Yagung"
       ],
       "Sebatik Utara": [
         "Lapri",
@@ -85947,14 +85947,14 @@
         "Long Budung",
         "Long Pasia",
         "Long Pupung",
-        "Pa' Amai",
-        "Pa' Dalan",
-        "Pa' Ibang",
-        "Pa' Kaber",
-        "Pa' Sing",
-        "Pa' Tera",
-        "Pa' Upan",
-        "Pa' Urang"
+        "Pa Amai",
+        "Pa Dalan",
+        "Pa Ibang",
+        "Pa Kaber",
+        "Pa Sing",
+        "Pa Tera",
+        "Pa Upan",
+        "Pa Urang"
       ],
       "Nunukan Selatan": [
         "Mansapa",
@@ -86200,7 +86200,7 @@
         "Bilalang III",
         "Bilalang III Utara",
         "Bilalang IV",
-        "Kolinganga'an",
+        "Kolingangaan",
         "Tudu Aog",
         "Tudu Aog Baru"
       ],
@@ -86888,7 +86888,7 @@
         "Sambuara",
         "Sambuara Satu"
       ],
-      "Tampan' Amma": [
+      "Tampan Amma": [
         "Ammat",
         "Ammat Selatan",
         "Binalang",
@@ -87631,7 +87631,7 @@
         "Pimpi",
         "Talaga",
         "Vahuta",
-        "Voa'a"
+        "Voaa"
       ],
       "Kaidipang": [
         "Bigo",
@@ -88358,8 +88358,7 @@
         "Batuputih Bawah",
         "Batuputih Atas"
       ]
-    },
-    "Minahasa Selatan/Bolaang Mongondwo Timur": {}
+    }
   },
   "Aceh": {
     "Pidie Jaya": {
@@ -89683,7 +89682,7 @@
         "Kuala Peudawa Puntong",
         "Kuta Blang",
         "Kuta Lawah",
-        "Meunasah Pu'Uk",
+        "Meunasah PuUk",
         "Sampoimah",
         "Seuneubok Bacee",
         "Seuneubok Rambong",
@@ -89834,7 +89833,7 @@
         "Bantayan Barat",
         "Blang Guci",
         "Blang Minjei",
-        "Buket Pu'Uk",
+        "Buket PuUk",
         "Buket Rumiya",
         "Buket Teukuh",
         "Gampong Keumuneng",
@@ -92115,7 +92114,7 @@
         "Krueng Kluet",
         "Limau Purut",
         "Pasi Kuala Asahan",
-        "Pasi Kuala Ba'U",
+        "Pasi Kuala BaU",
         "Pulo Ie I",
         "Pulo Kambing",
         "Ruak",
@@ -92210,7 +92209,7 @@
         "Meuligo",
         "Mutiara",
         "Panton Luas",
-        "Sawang Ba'U",
+        "Sawang BaU",
         "Sawang I",
         "Sawang Ii",
         "Sikulat",
@@ -97267,8 +97266,8 @@
         "Sira",
         "Sira Tee",
         "Tohmri",
-        "Way 'U'",
-        "Wrait 'U'",
+        "Way U",
+        "Wrait U",
         "Yaksoro"
       ],
       "Aifat Utara": [
@@ -98676,13 +98675,13 @@
         "Musyawarah",
         "Pelehu",
         "Suka Damai",
-        "Taula'a",
+        "Taulaa",
         "Totopo"
       ],
       "Biluhu": [
         "Biluhu Barat",
         "Biluhu Tengah",
-        "Botubolu'o",
+        "Botuboluo",
         "Huwongo",
         "Lobuto",
         "Lobuto Timur",
@@ -98697,7 +98696,7 @@
         "Lamu",
         "Langgula",
         "Lopo",
-        "Olimoo'o",
+        "Olimooo",
         "Tontayuo"
       ],
       "Tolangohula": [

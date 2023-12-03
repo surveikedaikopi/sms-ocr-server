@@ -1,13 +1,107 @@
 import json
 import random
 import pandas as pd
+import geopandas as gpd
+from pytz import timezone
+from dotenv import load_dotenv
+from shapely.geometry import Point
+from google.cloud import documentai
+
 
 # ================================================================================================================
-# Load files
+# Initial Setup
+
+# Load env
+load_dotenv()
+
+# Load the shapefile
+shapefile_path = 'location.shp'
+gdf = gpd.read_file(shapefile_path)
+gdf.crs = "EPSG:4326"
 
 # Load region data from JSON
 with open('region.json', 'r') as json_file:
     region_data = json.load(json_file)
+
+
+
+# ================================================================================================================
+# Auxiliary Functions
+
+# Function to convert datetime to server time zone
+def convert_to_server_timezone(dt):
+    # Define the time zone of the server
+    server_timezone = timezone('UTC')
+    return dt.astimezone(server_timezone)
+
+
+# Get administrative regions from coordinate
+def get_location(coordinate):
+    # Create a Shapely Point object from the input coordinate
+    point = Point(coordinate)
+    # Check which polygon contains the point
+    selected_row = gdf[gdf.geometry.contains(point)]
+    # Output
+    out = {
+        'Provinsi': selected_row['Provinsi'].values[0],
+        'Kab/Kota': selected_row['Kab/Kota'].values[0],
+        'Kecamatan': selected_row['Kecamatan'].values[0],
+        'Kelurahan': selected_row['Kelurahan'].values[0]
+    }
+    return out
+
+
+# Document inference
+def process_document_sample(attachment_url, n_candidate, processor_id):
+    project_id = "quickcount-404922"
+    location = "us"
+    # processor_id = "66c5b23bee13a9d6"
+
+    # Initialize the DocumentProcessorServiceClient
+    client = documentai.DocumentProcessorServiceClient()
+    
+    # Construct the processor path
+    name = f'projects/{project_id}/locations/{location}/processors/{processor_id}'
+        
+    # Convert the attachment URL content to a byte array
+    file_content = scto.get_attachment(attachment_url)
+    
+    # Load binary data
+    raw_document = documentai.RawDocument(content=file_content, mime_type='image/jpeg')
+
+    # Configure the process request
+    request = documentai.ProcessRequest(
+        name=name,
+        raw_document=raw_document,
+    )
+
+    # Process Document
+    out = client.process_document(request)    
+    output = {}
+    for entity in out.document.entities:
+        output.update({entity.type_:entity.mention_text})
+    
+    # Post-processing
+    ai_votes = [0] * n_candidate
+    for var_ in range(n_candidate):
+        try:
+            ai_votes[var_] = remove_non_numbers_and_convert_to_int(output[f'suara{var_+1}'])
+        except:
+            ai_votes[var_] = 0
+    try:
+        ai_invalid = remove_non_numbers_and_convert_to_int(output['rusak'])
+    except:
+        ai_invalid = 0
+            
+    return ai_votes, ai_invalid
+
+
+def remove_non_numbers_and_convert_to_int(input_string):
+    # Use a list comprehension to create a string containing only digits
+    digits_only = ''.join(char for char in input_string if char.isdigit())
+    # Convert the string of digits to an integer
+    result_integer = int(digits_only)
+    return result_integer
 
 
 
@@ -31,9 +125,6 @@ def create_target(event, N):
     df = pd.DataFrame(columns=['UID', 'Korwil', 'Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan'])
     # Generate unique IDs
     df['UID'] = generate_unique_codes(N)
-    # # Save UIDs in json file
-    # with open(f'uid_{event}.json', 'w') as json_file:
-    #     json.dump(df['UID'].tolist(), json_file)
     # Save excel file
     with pd.ExcelWriter(f'target_{event}.xlsx', engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='survey')
@@ -43,7 +134,7 @@ def create_target(event, N):
 # ================================================================================================================
 # Function to generate SCTO xlsform
 
-def create_xlsform_template(target_file, form_title, form_id):
+def create_xlsform_template(target_file, form_title, form_id, event):
 
     # Load target data from Excel
     target_data = pd.read_excel(target_file)
@@ -57,58 +148,73 @@ def create_xlsform_template(target_file, form_title, form_id):
     survey_df = pd.DataFrame(columns=['type', 'name', 'label', 'required', 'choice_filter', 'calculation', 'constraint', 'constraint message'])
 
     # default fields
-    survey_df['type'] = ['start', 'end', 'deviceid', 'phonenumber', 'username', 'calculate', 'calculate', 'caseid']
-    survey_df['name'] = ['starttime', 'endtime', 'deviceid', 'devicephonenum', 'username', 'device_info', 'duration', 'caseid']
-    survey_df['calculation'] = ['', '', '', '', '', 'device-info()', 'duration()', '']
+    survey_df['type'] = ['start', 'end', 'deviceid', 'phonenumber', 'username', 'calculate', 'calculate', 'caseid', 'calculate']
+    survey_df['name'] = ['starttime', 'endtime', 'deviceid', 'devicephonenum', 'username', 'device_info', 'duration', 'caseid', 'event']
+    survey_df['calculation'] = ['', '', '', '', '', 'device-info()', 'duration()', '', event]
     
-    # Add uid question
+    # UID
     survey_df = survey_df.append({'type': 'text',
                                   'name': 'UID',
-                                  'label': 'Masukkan UID (3 digit) yang sama dengan UID SMS',
+                                  'label': 'Masukkan UID (3 karakter) yang sama dengan UID SMS',
                                   'required': 'yes',
                                   'constraint': f"string-length(.) = 3 and regex(., '^({list_uid})$')",
                                   'constraint message': 'UID tidak terdaftar'
                                  }, ignore_index=True)    
         
-    # Add provinsi question
-    survey_df = survey_df.append({'type': 'select_one list_provinsi',
-                                  'name': 'selected_provinsi',
-                                  'label': 'Pilih Provinsi',
-                                  'required': 'yes'
-                                 }, ignore_index=True)
-
-    # Add kabupaten_kota question
-    survey_df = survey_df.append({'type': 'select_one list_kabkota',
-                                  'name': 'selected_kabupaten_kota',
-                                  'label': 'Pilih Kabupaten/Kota',
-                                  'required': 'yes',
-                                  'choice_filter': 'provinsi=${selected_provinsi}'
-                                 }, ignore_index=True)
-
-    # Add kecamatan question
-    survey_df = survey_df.append({'type': 'select_one list_kecamatan',
-                                  'name': 'selected_kecamatan',
-                                  'label': 'Pilih Kecamatan',
-                                  'required': 'yes',
-                                  'choice_filter': 'kabupaten_kota=${selected_kabupaten_kota}'
-                                 }, ignore_index=True)
-    
-    # Add kelurahan question
-    survey_df = survey_df.append({'type': 'select_one list_kelurahan',
-                                  'name': 'selected_kelurahan',
-                                  'label': 'Pilih Kelurahan',
-                                  'required': 'yes',
-                                  'choice_filter': 'kecamatan=${selected_kecamatan}'
-                                 }, ignore_index=True)
-
-    # Add image & geopoint question
-    for (t,n,l,r) in zip(['text', 'image', 'image', 'geopoint'], ['no_tps', 'foto_formulir_c1', 'foto_jumlah_suara', 'lokasi'], ['No. TPS', 'Foto Formulir C1', 'Foto Jumlah Suara di Formulir C1', 'Lokasi'], ['yes', 'yes', 'yes', 'yes']):
-        survey_df = survey_df.append({'type': t,
+    # Group 1: Regions & Address
+    survey_df = survey_df.append({'type': 'begin_group',
+                                  'name': 'regions',
+                                  'label': 'Wilayah',
+                                 }, ignore_index=True)    
+    regions = ['provinsi', 'kabkota', 'kecamatan', 'kelurahan']
+    labels = ['Provins', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
+    for (r, l) in zip([regions, labels]):
+        survey_df = survey_df.append({'type': f'select_one list_{r}',
+                                    'name': f'selected_{r}',
+                                    'label': f'Pilih {l}',
+                                    'required': 'yes'
+                                    }, ignore_index=True)
+    for (n, l) in zip(['no_tps', 'alamat', 'rt', 'rw'], ['No. TPS', 'Alamat', 'RT', 'RW']):
+        survey_df = survey_df.append({'type': 'text',
                                       'name': n,
                                       'label': l,
-                                      'required': r,
+                                      'required': 'yes',
                                      }, ignore_index=True)
+    survey_df = survey_df.append({'type': 'end_group',
+                                  'name': 'regions',
+                                 }, ignore_index=True) 
+
+    # Upload images
+    survey_df = survey_df.append({'type': 'begin_group',
+                                  'name': 'upload',
+                                  'label': 'Bagian untuk mengunggah/upload foto formulir C1',
+                                 }, ignore_index=True) 
+    for (n, l) in zip(['formulir_c1_a4', 'formulir_c1_plano', 'foto_jumlah_suara'], ['Foto Formulir C1-A4', 'Foto Formulir C1-Plano', 'Foto fokus jarak dekat di bagian jumlah suara']):
+        survey_df = survey_df.append({'type': 'image',
+                                      'name': n,
+                                      'label': l,
+                                      'required': 'yes',
+                                     }, ignore_index=True)
+    survey_df = survey_df.append({'type': 'end_group',
+                                  'name': 'upload',
+                                 }, ignore_index=True) 
     
+    # GPS
+    survey_df = survey_df.append({'type': 'geopoint',
+                                  'name': 'koordinat',
+                                  'label': 'Koordinat Lokasi (GPS)',
+                                  'required': 'yes',
+                                 }, ignore_index=True)
+
+    # Personal Info
+    txt = 'Masukkan foto Anda yang sedang berada di TPS (diusahakan di samping tanda nomor TPS)'
+    for (t, n, l) in zip(['image', 'text', 'text'], ['selfie', 'nama', 'no. hp'], [txt, 'Nama Anda', 'No. HP Anda'])
+    survey_df = survey_df.append({'type': t,
+                                  'name': n,
+                                  'label': l,
+                                  'required': 'yes',
+                                 }, ignore_index=True)
+
     # Save choices to an Excel file
     with pd.ExcelWriter(f'xlsform_{form_id}.xlsx', engine='openpyxl') as writer:
         survey_df.to_excel(writer, index=False, sheet_name='survey')
@@ -150,8 +256,7 @@ def create_xlsform_template(target_file, form_title, form_id):
 
         # Add kecamatan choices
         for kk in kab_kota:
-            # kecamatan = nested_target[p][kk]
-            kecamatan = region_data[p][kk]
+            kecamatan = nested_target[p][kk]
             kecamatan = sorted(kecamatan)
             choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kecamatan', 
                                                          'name': ['_'.join(i.split(' ')) for i in kecamatan],

@@ -1,20 +1,39 @@
 import os
+import time
 import json
 import tools
 import requests
 import numpy as np
 import pandas as pd
 from fastapi import Request
-from datetime import datetime
+from dotenv import load_dotenv
+from pysurveycto import SurveyCTOObject
+from datetime import datetime, timedelta
 from fastapi import Form, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
 
+
+# ================================================================================================================
+# Initial Setup
+
+# Load env
+load_dotenv()
+
+# Define app
 app = FastAPI()
 
-url_send_sms = "https://api.nusasms.com/api/v3/sendsms/plain"
-url_bubble = "https://quick-count.bubbleapps.io/version-test/api/1.1/obj"
-API_KEY = "cecd6c1aa78871f6746b03bb1997508f"
-headers = {'Authorization': f'Bearer {API_KEY}'}
+# Global Variables
+url_send_sms = os.environ.get('url_send_sms')
+url_bubble = os.environ.get('url_bubble')
+BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
+SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
+SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
+SCTO_PASSWORD = os.environ.get('SCTO_PASSWORD')
+
+# Bubble Headers
+headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
+
+
 
 # ================================================================================================================
 # Endpoint to read the "inbox.txt" file
@@ -26,6 +45,8 @@ async def read_inbox():
         return {"inbox_data": data}
     except FileNotFoundError:
         return {"message": "File not found"}
+
+
 
 # ================================================================================================================
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
@@ -66,7 +87,7 @@ for port in range(1, num_endpoints + 1):
         # Split message
         info = msg.lower().split('#')
 
-        # Default Error Type & Status
+        # Default Values
         error_type = None
         raw_sms_status = 'Rejected'
 
@@ -98,25 +119,25 @@ for port in range(1, num_endpoints + 1):
                         error_type = 3
                     else:
                         # Get votes
-                        votes = info[3:]
+                        votes = info[3:-1]
                         vote1 = votes[0]
                         vote2 = votes[1]
                         try:
                             vote3 = votes[2]
                         except:
-                            vote3 = 0
+                            vote3 = None
                         try:
                             vote4 = votes[3]
                         except:
-                            vote4 = 0
+                            vote4 = None
                         try:
                             vote5 = votes[4]
                         except:
-                            vote5 = 0
+                            vote5 = None
                         try:
                             vote6 = votes[5]
                         except:
-                            vote6 = 0
+                            vote6 = None
                         # Get invalid votes
                         invalid = info[-1]
                         # Get total votes
@@ -139,19 +160,22 @@ for port in range(1, num_endpoints + 1):
                             # Check if SCTO data exists
                             scto = data['response']['results'][0]['SCTO']
 
+                            # Get existing validator
+                            validator = data['response']['results'][0]['Validator']
+
                             # If SCTO data exists, check if they are consistent
                             if scto:
-                                if votes[:-1] == data['response']['results'][0]['SCTO Votes']:
+                                if votes == data['response']['results'][0]['SCTO Votes']:
                                     status = 'Verified'
+                                    validator = 'System'
                                 else:
                                     status = 'Not Verified'
                                     note = 'SMS vs SCTO not consistent'
                             else:
                                 status = 'SMS Only'
-
-                            # Convert receive_date_str to datetime format
-                            tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
+                            
                             # Extract the hour as an integer
+                            tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
                             hour = tmp.hour
 
                             # if note is not yet defined
@@ -164,14 +188,15 @@ for port in range(1, num_endpoints + 1):
                             payload = {
                                 'Active': True,
                                 'SMS': True,
+                                'SMS Int': 1,
                                 'UID': uid.upper(),
-                                'Gateway Port': port,
-                                'Gateway Number': gateway_number,
-                                'Phone': originator,
+                                'SMS Gateway Port': port,
+                                'SMS Gateway Number': gateway_number,
+                                'SMS Sender': originator,
                                 'SMS Timestamp': receive_date,
                                 'SMS Hour': hour,
                                 'Event Name': event,
-                                'SMS Votes': votes[:-1],
+                                'SMS Votes': votes,
                                 'SMS Invalid': invalid,
                                 'SMS Total Voters': total_votes, 
                                 'Vote1': vote1,
@@ -180,11 +205,12 @@ for port in range(1, num_endpoints + 1):
                                 'Vote4': vote4,
                                 'Vote5': vote5,
                                 'Vote6': vote6,
-                                'Final Votes': votes[:-1],
+                                'Final Votes': votes,
                                 'Invalid Votes': invalid,
                                 'Complete': scto,
                                 'Status': status,
-                                'Note': note
+                                'Note': note,
+                                'Validator': validator
                             }
 
                             raw_sms_status = 'Accepted'
@@ -197,18 +223,19 @@ for port in range(1, num_endpoints + 1):
                             _id = uid_dict[uid.upper()]
                             requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
 
-                # # Return the message to the sender via SMS Gateway
-                # params = {
-                #     "user": "taufikadinugraha_api",
-                #     "password": "SekarangSeriusSMS@ku99",
-                #     "SMSText": message,
-                #     "GSM": originator,
-                #     "output": "json",
-                # }
-                # requests.get(url_send_sms, params=params)
-
             except:
                 error_type = 1
+                message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
+
+            # # Return the message to the sender via SMS Gateway
+            # params = {
+            #     "user": "taufikadinugraha_api",
+            #     "password": "SekarangSeriusSMS@ku99",
+            #     "SMSText": message,
+            #     "GSM": originator,
+            #     "output": "json",
+            # }
+            # requests.get(url_send_sms, params=params)
 
         else:
             error_type = 0
@@ -311,25 +338,25 @@ async def generate_xlsform(
         )
     ])
 
-    # Populate votes table
+    # Populate votes table in bulk
     headers = {
-        'Authorization': f'Bearer {API_KEY}', 
+        'Authorization': f'Bearer {BUBBLE_API_KEY}', 
         'Content-Type': 'text/plain'
         }
-    res = requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
-    headers = {'Authorization': f'Bearer {API_KEY}'}
+    headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
     res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
     uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
     with open(f'uid_{event}.json', 'w') as json_file:
         json.dump(uid_dict, json_file)
 
     # Generate xlsform logic using the target file
-    tools.create_xlsform_template(target_file_name, form_title, form_id)
+    tools.create_xlsform_template(target_file_name, form_title, form_id, event)
     xlsform_path = f'xlsform_{form_id}.xlsx'
 
     def file_generator():
@@ -350,5 +377,134 @@ async def delete_event(
     event: str = Form(...),
     form_id: str = Form(...)
 ):
-    os.system(f'rm *_{event}.*')
-    os.system(f'rm *_{form_id}.*')
+    os.system(f'rm -f *_{event}.*')
+    os.system(f'rm -f *_{form_id}.*')
+
+
+
+# ================================================================================================================
+# Process SCTO data
+
+def scto_process(event, form_id, n_candidate):
+    # Retrieve event data from Bubble database
+    filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
+    filter_json = json.dumps(filter_params)
+    params = {"constraints": filter_json}
+    res = requests.get(f'{url_bubble}/Events', headers=headers, params=params)
+    data = res.json()
+
+    # Get paramaters
+    form_id = data['response']['results'][0]['SCTO']
+    n_candidate = data['response']['results'][0]['SCTO']
+
+    # Retrieve data from SCTO
+    res = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
+
+    # UID
+    uid = res[0]['UID']
+
+    # SCTO Timestamp
+    std_datetime = datetime.strptime(res[0]['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
+    
+    # GPS location
+    coordinate = np.array(res[0]['lokasi'].split(' ')[1::-1]).astype(float)
+    loc = tools.get_location(coordinate)
+    
+    # Survey Link
+    key = res[0]['KEY'].split('uuid:')[-1]
+    link = f"https://{SCTO_SERVER_NAME}.surveycto.com/view/submission.html?uuid=uuid%3A{key}"
+    
+    # OCR C1-Form
+    attachment_url = res[0]['foto_jumlah_suara']
+    ai_votes, ai_invalid = tools.process_document_sample(attachment_url, n_candidate)
+
+    # Retrieve data with this UID from Bubble database
+    filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
+    filter_json = json.dumps(filter_params)
+    params = {"constraints": filter_json}
+    res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+    data = res_bubble.json()
+
+    # Check if SMS data exists
+    sms = data['response']['results'][0]['SMS']
+
+    # If SMS data exists, check if they are consistent
+    if sms:
+        if ai_votes == data['response']['results'][0]['SMS Votes']:
+            status = 'Verified'
+        else:
+            status = 'Not Verified'
+            note = 'SMS vs SCTO not consistent'
+    else:
+        status = 'SCTO Only'
+
+    # if note is not yet defined
+    try:
+        note
+    except:
+        note = ''
+
+    # Payload
+    payload = {
+        'Active': True,
+        'Complete': sms,
+        'UID': uid,
+        'TPS': res[0]['no_tps'],
+        'SCTO': True,
+        'SCTO Username': res[0]['username'],
+        'SCTO Timestamp': std_datetime,
+        'SCTO Hour': std_datetime.hour,
+        'SCTO Provinsi': res[0]['selected_provinsi'].replace('-', ' '),
+        'SCTO Kab/Kota': res[0]['selected_kabupaten_kota'].replace('-', ' '),
+        'SCTO Kecamatan': res[0]['selected_kecamatan'].replace('-', ' '),
+        'SCTO Kelurahan': res[0]['selected_kelurahan'].replace('-', ' '),
+        'SCTO Votes': ai_votes,
+        'SCTO Invalid': ai_invalid,
+        'SCTO Total Voters': np.sum(ai_votes) + ai_invalid,
+        'GPS Provinsi': loc['Provinsi'],
+        'GPS Kab/Kota': loc['Kab/Kota'],
+        'GPS Kecamatan': loc['Kecamatan'],
+        'GPS Kelurahan': loc['Kelurahan'],
+        'Status': status,
+        'Survey Link': link
+    }
+
+    # Load the JSON file into a dictionary
+    with open(f'uid_{event}.json', 'r') as json_file:
+        uid_dict = json.load(json_file)
+
+    # Forward data to Bubble Votes database
+    _id = uid_dict[uid.upper()]
+    requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+
+
+
+
+# ================================================================================================================
+# Running All The Time
+
+# Build connection
+scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+minute_delta = 10
+
+while True:
+
+    # Get the current time in the server's time zone
+    current_time_server = tools.convert_to_server_timezone(datetime.now())
+
+    # Calculate the oldest completion date based on the current time
+    date_obj = current_time_server - timedelta(minutes=minute_delta)
+
+    # Retrieve event from Bubble database
+    res = requests.get(f'{url_bubble}/Events', headers=headers)
+    data = res.json()
+    events = [i['Event Name'] for i in data['response']['results']]
+    form_ids = [i['Event Name'] for i in data['response']['results']]
+    n_candidates = [i['Event Name'] for i in data['response']['results']]
+
+    for (event, form_id, n_candidate) in zip(events, form_ids, n_candidates):
+        # Run 'scto_process' function asynchronously
+        scto_process(event, form_id, n_candidate)
+
+    # Wait for 10 minutes before the next iteration
+    time.sleep(minute_delta * 60)  # 5 minutes in seconds
