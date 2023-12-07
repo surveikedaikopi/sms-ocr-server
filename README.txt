@@ -12,6 +12,18 @@ sudo docker network prune
 df -h
 
 
+sudo apt autoremove
+sudo apt clean
+sudo dpkg --list 'linux-image*'
+sudo apt-get purge <old-kernel-package>
+sudo du -h /var/log
+sudo rm /var/log/<large-log-file>
+sudo du -h --max-depth=1 /
+sudo find / -type f -size +1G
+sudo find / -name "core" -exec rm -f {} \;
+
+
+
 http://4.194.114.42:8008/docs
 http://4.194.114.42:8008/receive
 http://4.194.114.42:8008/read
