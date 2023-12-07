@@ -188,6 +188,16 @@ for port in range(1, num_endpoints + 1):
                                 note
                             except:
                                 note = ''
+                            
+                            # Delta Time
+                            scto_timestamp = data['response']['results'][0]['SCTO Timestamp']
+                            if scto_timestamp:
+                                sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
+                                scto_timestamp = datetime.strptime(scto_timestamp, "%Y-%m-%d %H:%M:%S")
+                                delta_time = abs(scto_timestamp - sms_timestamp)
+                                delta_time_hours = delta_time.total_seconds() / 3600
+                            else:
+                                delta_time_hours = None
 
                             # Payload
                             payload = {
@@ -214,6 +224,7 @@ for port in range(1, num_endpoints + 1):
                                 'Invalid Votes': invalid,
                                 'Complete': scto,
                                 'Status': status,
+                                'Delta Time': delta_time_hours,
                                 'Note': note,
                                 'Validator': validator
                             }
@@ -397,7 +408,16 @@ def scto_process(data, event, n_candidate, processor_id):
 
     # SCTO Timestamp
     std_datetime = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
+    std_datetime = std_datetime + timedelta(hours=7)
     
+    # Delta Time
+    if data['SMS Timestamp']:
+        sms_timestamp = datetime.strptime(data['SMS Timestamp'], "%Y-%m-%d %H:%M:%S")
+        delta_time = abs(std_datetime - sms_timestamp)
+        delta_time_hours = delta_time.total_seconds() / 3600
+    else:
+        delta_time_hours = None
+
     # GPS location
     coordinate = np.array(data['koordinat'].split(' ')[1::-1]).astype(float)
     loc = tools.get_location(coordinate)
@@ -408,10 +428,16 @@ def scto_process(data, event, n_candidate, processor_id):
     
     # OCR C1-Form
     if processor_id:
-        attachment_url = data['foto_jumlah_suara']
-        ai_votes, ai_invalid = tools.process_document_sample(attachment_url, n_candidate)
+        try:
+            attachment_url = data['foto_jumlah_suara']
+            # Build SCTO connection
+            scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+            ai_votes, ai_invalid = tools.read_form(scto, attachment_url, n_candidate, processor_id)
+        except:
+            ai_votes = [0] * n_candidate
+            ai_invalid = 0            
     else:
-        ai_votes = [0]*n_candidate
+        ai_votes = [0] * n_candidate
         ai_invalid = 0
 
     # Retrieve data with this UID from Bubble database
@@ -465,6 +491,7 @@ def scto_process(data, event, n_candidate, processor_id):
         'GPS Kab/Kota': loc['Kab/Kota'],
         'GPS Kecamatan': loc['Kecamatan'],
         'GPS Kelurahan': loc['Kelurahan'],
+        'Delta Time': delta_time_hours,
         'Status': status,
         'Survey Link': link
     }
@@ -482,28 +509,31 @@ def scto_process(data, event, n_candidate, processor_id):
 # ================================================================================================================
 # Asynchronous process
 def process_data(event, form_id, n_candidate, date_obj, processor_id):
+    # Build SCTO connection
+    scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
     # Retrieve data from SCTO
-    data = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
+    list_data = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
     # Loop over data
-    for i_scto in range(len(data)):
-        # Run 'scto_process' function asynchronously
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.submit(scto_process, data[i_scto], event, n_candidate, processor_id)
+    if len(list_data) > 0:
+        for data in list_data:
+            # Run 'scto_process' function asynchronously
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                executor.submit(scto_process, data, event, n_candidate, processor_id)
 
 
 
 # ================================================================================================================
 # Running All The Time
 
-
-# Build connection
-scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+# Time period
 minute_delta = 10
 
 while True:
 
     # Get the current time in the server's time zone
     current_time_server = tools.convert_to_server_timezone(datetime.now())
+
+    print(datetime.now())
 
     # Calculate the oldest completion date based on the current time
     date_obj = current_time_server - timedelta(minutes=minute_delta)
@@ -512,16 +542,16 @@ while True:
     res = requests.get(f'{url_bubble}/Events', headers=headers)
     data = res.json()
 
-    print(data)
+    if data['response']['count'] > 0:
 
-    events = [i['Event Name'] for i in data['response']['results']]
-    form_ids = [i['SCTO FormID'] for i in data['response']['results']]
-    n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
-    processor_ids = [i['OCR Processor ID'] for i in data['response']['results']]
+        events = [i['Event Name'] for i in data['response']['results']]
+        form_ids = [i['SCTO FormID'] for i in data['response']['results']]
+        n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
+        processor_ids = [i['OCR Processor ID'] for i in data['response']['results']]
 
-    # Process data asynchronously
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        executor.map(process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
+        # Process data asynchronously
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
 
     # Wait for 10 minutes before the next iteration
-    time.sleep(minute_delta * 60)  # 5 minutes in seconds
+    time.sleep(minute_delta * 60) 

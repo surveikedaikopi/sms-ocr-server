@@ -9,6 +9,7 @@ COPY . /app
 
 ########################
 COPY location.shp /app
+COPY .env /app
 ########################
 
 # Install any needed packages specified in requirements.txt

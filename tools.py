@@ -1,3 +1,4 @@
+import os
 import json
 import random
 import pandas as pd
@@ -52,7 +53,7 @@ def get_location(coordinate):
 
 
 # Document inference
-def process_document_sample(attachment_url, n_candidate, processor_id):
+def read_form(scto, attachment_url, n_candidate, processor_id):
     project_id = "quickcount-404922"
     location = "us"
     # processor_id = "66c5b23bee13a9d6"
