@@ -15,14 +15,14 @@ from google.cloud import documentai
 # Load env
 load_dotenv()
 
-# # Load the shapefile
-# shapefile_path = 'location.shp'
-# gdf = gpd.read_file(shapefile_path)
-# gdf.crs = "EPSG:4326"
+# Load the shapefile
+shapefile_path = 'location.shp'
+gdf = gpd.read_file(shapefile_path)
+gdf.crs = "EPSG:4326"
 
-# # Load region data from JSON
-# with open('region.json', 'r') as json_file:
-#     region_data = json.load(json_file)
+# Load region data from JSON
+with open('region.json', 'r') as json_file:
+    region_data = json.load(json_file)
 
 
 

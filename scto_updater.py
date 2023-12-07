@@ -201,11 +201,6 @@ while True:
         n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
         processor_ids = [i['OCR Processor ID'] for i in data['response']['results']]
 
-        print(events)
-        print(form_ids)
-        print(n_candidates)
-        print(processor_ids)
-
         # Process data asynchronously
         with concurrent.futures.ThreadPoolExecutor() as executor:
             executor.map(process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
