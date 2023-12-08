@@ -8,8 +8,10 @@ import tools
 import requests
 import numpy as np
 import pandas as pd
+import concurrent.futures
 from fastapi import Request
 from dotenv import load_dotenv
+from datetime import datetime, timedelta
 from fastapi import Form, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
 
@@ -391,3 +393,31 @@ async def delete_event(
 ):
     os.system(f'rm -f *_{event}.*')
     os.system(f'rm -f *_{form_id}.*')
+
+
+
+# ================================================================================================================
+# Endpoint to trigger SCTO data processing
+@app.post("/scto_trigger")
+def scto_trigger():
+   
+    # Get the current time in the server's time zone
+    current_time_server = tools.convert_to_server_timezone(datetime.now())
+
+    # Calculate the oldest completion date based on the current time
+    date_obj = current_time_server - timedelta(minutes=10)
+
+    # Retrieve events from Bubble database
+    res = requests.get(f'{url_bubble}/Events', headers=headers)
+    data = res.json()
+
+    if data['response']['count'] > 0:
+
+        events = [i['Event Name'] for i in data['response']['results']]
+        form_ids = [i['SCTO FormID'] for i in data['response']['results']]
+        n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
+        processor_ids = [i['OCR Processor ID'] if 'OCR Processor ID' in i and i['OCR Processor ID'] is not None else None for i in data['response']['results']]
+
+        # Process data asynchronously
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            executor.map(tools.process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
