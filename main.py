@@ -10,7 +10,6 @@ import numpy as np
 import pandas as pd
 import concurrent.futures
 from fastapi import Request
-from typing import Optional
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from fastapi import Form, FastAPI, UploadFile
@@ -400,7 +399,7 @@ async def delete_event(
 # ================================================================================================================
 # Endpoint to trigger SCTO data processing
 @app.post("/scto_trigger")
-def scto_trigger(input_time: Optional[datetime] = None):
+def scto_trigger(input_time: datetime):
    
     # Get the current time in the server's time zone
     current_time_server = tools.convert_to_server_timezone(input_time)
