@@ -2,7 +2,9 @@ sudo docker build -t webhook .
 sudo docker run -d -p 8008:8008 --env-file .env webhook
 
 sudo docker logs <containerID>
+sudo docker logs -f --tail 20 <containerID>
 sudo docker exec -it <containerID> /bin/bash
+
 
 
 sudo docke image prune -a

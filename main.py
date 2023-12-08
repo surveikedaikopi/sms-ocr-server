@@ -238,9 +238,10 @@ for port in range(1, num_endpoints + 1):
                             _id = uid_dict[uid.upper()]
                             requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
 
-            except:
+            except Exception as e:
                 error_type = 1
                 message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
+                print(e)
 
             # # Return the message to the sender via SMS Gateway
             # params = {
@@ -430,5 +431,5 @@ def scto_data(
                 with concurrent.futures.ThreadPoolExecutor() as executor:
                     executor.submit(tools.scto_process, data, event, n_candidate, processor_id)
     
-    except:
-        pass
+    except Exception as e:
+        print(e)

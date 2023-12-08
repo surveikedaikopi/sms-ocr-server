@@ -178,10 +178,10 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                  }, ignore_index=True)    
         
     # Group 1: Regions & Address
-    survey_df = survey_df.append({'type': 'begin_group',
-                                  'name': 'regions',
-                                  'label': 'Wilayah',
-                                 }, ignore_index=True)    
+    # survey_df = survey_df.append({'type': 'begin_group',
+    #                               'name': 'regions',
+    #                               'label': 'Wilayah',
+    #                              }, ignore_index=True)    
     regions = ['provinsi', 'kabkota', 'kecamatan', 'kelurahan']
     labels = ['Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
     for (r, l) in zip(regions, labels):
@@ -196,9 +196,9 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                       'label': l,
                                       'required': 'yes',
                                      }, ignore_index=True)
-    survey_df = survey_df.append({'type': 'end_group',
-                                  'name': 'regions',
-                                 }, ignore_index=True) 
+    # survey_df = survey_df.append({'type': 'end_group',
+    #                               'name': 'regions',
+    #                              }, ignore_index=True) 
 
     # Upload images
     survey_df = survey_df.append({'type': 'begin_group',
