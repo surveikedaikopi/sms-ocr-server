@@ -199,7 +199,7 @@ while True:
         events = [i['Event Name'] for i in data['response']['results']]
         form_ids = [i['SCTO FormID'] for i in data['response']['results']]
         n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
-        processor_ids = [i['OCR Processor ID'] for i in data['response']['results']]
+        processor_ids = [i['OCR Processor ID'] if 'OCR Processor ID' in i and i['OCR Processor ID'] is not None else None for i in data['response']['results']]
 
         # Process data asynchronously
         with concurrent.futures.ThreadPoolExecutor() as executor:
