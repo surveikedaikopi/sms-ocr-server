@@ -224,7 +224,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 
     # Personal Info
     txt = 'Masukkan foto Anda yang sedang berada di TPS (diusahakan di samping tanda nomor TPS)'
-    for (t, n, l) in zip(['image', 'text', 'text'], ['selfie', 'nama', 'no. hp'], [txt, 'Nama Anda', 'No. HP Anda']):
+    for (t, n, l) in zip(['image', 'text', 'text'], ['selfie', 'nama', 'no_hp'], [txt, 'Nama Anda', 'No. HP Anda']):
         survey_df = survey_df.append({'type': t,
                                     'name': n,
                                     'label': l,
