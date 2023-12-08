@@ -11,6 +11,7 @@ import pandas as pd
 import concurrent.futures
 from fastapi import Request
 from dotenv import load_dotenv
+from pysurveycto import SurveyCTOObject
 from datetime import datetime, timedelta
 from fastapi import Form, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
@@ -277,7 +278,7 @@ for port in range(1, num_endpoints + 1):
 async def create_json_ncandidate(
     event: str = Form(...),
     N_candidate: int = Form(...),
-):
+    ):
     with open(f'event_{event}.json', 'w') as json_file:
         json.dump({"n_candidate": N_candidate}, json_file)
 
@@ -288,8 +289,8 @@ async def create_json_ncandidate(
 @app.post("/getUID")
 async def get_uid(
     event: str = Form(...),
-    N_TPS: int = Form(...),
-):
+    N_TPS: int = Form(...)
+    ):
 
     # Generate target file
     tools.create_target(event, N_TPS)
@@ -317,7 +318,7 @@ async def generate_xlsform(
     form_id: str = Form(...),
     target_file_name: str = Form(...),
     target_file: UploadFile = Form(...)
-):
+    ):
 
     event = target_file_name.split('_')[-1].split('.')[0]
 
@@ -390,7 +391,7 @@ async def generate_xlsform(
 async def delete_event(
     event: str = Form(...),
     form_id: str = Form(...)
-):
+    ):
     os.system(f'rm -f *_{event}.*')
     os.system(f'rm -f *_{form_id}.*')
 
@@ -398,26 +399,34 @@ async def delete_event(
 
 # ================================================================================================================
 # Endpoint to trigger SCTO data processing
-@app.post("/scto_trigger")
-def scto_trigger(input_time: datetime):
-   
-    # Get the current time in the server's time zone
-    current_time_server = tools.convert_to_server_timezone(input_time)
+@app.post("/scto_data")
+def scto_data(
+    event: str = Form(...), 
+    form_id: str = Form(...), 
+    n_candidate: int = Form(...), 
+    input_time: datetime = Form(...), 
+    processor_id: str = Form(...)
+    ):
+    try:
 
-    # Calculate the oldest completion date based on the current time
-    date_obj = current_time_server - timedelta(minutes=5)
+        # Get the current time in the server's time zone
+        current_time_server = tools.convert_to_server_timezone(input_time)
 
-    # Retrieve events from Bubble database
-    res = requests.get(f'{url_bubble}/Events', headers=headers)
-    data = res.json()
+        # Calculate the oldest completion date based on the current time
+        date_obj = current_time_server - timedelta(minutes=10)
 
-    if data['response']['count'] > 0:
+        # Build SCTO connection
+        scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
 
-        events = [i['Event Name'] for i in data['response']['results']]
-        form_ids = [i['SCTO FormID'] for i in data['response']['results']]
-        n_candidates = [i['Number of Candidates'] for i in data['response']['results']]
-        processor_ids = [i['OCR Processor ID'] if 'OCR Processor ID' in i and i['OCR Processor ID'] is not None else None for i in data['response']['results']]
+        # Retrieve data from SCTO
+        list_data = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
 
-        # Process data asynchronously
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            executor.map(tools.process_data, events, form_ids, n_candidates, [date_obj]*len(events), processor_ids)
+        # Loop over data
+        if len(list_data) > 0:
+            for data in list_data:
+                # Run 'scto_process' function asynchronously
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    executor.submit(tools.scto_process, data, event, n_candidate, processor_id)
+    
+    except:
+        pass

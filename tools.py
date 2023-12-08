@@ -432,23 +432,3 @@ def scto_process(data, event, n_candidate, processor_id):
         with print_lock:
             print(e)
 
-
-
-def process_data(event, form_id, n_candidate, date_obj, processor_id):
-    try:
-
-        # Build SCTO connection
-        scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-
-        # Retrieve data from SCTO
-        list_data = scto.get_form_data(form_id, format='json', shape='wide', oldest_completion_date=date_obj)
-
-        # Loop over data
-        if len(list_data) > 0:
-            for data in list_data:
-                # Run 'scto_process' function asynchronously
-                with concurrent.futures.ThreadPoolExecutor() as executor:
-                    executor.submit(scto_process, data, event, n_candidate, processor_id)
-    
-    except:
-        pass
