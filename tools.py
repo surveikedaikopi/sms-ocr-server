@@ -51,13 +51,6 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 # ================================================================================================================
 # Auxiliary Functions
 
-# Function to convert datetime to server time zone
-def convert_to_server_timezone(dt):
-    # Define the time zone of the server
-    server_timezone = timezone('UTC')
-    return dt.astimezone(server_timezone)
-
-
 # Get administrative regions from coordinate
 def get_location(coordinate):
     # Create a Shapely Point object from the input coordinate
@@ -191,7 +184,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                  }, ignore_index=True)    
     regions = ['provinsi', 'kabkota', 'kecamatan', 'kelurahan']
     labels = ['Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
-    for (r, l) in zip([regions, labels]):
+    for (r, l) in zip(regions, labels):
         survey_df = survey_df.append({'type': f'select_one list_{r}',
                                     'name': f'selected_{r}',
                                     'label': f'Pilih {l}',

@@ -209,7 +209,7 @@ for port in range(1, num_endpoints + 1):
                                 'SMS Sender': originator,
                                 'SMS Timestamp': receive_date,
                                 'SMS Hour': hour,
-                                'Event Name': event,
+                                'Event ID': event,
                                 'SMS Votes': votes,
                                 'SMS Invalid': invalid,
                                 'SMS Total Voters': total_votes, 
@@ -337,7 +337,7 @@ async def generate_xlsform(
         f'"SMS": false, '
         f'"SCTO": false, '
         f'"Status": "Empty", '
-        f'"Event Name": "{event}", '
+        f'"Event ID": "{event}", '
         f'"Korwil": "{korwil}", '
         f'"Provinsi": "{provinsi}", '
         f'"Kab/Kota": "{kab_kota}", '
@@ -361,7 +361,7 @@ async def generate_xlsform(
     requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
     # Get UIDs and store as json
-    filter_params = [{"key": "Event Name", "constraint_type": "text contains", "value": event}]
+    filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
     headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
@@ -408,16 +408,14 @@ def scto_data(
     processor_id: str = Form(...)
     ):
 
-    # Get the current time in the server's time zone
-    current_time_server = tools.convert_to_server_timezone(input_time)
-
     #####################
-    print(current_time_server)
+    print(f'Event: {event}\t Input Time: {input_time}')
+    #####################
 
     try:
 
         # Calculate the oldest completion date based on the current time
-        date_obj = current_time_server - timedelta(minutes=10)
+        date_obj = input_time - timedelta(minutes=10)
 
         # Build SCTO connection
         scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
