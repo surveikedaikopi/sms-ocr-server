@@ -407,10 +407,14 @@ def scto_data(
     input_time: datetime = Form(...), 
     processor_id: str = Form(...)
     ):
-    try:
 
-        # Get the current time in the server's time zone
-        current_time_server = tools.convert_to_server_timezone(input_time)
+    # Get the current time in the server's time zone
+    current_time_server = tools.convert_to_server_timezone(input_time)
+
+    #####################
+    print(current_time_server)
+
+    try:
 
         # Calculate the oldest completion date based on the current time
         date_obj = current_time_server - timedelta(minutes=10)
