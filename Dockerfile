@@ -18,10 +18,3 @@ EXPOSE 8008
 
 # Run app.py when the container launches
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8008"]
-
-
-# # Set entrypoint script as executable
-# RUN chmod +x /app/entrypoint.sh
-
-# # Set entrypoint
-# ENTRYPOINT ["./entrypoint.sh"]
