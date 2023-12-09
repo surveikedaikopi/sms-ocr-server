@@ -165,7 +165,10 @@ for port in range(1, num_endpoints + 1):
                             scto = data['response']['results'][0]['SCTO']
 
                             # Get existing validator
-                            validator = data['response']['results'][0]['Validator']
+                            if 'validator' in data:
+                                validator = data['response']['results'][0]['Validator']
+                            else:
+                                validator = None
 
                             # If SCTO data exists, check if they are consistent
                             if scto:
@@ -189,8 +192,8 @@ for port in range(1, num_endpoints + 1):
                                 note = ''
                             
                             # Delta Time
-                            scto_timestamp = data['response']['results'][0]['SCTO Timestamp']
-                            if scto_timestamp:
+                            if 'SCTO Timestamp' in data:
+                                scto_timestamp = data['response']['results'][0]['SCTO Timestamp']
                                 sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
                                 scto_timestamp = datetime.strptime(scto_timestamp, "%Y-%m-%d %H:%M:%S")
                                 delta_time = abs(scto_timestamp - sms_timestamp)
@@ -241,7 +244,7 @@ for port in range(1, num_endpoints + 1):
             except Exception as e:
                 error_type = 1
                 message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
-                print(e)
+                print(f'Error Location: SMS - Error Type 1, keyword: {e}')
 
             # # Return the message to the sender via SMS Gateway
             # params = {
@@ -406,7 +409,7 @@ def scto_data(
     form_id: str = Form(...), 
     n_candidate: int = Form(...), 
     input_time: datetime = Form(...), 
-    processor_id: str = Form(...)
+    processor_id: str = Form(None)
     ):
 
     #####################
@@ -432,4 +435,4 @@ def scto_data(
                     executor.submit(tools.scto_process, data, event, n_candidate, processor_id)
     
     except Exception as e:
-        print(e)
+        print(f'Process: scto_data endpoint\t Keyword: {e}')

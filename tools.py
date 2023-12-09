@@ -6,8 +6,6 @@ import threading
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-import concurrent.futures
-from pytz import timezone
 from dotenv import load_dotenv
 from shapely.geometry import Point
 from google.cloud import documentai
@@ -327,7 +325,7 @@ def scto_process(data, event, n_candidate, processor_id):
         std_datetime = std_datetime + timedelta(hours=7)
         
         # Delta Time
-        if data['SMS Timestamp']:
+        if 'SMS Timestamp' in data:
             sms_timestamp = datetime.strptime(data['SMS Timestamp'], "%Y-%m-%d %H:%M:%S")
             delta_time = abs(std_datetime - sms_timestamp)
             delta_time_hours = delta_time.total_seconds() / 3600
@@ -393,7 +391,7 @@ def scto_process(data, event, n_candidate, processor_id):
             'SCTO RW': data['rw'],
             'SCTO': True,
             'SCTO Enum Name': data['nama'],
-            'SCTO Enum Phone': data['no. hp'],
+            'SCTO Enum Phone': data['no_hp'],
             'SCTO Timestamp': std_datetime,
             'SCTO Hour': std_datetime.hour,
             'SCTO Provinsi': data['selected_provinsi'].replace('-', ' '),
@@ -423,5 +421,5 @@ def scto_process(data, event, n_candidate, processor_id):
     except Exception as e:
         # Handle the exception (you can log it, print an error message, etc.)
         with print_lock:
-            print(e)
+            print(f'Process: scto_process\t Keyword: {e}')
 
