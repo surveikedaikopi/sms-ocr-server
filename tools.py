@@ -383,6 +383,12 @@ def scto_process(data, event, n_candidate, processor_id):
         else:
             status = 'SCTO Only'
 
+        # Update GPS status
+        if (data_bubble['response']['results'][0]['Provinsi']==loc['Provinsi']) and (data_bubble['response']['results'][0]['Kab/Kota']==loc['Kab/Kota']) and (data_bubble['response']['results'][0]['Kecamatan']==loc['Kecamatan']) and (data_bubble['response']['results'][0]['Kelurahan']==loc['Kelurahan']):
+            gps_status = 'Verified'
+        else:
+            gps_status = 'Not Verified'
+
         # Payload
         payload = {
             'Active': True,
@@ -393,6 +399,7 @@ def scto_process(data, event, n_candidate, processor_id):
             'SCTO RT': data['rt'],
             'SCTO RW': data['rw'],
             'SCTO': True,
+            'SCTO Int': 1,
             'SCTO Enum Name': data['nama'],
             'SCTO Enum Phone': data['no_hp'],
             'SCTO Timestamp': std_datetime,
@@ -403,11 +410,11 @@ def scto_process(data, event, n_candidate, processor_id):
             'SCTO Kelurahan': data['selected_kelurahan'].replace('-', ' '),
             'SCTO Votes': ai_votes,
             'SCTO Invalid': ai_invalid,
-            'SCTO Total Voters': np.sum(ai_votes) + ai_invalid,
             'GPS Provinsi': loc['Provinsi'],
             'GPS Kab/Kota': loc['Kab/Kota'],
             'GPS Kecamatan': loc['Kecamatan'],
             'GPS Kelurahan': loc['Kelurahan'],
+            'GPS Status': gps_status,
             'Delta Time': delta_time_hours,
             'Status': status,
             'Survey Link': link
@@ -419,7 +426,9 @@ def scto_process(data, event, n_candidate, processor_id):
 
         # Forward data to Bubble Votes database
         _id = uid_dict[uid.upper()]
-        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+        out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+        out = out.json()
+        print(f"Status Code: {out['StatusCode']}\t Message: {out['body']['message']}")
 
     except Exception as e:
         # Handle the exception (you can log it, print an error message, etc.)

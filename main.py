@@ -144,7 +144,7 @@ for port in range(1, num_endpoints + 1):
                         # Get invalid votes
                         invalid = info[-1]
                         # Get total votes
-                        total_votes = np.array(votes).astype(int).sum()
+                        total_votes = np.array(votes).astype(int).sum() + invalid
                         summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
                         # Check Error Type 4 (maximum votes)
                         if total_votes > 300:
@@ -207,7 +207,6 @@ for port in range(1, num_endpoints + 1):
                                 'Event ID': event,
                                 'SMS Votes': votes,
                                 'SMS Invalid': invalid,
-                                'SMS Total Voters': total_votes, 
                                 'Vote1': vote1,
                                 'Vote2': vote2,
                                 'Vote3': vote3,
@@ -230,7 +229,9 @@ for port in range(1, num_endpoints + 1):
 
                             # Forward data to Bubble database
                             _id = uid_dict[uid.upper()]
-                            requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+                            out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+                            out = out.json()
+                            print(f"Status Code: {out['StatusCode']}\t Message: {out['body']['message']}")
 
             except Exception as e:
                 error_type = 1
