@@ -1,4 +1,3 @@
-# Filter out the Python 3.7 deprecation warning from google.oauth2
 import warnings
 warnings.filterwarnings("ignore", module="google.oauth2")
 
@@ -177,19 +176,12 @@ for port in range(1, num_endpoints + 1):
                                     validator = 'System'
                                 else:
                                     status = 'Not Verified'
-                                    note = 'SMS vs SCTO not consistent'
                             else:
                                 status = 'SMS Only'
                             
                             # Extract the hour as an integer
                             tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
                             hour = tmp.hour
-
-                            # if note is not yet defined
-                            try:
-                                note
-                            except:
-                                note = ''
                             
                             # Delta Time
                             if 'SCTO Timestamp' in data:
@@ -227,7 +219,6 @@ for port in range(1, num_endpoints + 1):
                                 'Complete': scto,
                                 'Status': status,
                                 'Delta Time': delta_time_hours,
-                                'Note': note,
                                 'Validator': validator
                             }
 
@@ -413,13 +404,13 @@ def scto_data(
     ):
 
     #####################
-    print(f'Event: {event}\t Input Time: {input_time}')
+    print(f'\nEvent: {event}\t Input Time: {input_time}')
     #####################
 
     try:
 
         # Calculate the oldest completion date based on the current time
-        date_obj = input_time - timedelta(minutes=10)
+        date_obj = input_time - timedelta(minutes=5)
 
         # Build SCTO connection
         scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
@@ -435,4 +426,4 @@ def scto_data(
                     executor.submit(tools.scto_process, data, event, n_candidate, processor_id)
     
     except Exception as e:
-        print(f'Process: scto_data endpoint\t Keyword: {e}')
+        print(f'Process: scto_data endpoint\t Keyword: {e}\n')

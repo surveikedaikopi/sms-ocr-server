@@ -370,15 +370,8 @@ def scto_process(data, event, n_candidate, processor_id):
                 status = 'Verified'
             else:
                 status = 'Not Verified'
-                note = 'SMS vs SCTO not consistent'
         else:
             status = 'SCTO Only'
-
-        # if note is not yet defined
-        try:
-            note
-        except:
-            note = ''
 
         # Payload
         payload = {
