@@ -175,28 +175,38 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                   'constraint message': 'UID tidak terdaftar'
                                  }, ignore_index=True)    
         
-    # Group 1: Regions & Address
-    # survey_df = survey_df.append({'type': 'begin_group',
-    #                               'name': 'regions',
-    #                               'label': 'Wilayah',
-    #                              }, ignore_index=True)    
-    regions = ['provinsi', 'kabkota', 'kecamatan', 'kelurahan']
-    labels = ['Provinsi', 'Kabupaten/Kota', 'Kecamatan', 'Kelurahan']
-    for (r, l) in zip(regions, labels):
-        survey_df = survey_df.append({'type': f'select_one list_{r}',
-                                    'name': f'selected_{r}',
-                                    'label': f'Pilih {l}',
-                                    'required': 'yes'
-                                    }, ignore_index=True)
+    # Regions 
+    survey_df = survey_df.append({'type': 'select_one list_provinsi',
+                                'name': 'selected_provinsi',
+                                'label': 'Pilih Provinsi',
+                                'required': 'yes',
+                                }, ignore_index=True)
+    survey_df = survey_df.append({'type': 'select_one list_kabkota',
+                                'name': 'selected_kabkota',
+                                'label': 'Pilih Kabupaten/Kota',
+                                'required': 'yes',
+                                'choice_filter': 'filter_provinsi=${{selected_provinsi}}',
+                                }, ignore_index=True)
+    survey_df = survey_df.append({'type': 'select_one list_kecamatan',
+                                'name': 'selected_kecamatan',
+                                'label': 'Pilih Kecamatan',
+                                'required': 'yes',
+                                'choice_filter': 'filter_provinsi=${{selected_provinsi}} and filter_kabkota=${{selected_kabkota}}',
+                                }, ignore_index=True)
+    survey_df = survey_df.append({'type': 'select_one list_kelurahan',
+                                'name': 'selected_kelurahan',
+                                'label': 'Pilih Kelurahan',
+                                'required': 'yes',
+                                'choice_filter': 'filter_provinsi=${{selected_provinsi}} and filter_kabkota=${{selected_kabkota}} and filter_kecamatan=${{selected_kecamatan}}',
+                                }, ignore_index=True)
+
+    # Address
     for (n, l) in zip(['no_tps', 'alamat', 'rt', 'rw'], ['No. TPS', 'Alamat', 'RT', 'RW']):
         survey_df = survey_df.append({'type': 'text',
                                       'name': n,
                                       'label': l,
                                       'required': 'yes',
-                                     }, ignore_index=True)
-    # survey_df = survey_df.append({'type': 'end_group',
-    #                               'name': 'regions',
-    #                              }, ignore_index=True) 
+                                     }, ignore_index=True) 
 
     # Upload images
     survey_df = survey_df.append({'type': 'begin_group',
@@ -248,7 +258,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
             nested_target[provinsi][kab_kota].append(kecamatan)
 
     # Create a DataFrame for choices
-    choices_df = pd.DataFrame(columns=['list_name', 'name', 'label', 'provinsi', 'kabupaten_kota', 'kecamatan'])
+    choices_df = pd.DataFrame(columns=['list_name', 'name', 'label', 'filter_provinsi', 'filter_kabkota', 'filter_kecamatan'])
 
     # Add provinsi choices
     provinsi = list(nested_target.keys())
@@ -265,7 +275,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
         choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kabkota', 
                                                      'name': ['_'.join(i.split(' ')) for i in kab_kota],
                                                      'label': kab_kota,
-                                                     'provinsi': '_'.join(p.split(' '))
+                                                     'filter_provinsi': '_'.join(p.split(' '))
                                                     }))
 
         # Add kecamatan choices
@@ -275,8 +285,8 @@ def create_xlsform_template(target_file, form_title, form_id, event):
             choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kecamatan', 
                                                          'name': ['_'.join(i.split(' ')) for i in kecamatan],
                                                          'label': kecamatan,
-                                                         'provinsi': '_'.join(p.split(' ')),
-                                                         'kabupaten_kota': '_'.join(kk.split(' '))
+                                                         'filter_provinsi': '_'.join(p.split(' ')),
+                                                         'filter_kabkota': '_'.join(kk.split(' '))
                                                         }))
 
             # Add kelurahan choices
@@ -286,9 +296,9 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                 choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kelurahan', 
                                                              'name': ['_'.join(i.split(' ')) for i in kelurahan],
                                                              'label': kelurahan,
-                                                             'provinsi': '_'.join(p.split(' ')),
-                                                             'kabupaten_kota': '_'.join(kk.split(' ')),                                                           
-                                                             'kecamatan': '_'.join(kec.split(' '))
+                                                             'filter_provinsi': '_'.join(p.split(' ')),
+                                                             'filter_kabkota': '_'.join(kk.split(' ')),                                                           
+                                                             'filter_kecamatan': '_'.join(kec.split(' '))
                                                             }))
 
     # Save choices to an Excel file
