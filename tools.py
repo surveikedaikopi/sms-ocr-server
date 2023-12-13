@@ -185,19 +185,19 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                 'name': 'selected_kabkota',
                                 'label': 'Pilih Kabupaten/Kota',
                                 'required': 'yes',
-                                'choice_filter': 'filter_provinsi=${{selected_provinsi}}',
+                                'choice_filter': 'filter_provinsi=${selected_provinsi}',
                                 }, ignore_index=True)
     survey_df = survey_df.append({'type': 'select_one list_kecamatan',
                                 'name': 'selected_kecamatan',
                                 'label': 'Pilih Kecamatan',
                                 'required': 'yes',
-                                'choice_filter': 'filter_provinsi=${{selected_provinsi}} and filter_kabkota=${{selected_kabkota}}',
+                                'choice_filter': 'filter_provinsi=${selected_provinsi} and filter_kabkota=${selected_kabkota}',
                                 }, ignore_index=True)
     survey_df = survey_df.append({'type': 'select_one list_kelurahan',
                                 'name': 'selected_kelurahan',
                                 'label': 'Pilih Kelurahan',
                                 'required': 'yes',
-                                'choice_filter': 'filter_provinsi=${{selected_provinsi}} and filter_kabkota=${{selected_kabkota}} and filter_kecamatan=${{selected_kecamatan}}',
+                                'choice_filter': 'filter_provinsi=${selected_provinsi} and filter_kabkota=${selected_kabkota} and filter_kecamatan=${selected_kecamatan}',
                                 }, ignore_index=True)
 
     # Address
@@ -405,10 +405,10 @@ def scto_process(data, event, n_candidate, processor_id):
             'SCTO Enum Phone': data['no_hp'],
             'SCTO Timestamp': std_datetime,
             'SCTO Hour': std_datetime.hour,
-            'SCTO Provinsi': data['selected_provinsi'].replace('-', ' '),
-            'SCTO Kab/Kota': data['selected_kabkota'].replace('-', ' '),
-            'SCTO Kecamatan': data['selected_kecamatan'].replace('-', ' '),
-            'SCTO Kelurahan': data['selected_kelurahan'].replace('-', ' '),
+            'SCTO Provinsi': data['selected_provinsi'].replace('_', ' '),
+            'SCTO Kab/Kota': data['selected_kabkota'].replace('_', ' '),
+            'SCTO Kecamatan': data['selected_kecamatan'].replace('_', ' '),
+            'SCTO Kelurahan': data['selected_kelurahan'].replace('_', ' '),
             'SCTO Votes': ai_votes,
             'SCTO Invalid': ai_invalid,
             'GPS Provinsi': loc['Provinsi'],

@@ -187,7 +187,7 @@ for port in range(1, num_endpoints + 1):
                             # Delta Time
                             if 'SCTO Timestamp' in data:
                                 sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-                                scto_timestamp = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
+                                scto_timestamp = datetime.strptime(data['SCTO Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
                                 scto_timestamp = scto_timestamp + timedelta(hours=7)
                                 delta_time = abs(scto_timestamp - sms_timestamp)
                                 delta_time_hours = delta_time.total_seconds() / 3600
