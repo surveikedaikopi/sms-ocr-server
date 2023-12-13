@@ -144,7 +144,7 @@ for port in range(1, num_endpoints + 1):
                         # Get invalid votes
                         invalid = info[-1]
                         # Get total votes
-                        total_votes = np.array(votes).astype(int).sum() + invalid
+                        total_votes = np.array(votes).astype(int).sum() + int(invalid)
                         summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
                         # Check Error Type 4 (maximum votes)
                         if total_votes > 300:
@@ -159,19 +159,20 @@ for port in range(1, num_endpoints + 1):
                             params = {"constraints": filter_json}
                             res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
                             data = res.json()
-
-                            # Check if SCTO data exists
-                            scto = data['response']['results'][0]['SCTO']
+                            data = data['response']['results'][0]
 
                             # Get existing validator
-                            if 'validator' in data:
-                                validator = data['response']['results'][0]['Validator']
+                            if 'Validator' in data:
+                                validator = data['Validator']
                             else:
                                 validator = None
 
+                            # Check if SCTO data exists
+                            scto = data['SCTO']
+
                             # If SCTO data exists, check if they are consistent
                             if scto:
-                                if votes == data['response']['results'][0]['SCTO Votes']:
+                                if votes == data['SCTO Votes']:
                                     status = 'Verified'
                                     validator = 'System'
                                 else:
@@ -185,9 +186,9 @@ for port in range(1, num_endpoints + 1):
                             
                             # Delta Time
                             if 'SCTO Timestamp' in data:
-                                scto_timestamp = data['response']['results'][0]['SCTO Timestamp']
                                 sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-                                scto_timestamp = datetime.strptime(scto_timestamp, "%Y-%m-%d %H:%M:%S")
+                                scto_timestamp = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
+                                scto_timestamp = scto_timestamp + timedelta(hours=7)
                                 delta_time = abs(scto_timestamp - sms_timestamp)
                                 delta_time_hours = delta_time.total_seconds() / 3600
                             else:
@@ -230,8 +231,7 @@ for port in range(1, num_endpoints + 1):
                             # Forward data to Bubble database
                             _id = uid_dict[uid.upper()]
                             out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
-                            out = out.json()
-                            print(f"Status Code: {out['StatusCode']}\t Message: {out['body']['message']}")
+                            print(out)
 
             except Exception as e:
                 error_type = 1

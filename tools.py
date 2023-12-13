@@ -333,10 +333,18 @@ def scto_process(data, event, n_candidate, processor_id):
         # SCTO Timestamp
         std_datetime = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p")
         std_datetime = std_datetime + timedelta(hours=7)
-        
+
+        # Retrieve data with this UID from Bubble database
+        filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
+        filter_json = json.dumps(filter_params)
+        params = {"constraints": filter_json}
+        res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+        data_bubble = res_bubble.json()
+        data_bubble = data_bubble['response']['results'][0]
+
         # Delta Time
-        if 'SMS Timestamp' in data:
-            sms_timestamp = datetime.strptime(data['SMS Timestamp'], "%Y-%m-%d %H:%M:%S")
+        if 'SMS Timestamp' in data_bubble:
+            sms_timestamp = datetime.strptime(data_bubble['SMS Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
             delta_time = abs(std_datetime - sms_timestamp)
             delta_time_hours = delta_time.total_seconds() / 3600
         else:
@@ -364,19 +372,12 @@ def scto_process(data, event, n_candidate, processor_id):
             ai_votes = [0] * n_candidate
             ai_invalid = 0
 
-        # Retrieve data with this UID from Bubble database
-        filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
-        filter_json = json.dumps(filter_params)
-        params = {"constraints": filter_json}
-        res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-        data_bubble = res_bubble.json()
-
         # Check if SMS data exists
-        sms = data_bubble['response']['results'][0]['SMS']
+        sms = data_bubble['SMS']
 
         # If SMS data exists, check if they are consistent
         if sms:
-            if ai_votes == data_bubble['response']['results'][0]['SMS Votes']:
+            if ai_votes == data_bubble['SMS Votes']:
                 status = 'Verified'
             else:
                 status = 'Not Verified'
@@ -384,7 +385,7 @@ def scto_process(data, event, n_candidate, processor_id):
             status = 'SCTO Only'
 
         # Update GPS status
-        if (data_bubble['response']['results'][0]['Provinsi']==loc['Provinsi']) and (data_bubble['response']['results'][0]['Kab/Kota']==loc['Kab/Kota']) and (data_bubble['response']['results'][0]['Kecamatan']==loc['Kecamatan']) and (data_bubble['response']['results'][0]['Kelurahan']==loc['Kelurahan']):
+        if (data_bubble['Provinsi']==loc['Provinsi']) and (data_bubble['Kab/Kota']==loc['Kab/Kota']) and (data_bubble['Kecamatan']==loc['Kecamatan']) and (data_bubble['Kelurahan']==loc['Kelurahan']):
             gps_status = 'Verified'
         else:
             gps_status = 'Not Verified'
@@ -427,8 +428,7 @@ def scto_process(data, event, n_candidate, processor_id):
         # Forward data to Bubble Votes database
         _id = uid_dict[uid.upper()]
         out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
-        out = out.json()
-        print(f"Status Code: {out['StatusCode']}\t Message: {out['body']['message']}")
+        print(out)
 
     except Exception as e:
         # Handle the exception (you can log it, print an error message, etc.)
