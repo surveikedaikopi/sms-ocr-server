@@ -13,6 +13,13 @@ RUN pip install -r requirements.txt
 # Install python-multipart
 RUN pip install python-multipart
 
+
+################
+COPY .env /app
+COPY location.shp /app
+################
+
+
 # Make port 80 available to the world outside this container
 EXPOSE 8008
 
