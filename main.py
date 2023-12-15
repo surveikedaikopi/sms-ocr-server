@@ -347,7 +347,7 @@ async def generate_xlsform(
         f'"SCTO Int": 0, '
         f'"Status": "Empty", '
         f'"Event ID": "{event}", '
-        f'"Korwil": "{korprov}", '
+        f'"Korprov": "{korprov}", '
         f'"Korwil": "{korwil}", '
         f'"Provinsi": "{provinsi}", '
         f'"Kab/Kota": "{kab_kota}", '
@@ -448,10 +448,10 @@ def scto_data(
 
 # ================================================================================================================
 # Endpoint for regions aggregation
-@app.post("/region_aggregate/")
+@app.post("/region_aggregate")
 async def region_aggregate(
-    count_: list = Form(...), 
-    sum_: list = Form(...)
+    part_sum: list = Form(...), 
+    total_sum: list = Form(...)
     ):
-    result = list(np.array(count_) / np.array(sum_))
+    result = list(np.array(part_sum) / np.array(total_sum))
     return {"result": result}
