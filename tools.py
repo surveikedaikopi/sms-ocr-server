@@ -171,15 +171,6 @@ def create_xlsform_template(target_file, form_title, form_id, event):
     # Load target data from Excel
     target_data = pd.read_excel(target_file)
 
-    # Rename regions
-    for index, row in target_data.iterrows():
-        input_regions = [row['Provinsi'], row['Kab/Kota'], row['Kecamatan'], row['Kelurahan']]
-        output_regions = rename_region(input_regions)
-        target_data.loc[index, 'Provinsi'] = output_regions[0]
-        target_data.loc[index, 'Kab/Kota'] = output_regions[1]
-        target_data.loc[index, 'Kecamatan'] = output_regions[2]
-        target_data.loc[index, 'Kelurahan'] = output_regions[3]
-
     # List UID
     list_uid = '|'.join(target_data['UID'].tolist())
     

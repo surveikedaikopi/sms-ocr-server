@@ -145,7 +145,7 @@ for port in range(1, num_endpoints + 1):
                         invalid = info[-1]
                         # Get total votes
                         total_votes = np.array(votes).astype(int).sum() + int(invalid)
-                        summary = f'event:{event}\n' + '\n'.join([f'0{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
+                        summary = f'event:{event}\n' + '\n'.join([f'suara{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
                         # Check Error Type 4 (maximum votes)
                         if total_votes > 300:
                             message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
@@ -324,6 +324,15 @@ async def generate_xlsform(
     # Get UIDs from the target file
     df = pd.read_excel(target_file_name)
 
+    # Rename regions
+    for index, row in df.iterrows():
+        input_regions = [row['Provinsi'], row['Kab/Kota'], row['Kecamatan'], row['Kelurahan']]
+        output_regions = tools.rename_region(input_regions)
+        df.loc[index, 'Provinsi'] = output_regions[0]
+        df.loc[index, 'Kab/Kota'] = output_regions[1]
+        df.loc[index, 'Kecamatan'] = output_regions[2]
+        df.loc[index, 'Kelurahan'] = output_regions[3]
+
     # Generate Text for API input
     data = '\n'.join([
         f'{{"UID": "{uid}", '
@@ -335,13 +344,15 @@ async def generate_xlsform(
         f'"SCTO Int": 0, '
         f'"Status": "Empty", '
         f'"Event ID": "{event}", '
+        f'"Korwil": "{korprov}", '
         f'"Korwil": "{korwil}", '
         f'"Provinsi": "{provinsi}", '
         f'"Kab/Kota": "{kab_kota}", '
         f'"Kecamatan": "{kecamatan}", '
         f'"Kelurahan": "{kelurahan}"}}'
-        for uid, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(
+        for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(
             df['UID'],
+            df['Korprov'],
             df['Korwil'],
             df['Provinsi'],
             df['Kab/Kota'],
