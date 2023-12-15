@@ -333,6 +333,9 @@ async def generate_xlsform(
         df.loc[index, 'Kecamatan'] = output_regions[2]
         df.loc[index, 'Kelurahan'] = output_regions[3]
 
+    # Save the target file after renaming regions
+    df.to_excel(target_file_name, index=False)
+
     # Generate Text for API input
     data = '\n'.join([
         f'{{"UID": "{uid}", '
