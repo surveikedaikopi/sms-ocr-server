@@ -448,10 +448,13 @@ def scto_data(
 
 # ================================================================================================================
 # Endpoint for regions aggregation
-@app.post("/region_aggregate")
+@app.post("/group_normalize")
 async def region_aggregate(
     part_sum: list = Form(...), 
     total_sum: list = Form(...)
     ):
+    part_sum = [int(value) for element in part_sum for value in element.split(",")]
+    total_sum = [int(value) for element in total_sum for value in element.split(",")]
+
     result = list(np.array(part_sum) / np.array(total_sum))
     return {"result": result}
