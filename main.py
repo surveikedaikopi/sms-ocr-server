@@ -331,6 +331,8 @@ async def generate_xlsform(
         f'"Complete": false, '
         f'"SMS": false, '
         f'"SCTO": false, '
+        f'"SMS Int": 0, '
+        f'"SCTO Int": 0, '
         f'"Status": "Empty", '
         f'"Event ID": "{event}", '
         f'"Korwil": "{korwil}", '
@@ -410,7 +412,7 @@ def scto_data(
     try:
 
         # Calculate the oldest completion date based on the current time
-        date_obj = input_time - timedelta(minutes=5)
+        date_obj = input_time - timedelta(seconds=301)
 
         # Build SCTO connection
         scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
@@ -427,3 +429,15 @@ def scto_data(
     
     except Exception as e:
         print(f'Process: scto_data endpoint\t Keyword: {e}\n')
+
+
+
+# ================================================================================================================
+# Endpoint for regions aggregation
+@app.post("/region_aggregate/")
+async def region_aggregate(
+    count_: list = Form(...), 
+    sum_: list = Form(...)
+    ):
+    result = list(np.array(count_) / np.array(sum_))
+    return {"result": result}

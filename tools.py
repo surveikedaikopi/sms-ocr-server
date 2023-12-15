@@ -6,6 +6,7 @@ import threading
 import numpy as np
 import pandas as pd
 import geopandas as gpd
+from fuzzywuzzy import process
 from dotenv import load_dotenv
 from shapely.geometry import Point
 from google.cloud import documentai
@@ -48,6 +49,23 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 
 # ================================================================================================================
 # Auxiliary Functions
+
+# Rename regions
+list_provinsi = list(region_data.keys())
+def rename_region(data):
+    # provinsi
+    reference = list_provinsi
+    provinsi, _ = process.extractOne(data[0], reference)
+    # kabupaten/kota
+    reference = list(region_data[provinsi].keys())
+    kabkota, _ = process.extractOne(data[1], reference)       
+    # kecamatan
+    reference = list(region_data[provinsi][kabkota].keys())
+    kecamatan, _ = process.extractOne(data[2], reference) 
+    # kelurahan
+    reference = list(region_data[provinsi][kabkota][kecamatan])
+    kelurahan, _ = process.extractOne(data[3], reference)
+    return provinsi, kabkota, kecamatan, kelurahan
 
 # Get administrative regions from coordinate
 def get_location(coordinate):
@@ -152,6 +170,15 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 
     # Load target data from Excel
     target_data = pd.read_excel(target_file)
+
+    # Rename regions
+    for index, row in target_data.iterrows():
+        input_regions = [row['Provinsi'], row['Kab/Kota'], row['Kecamatan'], row['Kelurahan']]
+        output_regions = rename_region(input_regions)
+        target_data.loc[index, 'Provinsi'] = output_regions[0]
+        target_data.loc[index, 'Kab/Kota'] = output_regions[1]
+        target_data.loc[index, 'Kecamatan'] = output_regions[2]
+        target_data.loc[index, 'Kelurahan'] = output_regions[3]
 
     # List UID
     list_uid = '|'.join(target_data['UID'].tolist())
