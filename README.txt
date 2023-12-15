@@ -23,7 +23,9 @@ sudo apt-get purge <old-kernel-package>
 sudo du -h /var/log
 sudo rm /var/log/<large-log-file>
 sudo du -h --max-depth=1 /
+sudo du -h --max-depth=1 /var/lib/docker
 sudo find / -type f -size +1G
+sudo docker system prune -a
 sudo find / -name "core" -exec rm -f {} \;
 
 
