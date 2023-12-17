@@ -325,6 +325,10 @@ async def generate_xlsform(
     df = pd.read_excel(target_file_name)
 
     # Rename regions
+    df['Provinsi Ori'] = df['Provinsi'].copy()
+    df['Kab/Kota Ori'] = df['Kab/Kota'].copy()
+    df['Kecamatan Ori'] = df['Kecamatan'].copy()
+    df['Kelurahan Ori'] = df['Kelurahan'].copy()
     for index, row in df.iterrows():
         input_regions = [row['Provinsi'], row['Kab/Kota'], row['Kecamatan'], row['Kelurahan']]
         output_regions = tools.rename_region(input_regions)
@@ -352,15 +356,23 @@ async def generate_xlsform(
         f'"Provinsi": "{provinsi}", '
         f'"Kab/Kota": "{kab_kota}", '
         f'"Kecamatan": "{kecamatan}", '
-        f'"Kelurahan": "{kelurahan}"}}'
-        for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan in zip(
+        f'"Kelurahan": "{kelurahan}", '
+        f'"Provinsi": "{provinsi_ori}", '
+        f'"Kab/Kota": "{kab_kota_ori}", '
+        f'"Kecamatan": "{kecamatan_ori}", '
+        f'"Kelurahan": "{kelurahan_ori}"}}'
+        for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
             df['UID'],
             df['Korprov'],
             df['Korwil'],
             df['Provinsi'],
             df['Kab/Kota'],
             df['Kecamatan'],
-            df['Kelurahan']
+            df['Kelurahan'],
+            df['Provinsi Ori'],
+            df['Kab/Kota Ori'],
+            df['Kecamatan Ori'],
+            df['Kelurahan Ori']
         )
     ])
 
