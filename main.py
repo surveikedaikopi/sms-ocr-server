@@ -193,6 +193,11 @@ for port in range(1, num_endpoints + 1):
                             else:
                                 delta_time_hours = None
 
+                            # Total Votes
+                            total_votes = 0
+                            for v in votes:
+                                total_votes += v if v is not None else 0
+
                             # Payload
                             payload = {
                                 'Active': True,
@@ -213,6 +218,7 @@ for port in range(1, num_endpoints + 1):
                                 'Vote4': vote4,
                                 'Vote5': vote5,
                                 'Vote6': vote6,
+                                'Total Votes': total_votes,
                                 'Final Votes': votes,
                                 'Invalid Votes': invalid,
                                 'Complete': scto,
