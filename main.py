@@ -357,10 +357,10 @@ async def generate_xlsform(
         f'"Kab/Kota": "{kab_kota}", '
         f'"Kecamatan": "{kecamatan}", '
         f'"Kelurahan": "{kelurahan}", '
-        f'"Provinsi": "{provinsi_ori}", '
-        f'"Kab/Kota": "{kab_kota_ori}", '
-        f'"Kecamatan": "{kecamatan_ori}", '
-        f'"Kelurahan": "{kelurahan_ori}"}}'
+        f'"Provinsi Ori": "{provinsi_ori}", '
+        f'"Kab/Kota Ori": "{kab_kota_ori}", '
+        f'"Kecamatan Ori": "{kecamatan_ori}", '
+        f'"Kelurahan" Ori: "{kelurahan_ori}"}}'
         for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
             df['UID'],
             df['Korprov'],
