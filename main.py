@@ -469,18 +469,16 @@ def scto_data(
 @app.post("/group_normalize")
 async def region_aggregate(
     candidates: list = Form(...),
-    region: list = Form(...),
     part_sum: list = Form(...), 
     total_sum: list = Form(...)
     ):
     part_sum = [int(value) for element in part_sum for value in element.split(",")]
     total_sum = [int(value) for element in total_sum for value in element.split(",")]
 
-    result = list(np.array(part_sum) / np.array(total_sum))
+    fractions = list(np.array(part_sum) / np.array(total_sum))
+    result = {name:out for (name, out) in zip(candidates, fractions)}
 
     output = {
-        "candidates": candidates,
-        "region": ,
         "result": result
         }
 

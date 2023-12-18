@@ -8,7 +8,7 @@ sudo docker cp <containerID>:<path> .
 
 
 
-sudo docker system prune -ac
+sudo docker system prune -a
 sudo docker image prune -a
 sudo docker container prune
 sudo docker volume prune
