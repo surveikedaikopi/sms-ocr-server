@@ -366,7 +366,7 @@ async def generate_xlsform(
         f'"Provinsi Ori": "{provinsi_ori}", '
         f'"Kab/Kota Ori": "{kab_kota_ori}", '
         f'"Kecamatan Ori": "{kecamatan_ori}", '
-        f'"Kelurahan" Ori: "{kelurahan_ori}"}}'
+        f'"Kelurahan Ori": "{kelurahan_ori}"}}'
         for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
             df['UID'],
             df['Korprov'],
@@ -387,8 +387,7 @@ async def generate_xlsform(
         'Authorization': f'Bearer {BUBBLE_API_KEY}', 
         'Content-Type': 'text/plain'
         }
-    out = requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
-    print(out)
+    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
