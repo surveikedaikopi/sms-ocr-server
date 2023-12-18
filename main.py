@@ -387,7 +387,8 @@ async def generate_xlsform(
         'Authorization': f'Bearer {BUBBLE_API_KEY}', 
         'Content-Type': 'text/plain'
         }
-    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+    out = requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+    print(out.json())
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
