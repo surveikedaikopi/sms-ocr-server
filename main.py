@@ -196,7 +196,7 @@ for port in range(1, num_endpoints + 1):
                             # Total Votes
                             total_votes = 0
                             for v in votes:
-                                total_votes += v if v is not None else 0
+                                total_votes += int(v) if v is not None else 0
 
                             # Payload
                             payload = {
@@ -468,6 +468,8 @@ def scto_data(
 # Endpoint for regions aggregation
 @app.post("/group_normalize")
 async def region_aggregate(
+    candidates: list = Form(...),
+    region: list = Form(...),
     part_sum: list = Form(...), 
     total_sum: list = Form(...)
     ):
@@ -475,4 +477,11 @@ async def region_aggregate(
     total_sum = [int(value) for element in total_sum for value in element.split(",")]
 
     result = list(np.array(part_sum) / np.array(total_sum))
-    return {"result": result}
+
+    output = {
+        "candidates": candidates,
+        "region": ,
+        "result": result
+        }
+
+    return output
