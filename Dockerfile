@@ -19,15 +19,14 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
 # Add the Cloud SDK tools to the path
 ENV PATH $PATH:/app/google-cloud-sdk/bin
 
-# Authenticate with Google Cloud (replace 'your-credentials.json' with your actual JSON key file)
-COPY your-credentials.json /app/your-credentials.json
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+# Authenticate with Google Cloud
 RUN gcloud auth activate-service-account --key-file=/app/cloud-storage.json
 
 # Download the 'location.shp' file from Google Cloud Storage to /app
 RUN gsutil cp gs://gis_regions/location.shp /app/location.shp
-
-# Copy the current directory contents into the container at /app
-COPY . /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
