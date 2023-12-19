@@ -7,8 +7,8 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
-    python \
-    python-dev \
+    python3 \
+    python3-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the application files
@@ -17,7 +17,7 @@ COPY . /app
 # Download and install Google Cloud SDK
 RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
     tar -zxvf google-cloud-sdk.tar.gz && \
-    CLOUDSDK_PYTHON=python ./google-cloud-sdk/install.sh
+    CLOUDSDK_PYTHON=python3 ./google-cloud-sdk/install.sh
 
 # Authenticate with Google Cloud
 RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=/app/cloud-storage.json
