@@ -1,4 +1,4 @@
-# Stage 1: Build Google Cloud SDK with Python 3.8
+# Stage 1: Build Google Cloud SDK with Python 3.9
 FROM python:3.9-slim as builder
 
 WORKDIR /app
@@ -7,8 +7,8 @@ WORKDIR /app
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
-    python3.8 \
-    python3.8-dev \
+    python3.9 \
+    python3.9-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy the application files
@@ -17,7 +17,7 @@ COPY . /app
 # Download and install Google Cloud SDK
 RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
     tar -zxvf google-cloud-sdk.tar.gz && \
-    CLOUDSDK_PYTHON=python3.8 ./google-cloud-sdk/install.sh
+    CLOUDSDK_PYTHON=python3.9 ./google-cloud-sdk/install.sh
 
 # Authenticate with Google Cloud
 RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=/app/cloud-storage.json
