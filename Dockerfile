@@ -4,6 +4,28 @@ FROM python:3.7-slim
 # Set the working directory to /app
 WORKDIR /app
 
+# Install Google Cloud SDK
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    python3 \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
+    tar -zxvf google-cloud-sdk.tar.gz && \
+    ./google-cloud-sdk/install.sh
+
+# Add the Cloud SDK tools to the path
+ENV PATH $PATH:/app/google-cloud-sdk/bin
+
+# Authenticate with Google Cloud (replace 'your-credentials.json' with your actual JSON key file)
+COPY your-credentials.json /app/your-credentials.json
+RUN gcloud auth activate-service-account --key-file=/app/cloud-storage.json
+
+# Download the 'location.shp' file from Google Cloud Storage to /app
+RUN gsutil cp gs://gis_regions/location.shp /app/location.shp
+
 # Copy the current directory contents into the container at /app
 COPY . /app
 

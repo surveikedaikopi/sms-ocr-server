@@ -473,5 +473,5 @@ async def region_aggregate(
     ):
     part_sum = [int(value) for element in part_sum for value in element.split(",")]
     total_sum = [int(value) for element in total_sum for value in element.split(",")]
-    result = list(np.array(part_sum) / np.array(total_sum))
+    result = list(np.round(np.array(part_sum) / np.array(total_sum) * 100, 2))
     return {"result": result}

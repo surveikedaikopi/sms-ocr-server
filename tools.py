@@ -90,7 +90,7 @@ def read_form(scto, attachment_url, n_candidate, processor_id):
     # processor_id = "66c5b23bee13a9d6"
 
     # Initialize the DocumentProcessorServiceClient
-    client = documentai.DocumentProcessorServiceClient()
+    client = documentai.DocumentProcessorServiceClient.from_service_account_file('document-ai.json')
     
     # Construct the processor path
     name = f'projects/{project_id}/locations/{location}/processors/{processor_id}'
@@ -375,7 +375,11 @@ def scto_process(data, event, n_candidate, processor_id):
         # Survey Link
         key = data['KEY'].split('uuid:')[-1]
         link = f"https://{SCTO_SERVER_NAME}.surveycto.com/view/submission.html?uuid=uuid%3A{key}"
-        
+
+        # C1-Form attachments
+        formulir_c1_a4 = data['formulir_c1_a4']
+        formulir_c1_plano = data['formulir_c1_plano']
+
         # OCR C1-Form
         if processor_id:
             try:
@@ -429,6 +433,8 @@ def scto_process(data, event, n_candidate, processor_id):
             'SCTO Kelurahan': data['selected_kelurahan'].replace('_', ' '),
             'SCTO Votes': ai_votes,
             'SCTO Invalid': ai_invalid,
+            'SCTO C1 A4': formulir_c1_a4,
+            'SCTO C1 Plano': formulir_c1_plano,
             'GPS Provinsi': loc['Provinsi'],
             'GPS Kab/Kota': loc['Kab/Kota'],
             'GPS Kecamatan': loc['Kecamatan'],
