@@ -1,32 +1,37 @@
-# Use an official Python runtime as a parent image
-FROM python:3.7-slim
+# Stage 1: Build Google Cloud SDK with Python 3.8
+FROM python:3.9-slim as builder
 
-# Set the working directory to /app
 WORKDIR /app
 
-# Install Google Cloud SDK
+# Install necessary packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     curl \
-    python3 \
-    python3-dev \
+    python3.8 \
+    python3.8-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
-    tar -zxvf google-cloud-sdk.tar.gz && \
-    ./google-cloud-sdk/install.sh
-
-# Add the Cloud SDK tools to the path
-ENV PATH $PATH:/app/google-cloud-sdk/bin
-
-# Copy the current directory contents into the container at /app
+# Copy the application files
 COPY . /app
 
+# Download and install Google Cloud SDK
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz && \
+    tar -zxvf google-cloud-sdk.tar.gz && \
+    CLOUDSDK_PYTHON=python3.8 ./google-cloud-sdk/install.sh
+
 # Authenticate with Google Cloud
-RUN gcloud auth activate-service-account --key-file=/app/cloud-storage.json
+RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=/app/cloud-storage.json
 
 # Download the 'location.shp' file from Google Cloud Storage to /app
-RUN gsutil cp gs://gis_regions/location.shp /app/location.shp
+RUN ./google-cloud-sdk/bin/gsutil cp gs://gis_regions/location.shp /app/location.shp
+
+# Stage 2: Final image with Python 3.7
+FROM python:3.7-slim
+
+WORKDIR /app
+
+# Copy the application files from the builder stage
+COPY --from=builder /app /app
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
