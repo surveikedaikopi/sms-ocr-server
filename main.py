@@ -32,6 +32,8 @@ BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
 SCTO_PASSWORD = os.environ.get('SCTO_PASSWORD')
+NUSA_USER_NAME = os.environ.get('NUSA_USER_NAME')
+NUSA_PASSWORD = os.environ.get('NUSA_PASSWORD')
 
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
@@ -243,15 +245,15 @@ for port in range(1, num_endpoints + 1):
                 message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
                 print(f'Error Location: SMS - Error Type 1, keyword: {e}')
 
-            # # Return the message to the sender via SMS Gateway
-            # params = {
-            #     "user": "taufikadinugraha_api",
-            #     "password": "SekarangSeriusSMS@ku99",
-            #     "SMSText": message,
-            #     "GSM": originator,
-            #     "output": "json",
-            # }
-            # requests.get(url_send_sms, params=params)
+            # Return the message to the sender via SMS Gateway
+            params = {
+                "user": NUSA_USER_NAME,
+                "password": NUSA_PASSWORD,
+                "SMSText": message,
+                "GSM": originator,
+                "output": "json",
+            }
+            requests.get(url_send_sms, params=params)
 
         else:
             error_type = 0

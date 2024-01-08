@@ -359,6 +359,12 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
         data_bubble = res_bubble.json()
         data_bubble = data_bubble['response']['results'][0]
 
+        # Get existing validator
+        if 'Validator' in data_bubble:
+            validator = data_bubble['Validator']
+        else:
+            validator = None
+
         # Delta Time
         if 'SMS Timestamp' in data_bubble:
             sms_timestamp = datetime.strptime(data_bubble['SMS Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -462,7 +468,6 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
         print(out)
 
     except Exception as e:
-        # Handle the exception (you can log it, print an error message, etc.)
         with print_lock:
             print(f'Process: scto_process\t Keyword: {e}')
 
