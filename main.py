@@ -172,7 +172,7 @@ for port in range(1, num_endpoints + 1):
 
                             # If SCTO data exists, check if they are consistent
                             if scto:
-                                if votes == data['SCTO Votes']:
+                                if (np.array(votes) == np.array(data['SCTO Votes'])) & (int(invalid) == int(data['SCTO Invalid'])):
                                     status = 'Verified'
                                     validator = 'System'
                                 else:
@@ -434,7 +434,8 @@ def scto_data(
     form_id: str = Form(...), 
     n_candidate: int = Form(...), 
     input_time: datetime = Form(...), 
-    processor_id: str = Form(None)
+    processor_id_a4: str = Form(None),
+    processor_id_plano: str = Form(None)
     ):
 
     #####################
@@ -457,7 +458,7 @@ def scto_data(
             for data in list_data:
                 # Run 'scto_process' function asynchronously
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                    executor.submit(tools.scto_process, data, event, n_candidate, processor_id)
+                    executor.submit(tools.scto_process, data, event, n_candidate, processor_id_a4, processor_id_plano)
     
     except Exception as e:
         print(f'Process: scto_data endpoint\t Keyword: {e}\n')

@@ -85,9 +85,8 @@ def get_location(coordinate):
 
 # Document inference
 def read_form(scto, attachment_url, n_candidate, processor_id):
-    project_id = "quickcount-404922"
+    project_id = "quick-count-410523"
     location = "us"
-    # processor_id = "66c5b23bee13a9d6"
 
     # Initialize the DocumentProcessorServiceClient
     client = documentai.DocumentProcessorServiceClient.from_service_account_file('document-ai.json')
@@ -231,7 +230,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                   'name': 'upload',
                                   'label': 'Bagian untuk mengunggah/upload foto formulir C1',
                                  }, ignore_index=True) 
-    for (n, l) in zip(['formulir_c1_a4', 'formulir_c1_plano', 'foto_jumlah_suara'], ['Foto Formulir C1-A4', 'Foto Formulir C1-Plano', 'Foto fokus jarak dekat di bagian jumlah suara']):
+    for (n, l) in zip(['formulir_c1_a4', 'formulir_c1_plano'], ['Foto Formulir C1-A4', 'Foto Formulir C1-Plano']):
         survey_df = survey_df.append({'type': 'image',
                                       'name': n,
                                       'label': l,
@@ -341,7 +340,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 # ================================================================================================================
 # Functions to process SCTO data
 
-def scto_process(data, event, n_candidate, processor_id):
+def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
 
     try:
 
@@ -381,15 +380,21 @@ def scto_process(data, event, n_candidate, processor_id):
         formulir_c1_plano = data['formulir_c1_plano']
 
         # OCR C1-Form
-        if processor_id:
+        if processor_id_a4:
             try:
-                attachment_url = data['foto_jumlah_suara']
+                attachment_url = data['formulir_c1_a4']
                 # Build SCTO connection
                 scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id)
+                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_a4)
             except:
-                ai_votes = [0] * n_candidate
-                ai_invalid = 0            
+                try:
+                    attachment_url = data['formulir_c1_plano']
+                    # Build SCTO connection
+                    scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+                    ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_plano)
+                except:
+                    ai_votes = [0] * n_candidate
+                    ai_invalid = 0            
         else:
             ai_votes = [0] * n_candidate
             ai_invalid = 0
@@ -399,8 +404,9 @@ def scto_process(data, event, n_candidate, processor_id):
 
         # If SMS data exists, check if they are consistent
         if sms:
-            if ai_votes == data_bubble['SMS Votes']:
+            if (np.array(ai_votes) == np.array(data_bubble['SMS Votes'])) & (int(ai_invalid) == int(data_bubble['SMS Invalid'])):
                 status = 'Verified'
+                validator = 'System'
             else:
                 status = 'Not Verified'
         else:
@@ -442,7 +448,8 @@ def scto_process(data, event, n_candidate, processor_id):
             'GPS Status': gps_status,
             'Delta Time': delta_time_hours,
             'Status': status,
-            'Survey Link': link
+            'Survey Link': link,
+            'Validator': validator
         }
 
         # Load the JSON file into a dictionary
