@@ -107,11 +107,16 @@ def read_form(scto, attachment_url, n_candidate, processor_id):
     )
 
     # Process Document
-    out = client.process_document(request)    
+    out = client.process_document(request)
+    entities = out.document.entities
     output = {}
-    for entity in out.document.entities:
-        output.update({entity.type_:entity.mention_text})
-    
+    # votes
+    for entity in entities[0].properties:
+        output.update({entity.type_: entity.normalized_value.text})
+    # invalid vote
+    entity = entities[1]
+    output.update({entity.type_: entity.normalized_value.text})
+
     # Post-processing
     ai_votes = [0] * n_candidate
     for var_ in range(n_candidate):
@@ -120,7 +125,7 @@ def read_form(scto, attachment_url, n_candidate, processor_id):
         except:
             ai_votes[var_] = 0
     try:
-        ai_invalid = remove_non_numbers_and_convert_to_int(output['rusak'])
+        ai_invalid = remove_non_numbers_and_convert_to_int(output['suara_rusak'])
     except:
         ai_invalid = 0
             
@@ -410,7 +415,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
 
         # If SMS data exists, check if they are consistent
         if sms:
-            if (np.array_equal(np.array(ai_votes), np.array(data_bubble['SMS Votes']))) and (int(ai_invalid) == int(data_bubble['SMS Invalid'])):
+            if (np.array_equal(np.array(ai_votes).astype(int), np.array(data_bubble['SMS Votes']).astype(int))) and (int(ai_invalid) == int(data_bubble['SMS Invalid'])):
                 status = 'Verified'
                 validator = 'System'
             else:
