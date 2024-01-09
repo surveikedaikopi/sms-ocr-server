@@ -410,7 +410,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
 
         # If SMS data exists, check if they are consistent
         if sms:
-            if (np.array(ai_votes) == np.array(data_bubble['SMS Votes'])) & (int(ai_invalid) == int(data_bubble['SMS Invalid'])):
+            if (np.array_equal(np.array(ai_votes), np.array(data_bubble['SMS Votes']))) and (int(ai_invalid) == int(data_bubble['SMS Invalid'])):
                 status = 'Verified'
                 validator = 'System'
             else:

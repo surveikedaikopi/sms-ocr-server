@@ -174,7 +174,7 @@ for port in range(1, num_endpoints + 1):
 
                             # If SCTO data exists, check if they are consistent
                             if scto:
-                                if (np.array(votes) == np.array(data['SCTO Votes'])) & (int(invalid) == int(data['SCTO Invalid'])):
+                                if (np.array_equal(np.array(votes), np.array(data['SCTO Votes']))) and (int(invalid) == int(data['SCTO Invalid'])):
                                     status = 'Verified'
                                     validator = 'System'
                                 else:
