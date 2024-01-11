@@ -64,7 +64,7 @@ for port in range(1, num_endpoints + 1):
     @app.post(f"/receive-{port}")
     async def receive_sms(
         request: Request,
-        id: int = Form(...),
+        id: str = Form(...),
         gateway_number: str = Form(...),
         originator: str = Form(...),
         msg: str = Form(...),
