@@ -223,7 +223,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                 }, ignore_index=True)
 
     # Address
-    for (n, l) in zip(['no_tps', 'alamat', 'rt', 'rw'], ['No. TPS', 'Alamat', 'RT', 'RW']):
+    for (n, l) in zip(['dapil', 'no_tps', 'alamat', 'rt', 'rw'], ['Daerah Pemilihan (Dapil)', 'No. TPS', 'Alamat', 'RT', 'RW']):
         survey_df = survey_df.append({'type': 'text',
                                       'name': n,
                                       'label': l,
@@ -392,20 +392,16 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
 
         # OCR C1-Form
         if processor_id_a4:
-            try:
-                attachment_url = data['formulir_c1_a4']
-                # Build SCTO connection
-                scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_a4)
-            except:
-                try:
+            attachment_url = data['formulir_c1_a4']
+            # Build SCTO connection
+            scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+            ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_a4)
+            if (np.sum(ai_votes) > 300) or (0 in ai_votes):
+                if processor_id_plano:
                     attachment_url = data['formulir_c1_plano']
                     # Build SCTO connection
                     scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-                    ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_plano)
-                except:
-                    ai_votes = [0] * n_candidate
-                    ai_invalid = 0            
+                    ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_plano)       
         else:
             ai_votes = [0] * n_candidate
             ai_invalid = 0
@@ -435,6 +431,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
             'Complete': sms,
             'UID': uid,
             'SCTO TPS': data['no_tps'],
+            'SCTO Dapil': data['dapil'],
             'SCTO Address': data['alamat'],
             'SCTO RT': data['rt'],
             'SCTO RW': data['rw'],

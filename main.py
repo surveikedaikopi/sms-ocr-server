@@ -65,7 +65,7 @@ for port in range(1, num_endpoints + 1):
     async def receive_sms(
         request: Request,
         id: int = Form(...),
-        gateway_number: int = Form(...),
+        gateway_number: str = Form(...),
         originator: str = Form(...),
         msg: str = Form(...),
         receive_date: str = Form(...)
