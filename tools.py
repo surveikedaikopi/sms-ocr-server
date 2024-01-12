@@ -396,7 +396,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
             # Build SCTO connection
             scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
             ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_a4)
-            if (np.sum(ai_votes) > 300) or (0 in ai_votes):
+            if (np.sum(ai_votes) + ai_invalid > 300) or (0 in ai_votes):
                 if processor_id_plano:
                     attachment_url = data['formulir_c1_plano']
                     # Build SCTO connection

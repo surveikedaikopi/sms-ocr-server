@@ -245,7 +245,7 @@ for port in range(1, num_endpoints + 1):
                 message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
                 print(f'Error Location: SMS - Error Type 1, keyword: {e}')
 
-            # Return the message to the sender via SMS Gateway
+            # Return the message to the sender via SMS Masking
             params = {
                 "user": NUSA_USER_NAME,
                 "password": NUSA_PASSWORD,
@@ -255,6 +255,17 @@ for port in range(1, num_endpoints + 1):
             }
             requests.get(url_send_sms, params=params)
 
+        elif msg == 'the gateway is active':
+            # Payload (Gateway Check)
+            payload_status = {
+                'Gateway Port': port,
+                'Gateway Status': True,
+                'Last Check': receive_date,
+            }
+
+            # Forward data to Bubble database (Raw SMS)
+            requests.post(f'{url_bubble}/GatewayCheck', headers=headers, data=payload_status)         
+        
         else:
             error_type = 0
 
@@ -272,6 +283,24 @@ for port in range(1, num_endpoints + 1):
 
         # Forward data to Bubble database (Raw SMS)
         requests.post(f'{url_bubble}/RAW_SMS', headers=headers, data=payload_raw)
+
+
+
+# ================================================================================================================
+# Endpoint to check gateway status
+@app.post("/check_gateway_status")
+async def check_gateway_status(     
+    gateway_sim_number: str = Form(...),
+    ):
+    # Sent trigger via SMS Masking
+    params = {
+        "user": NUSA_USER_NAME,
+        "password": NUSA_PASSWORD,
+        "SMSText": 'the gateway is active',
+        "GSM": gateway_sim_number,
+        "output": "json",
+    }
+    requests.get(url_send_sms, params=params)
 
 
 
