@@ -290,17 +290,39 @@ for port in range(1, num_endpoints + 1):
 # Endpoint to check gateway status
 @app.post("/check_gateway_status")
 async def check_gateway_status(     
-    gateway_sim_number: str = Form(...),
+    gateway_1: str = Form(...),
+    gateway_2: str = Form(...),
+    gateway_3: str = Form(...),
+    gateway_4: str = Form(...),
+    gateway_5: str = Form(...),
+    gateway_6: str = Form(...),
+    gateway_7: str = Form(...),
+    gateway_8: str = Form(...),
+    gateway_9: str = Form(...),
+    gateway_10: str = Form(...),
+    gateway_11: str = Form(...),
+    gateway_12: str = Form(...),
+    gateway_13: str = Form(...),
+    gateway_14: str = Form(...),
+    gateway_15: str = Form(...),
+    gateway_16: str = Form(...),
     ):
+
+    numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
+               gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
+
     # Sent trigger via SMS Masking
-    params = {
-        "user": NUSA_USER_NAME,
-        "password": NUSA_PASSWORD,
-        "SMSText": 'the gateway is active',
-        "GSM": gateway_sim_number,
-        "output": "json",
-    }
-    requests.get(url_send_sms, params=params)
+    for num in numbers:
+        # if number is not empty
+        if num:
+            params = {
+                "user": NUSA_USER_NAME,
+                "password": NUSA_PASSWORD,
+                "SMSText": 'the gateway is active',
+                "GSM": num,
+                "output": "json",
+            }
+            requests.get(url_send_sms, params=params)
 
 
 
