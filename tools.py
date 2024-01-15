@@ -35,7 +35,7 @@ print_lock = threading.Lock()
 
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
-url_bubble_pilpres = os.environ.get('url_bubble_pilpres')
+url_bubble = os.environ.get('url_bubble')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
@@ -360,7 +360,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
         filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
         filter_json = json.dumps(filter_params)
         params = {"constraints": filter_json}
-        res_bubble = requests.get(f'{url_bubble_pilpres}/Votes', headers=headers, params=params)
+        res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
         data_bubble = res_bubble.json()
         data_bubble = data_bubble['response']['results'][0]
 
@@ -466,7 +466,7 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
 
         # Forward data to Bubble Votes database
         _id = uid_dict[uid.upper()]
-        out = requests.patch(f'{url_bubble_pilpres}/votes/{_id}', headers=headers, data=payload)
+        out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
         print(out)
 
     except Exception as e:

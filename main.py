@@ -27,7 +27,7 @@ app = FastAPI()
 
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
-url_bubble_pilpres = os.environ.get('url_bubble_pilpres')
+url_bubble = os.environ.get('url_bubble')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
@@ -57,7 +57,7 @@ async def read_inbox():
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 
 # Define the number of endpoints
-num_endpoints = 48
+num_endpoints = 16
 
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 for port in range(1, num_endpoints + 1):
@@ -159,7 +159,7 @@ for port in range(1, num_endpoints + 1):
                             filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid.upper()}]
                             filter_json = json.dumps(filter_params)
                             params = {"constraints": filter_json}
-                            res = requests.get(f'{url_bubble_pilpres}/Votes', headers=headers, params=params)
+                            res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
                             data = res.json()
                             data = data['response']['results'][0]
 
@@ -237,7 +237,7 @@ for port in range(1, num_endpoints + 1):
 
                             # Forward data to Bubble database
                             _id = uid_dict[uid.upper()]
-                            out = requests.patch(f'{url_bubble_pilpres}/votes/{_id}', headers=headers, data=payload)
+                            out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
                             print(out)
 
             except Exception as e:
@@ -264,7 +264,7 @@ for port in range(1, num_endpoints + 1):
             }
 
             # Forward data to Bubble database (Raw SMS)
-            requests.post(f'{url_bubble_pilpres}/GatewayCheck', headers=headers, data=payload_status)         
+            requests.post(f'{url_bubble}/GatewayCheck', headers=headers, data=payload_status)         
         
         else:
             error_type = 0
@@ -282,53 +282,47 @@ for port in range(1, num_endpoints + 1):
         }
 
         # Forward data to Bubble database (Raw SMS)
-        requests.post(f'{url_bubble_pilpres}/RAW_SMS', headers=headers, data=payload_raw)
+        requests.post(f'{url_bubble}/RAW_SMS', headers=headers, data=payload_raw)
 
 
 
 # ================================================================================================================
 # Endpoint to check gateway status
-        
-# Define the number of groups
-num_groups = 3
+@app.post("/check_gateway_status")
+async def check_gateway_status(     
+    gateway_1: str = Form(...),
+    gateway_2: str = Form(...),
+    gateway_3: str = Form(...),
+    gateway_4: str = Form(...),
+    gateway_5: str = Form(...),
+    gateway_6: str = Form(...),
+    gateway_7: str = Form(...),
+    gateway_8: str = Form(...),
+    gateway_9: str = Form(...),
+    gateway_10: str = Form(...),
+    gateway_11: str = Form(...),
+    gateway_12: str = Form(...),
+    gateway_13: str = Form(...),
+    gateway_14: str = Form(...),
+    gateway_15: str = Form(...),
+    gateway_16: str = Form(...),
+    ):
 
-# Endpoint to receive SMS message, to validate, and to forward the pre-processed data
-for group in range(1, num_groups + 1):
-    @app.post(f"/check_gateway_status-{group}")
-    async def check_gateway_status(     
-        gateway_1: str = Form(...),
-        gateway_2: str = Form(...),
-        gateway_3: str = Form(...),
-        gateway_4: str = Form(...),
-        gateway_5: str = Form(...),
-        gateway_6: str = Form(...),
-        gateway_7: str = Form(...),
-        gateway_8: str = Form(...),
-        gateway_9: str = Form(...),
-        gateway_10: str = Form(...),
-        gateway_11: str = Form(...),
-        gateway_12: str = Form(...),
-        gateway_13: str = Form(...),
-        gateway_14: str = Form(...),
-        gateway_15: str = Form(...),
-        gateway_16: str = Form(...),
-        ):
+    numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
+               gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
 
-        numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
-                gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
-
-        # Sent trigger via SMS Masking
-        for num in numbers:
-            # if number is not empty
-            if num:
-                params = {
-                    "user": NUSA_USER_NAME,
-                    "password": NUSA_PASSWORD,
-                    "SMSText": 'the gateway is active',
-                    "GSM": num,
-                    "output": "json",
-                }
-                requests.get(url_send_sms, params=params)
+    # Sent trigger via SMS Masking
+    for num in numbers:
+        # if number is not empty
+        if num:
+            params = {
+                "user": NUSA_USER_NAME,
+                "password": NUSA_PASSWORD,
+                "SMSText": 'the gateway is active',
+                "GSM": num,
+                "output": "json",
+            }
+            requests.get(url_send_sms, params=params)
 
 
 
@@ -446,14 +440,14 @@ async def generate_xlsform(
         'Authorization': f'Bearer {BUBBLE_API_KEY}', 
         'Content-Type': 'text/plain'
         }
-    requests.post(f'{url_bubble_pilpres}/Votes/bulk', headers=headers, data=data)
+    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
     filter_json = json.dumps(filter_params)
     params = {"constraints": filter_json}
     headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-    res = requests.get(f'{url_bubble_pilpres}/Votes', headers=headers, params=params)
+    res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
     uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
     with open(f'uid_{event}.json', 'w') as json_file:
         json.dump(uid_dict, json_file)
