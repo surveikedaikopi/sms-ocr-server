@@ -57,7 +57,7 @@ async def read_inbox():
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 
 # Define the number of endpoints
-num_endpoints = 16
+num_endpoints = 48
 
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 for port in range(1, num_endpoints + 1):
@@ -288,41 +288,47 @@ for port in range(1, num_endpoints + 1):
 
 # ================================================================================================================
 # Endpoint to check gateway status
-@app.post("/check_gateway_status")
-async def check_gateway_status(     
-    gateway_1: str = Form(...),
-    gateway_2: str = Form(...),
-    gateway_3: str = Form(...),
-    gateway_4: str = Form(...),
-    gateway_5: str = Form(...),
-    gateway_6: str = Form(...),
-    gateway_7: str = Form(...),
-    gateway_8: str = Form(...),
-    gateway_9: str = Form(...),
-    gateway_10: str = Form(...),
-    gateway_11: str = Form(...),
-    gateway_12: str = Form(...),
-    gateway_13: str = Form(...),
-    gateway_14: str = Form(...),
-    gateway_15: str = Form(...),
-    gateway_16: str = Form(...),
-    ):
+        
+# Define the number of groups
+num_groups = 3
 
-    numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
-               gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
+# Endpoint to receive SMS message, to validate, and to forward the pre-processed data
+for group in range(1, num_groups + 1):
+    @app.post(f"/check_gateway_status-{group}")
+    async def check_gateway_status(     
+        gateway_1: str = Form(...),
+        gateway_2: str = Form(...),
+        gateway_3: str = Form(...),
+        gateway_4: str = Form(...),
+        gateway_5: str = Form(...),
+        gateway_6: str = Form(...),
+        gateway_7: str = Form(...),
+        gateway_8: str = Form(...),
+        gateway_9: str = Form(...),
+        gateway_10: str = Form(...),
+        gateway_11: str = Form(...),
+        gateway_12: str = Form(...),
+        gateway_13: str = Form(...),
+        gateway_14: str = Form(...),
+        gateway_15: str = Form(...),
+        gateway_16: str = Form(...),
+        ):
 
-    # Sent trigger via SMS Masking
-    for num in numbers:
-        # if number is not empty
-        if num:
-            params = {
-                "user": NUSA_USER_NAME,
-                "password": NUSA_PASSWORD,
-                "SMSText": 'the gateway is active',
-                "GSM": num,
-                "output": "json",
-            }
-            requests.get(url_send_sms, params=params)
+        numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
+                gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
+
+        # Sent trigger via SMS Masking
+        for num in numbers:
+            # if number is not empty
+            if num:
+                params = {
+                    "user": NUSA_USER_NAME,
+                    "password": NUSA_PASSWORD,
+                    "SMSText": 'the gateway is active',
+                    "GSM": num,
+                    "output": "json",
+                }
+                requests.get(url_send_sms, params=params)
 
 
 
