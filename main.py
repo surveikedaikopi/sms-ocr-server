@@ -109,19 +109,19 @@ for port in range(1, num_endpoints + 1):
                     json_content = json.load(json_file)
                     number_candidates = json_content['n_candidate']
 
-                format = 'kk#uid#event#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#rusak'
+                format = 'KK#UID#EventID#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#Rusak'
                 template_error_msg = 'cek & kirim ulang dgn format:\n' + format
 
                 tmp = pd.read_excel(f'target_{event}.xlsx', usecols=['UID'])
 
                 # Check Error Type 2 (UID)
                 if uid not in tmp['UID'].str.lower().tolist():
-                    message = f'Unique ID (UID) "{uid.upper()}" tidak terdaftar, ' + template_error_msg
+                    message = f'UID "{uid.upper()}" tidak terdaftar, ' + template_error_msg
                     error_type = 2
                 else:
                     # Check Error Type 3 (data completeness)
                     if len(info) != number_candidates + 4:
-                        message = 'Data tidak sesuai, ' + template_error_msg
+                        message = 'Data tidak lengkap, ' + template_error_msg
                         error_type = 3
                     else:
                         # Get votes
@@ -148,7 +148,7 @@ for port in range(1, num_endpoints + 1):
                         invalid = info[-1]
                         # Get total votes
                         total_votes = np.array(votes).astype(int).sum() + int(invalid)
-                        summary = f'event:{event}\n' + '\n'.join([f'suara{i+1}:{votes[i]}' for i in range(number_candidates)]) + f'\nrusak:{invalid}' + f'\ntotal:{total_votes}\n'
+                        summary = f'EventID: {event}\n' + '\n'.join([f'Paslon-0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nRusak: {invalid}' + f'\nTotal: {total_votes}\n'
                         # Check Error Type 4 (maximum votes)
                         if total_votes > 300:
                             message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
@@ -243,7 +243,7 @@ for port in range(1, num_endpoints + 1):
 
             except Exception as e:
                 error_type = 1
-                message = 'format tidak dikenali. kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nkk#uid#event#01#02#03#rusak'
+                message = 'Format tidak dikenali. Kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nKK#UID#EventID#01#02#03#Rusak'
                 print(f'Error Location: SMS - Error Type 1, keyword: {e}')
 
             # Return the message to the sender via SMS Masking
