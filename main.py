@@ -273,6 +273,8 @@ for port in range(1, num_endpoints + 1):
             # Forward data to Bubble database (Check Gateway)
             _id = data['_id']
             requests.patch(f'{url_bubble}/GatewayCheck/{_id}', headers=headers, data=payload_status)
+            # Set error type
+            error_type = 0
         
         else:
             error_type = 0
