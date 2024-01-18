@@ -79,7 +79,7 @@ for port in range(1, num_endpoints + 1):
         raw_data = {
             "ID": id,
             "Gateway Port": port,
-            "Gateway Number": gateway_number,
+            "Gateway ID": gateway_number,
             "Sender": originator,
             "Message": msg,
             "Receive Date": receive_date
@@ -208,7 +208,7 @@ for port in range(1, num_endpoints + 1):
                                 'SMS Int': 1,
                                 'UID': uid.upper(),
                                 'SMS Gateway Port': port,
-                                'SMS Gateway Number': gateway_number,
+                                'SMS Gateway ID': gateway_number,
                                 'SMS Sender': originator,
                                 'SMS Timestamp': receive_date,
                                 'SMS Hour': hour,
@@ -238,8 +238,7 @@ for port in range(1, num_endpoints + 1):
 
                             # Forward data to Bubble database
                             _id = uid_dict[uid.upper()]
-                            out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
-                            print(out)
+                            requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
 
             except Exception as e:
                 error_type = 1
@@ -259,13 +258,22 @@ for port in range(1, num_endpoints + 1):
         elif msg == 'the gateway is active':
             # Payload (Gateway Check)
             payload_status = {
+                'Gateway ID': gateway_number,
                 'Gateway Port': port,
                 'Gateway Status': True,
                 'Last Check': receive_date,
             }
 
-            # Forward data to Bubble database (Raw SMS)
-            requests.post(f'{url_bubble}/GatewayCheck', headers=headers, data=payload_status)         
+            # Retrieve data with this SIM Number from Bubble database (GatewayCheck)
+            filter_params = [{"key": "SIM Number", "constraint_type": "text contains", "value": originator}]
+            filter_json = json.dumps(filter_params)
+            params = {"constraints": filter_json}
+            res = requests.get(f'{url_bubble}/GatewayCheck', headers=headers, params=params)
+            data = res.json()
+            data = data['response']['results'][0]
+            # Forward data to Bubble database (Check Gateway)
+            _id = data['_id']
+            requests.patch(f'{url_bubble}/GatewayCheck/{_id}', headers=headers, data=payload_status)
         
         else:
             error_type = 0
@@ -276,7 +284,7 @@ for port in range(1, num_endpoints + 1):
             'Receive Date': receive_date,
             'Sender': originator,
             'Gateway Port': port, 
-            'Gateway Number': gateway_number,
+            'Gateway ID': gateway_number,
             'Message': msg,
             'Error Type': error_type,
             'Status': raw_sms_status
