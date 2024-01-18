@@ -258,14 +258,13 @@ for port in range(1, num_endpoints + 1):
         elif msg == 'the gateway is active':
             # Payload (Gateway Check)
             payload_status = {
-                'Gateway ID': gateway_number,
                 'Gateway Port': port,
                 'Gateway Status': True,
                 'Last Check': receive_date,
             }
 
             # Retrieve data with this SIM Number from Bubble database (GatewayCheck)
-            filter_params = [{"key": "SIM Number", "constraint_type": "text contains", "value": originator}]
+            filter_params = [{"key": "Gateway ID", "constraint_type": "text contains", "value": gateway_number}]
             filter_json = json.dumps(filter_params)
             params = {"constraints": filter_json}
             res = requests.get(f'{url_bubble}/GatewayCheck', headers=headers, params=params)
