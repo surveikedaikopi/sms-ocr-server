@@ -392,10 +392,15 @@ def scto_process(data, event, n_candidate, proc_id_a4):
 
         # OCR C1-Form
         if proc_id_a4:
-            attachment_url = data['formulir_c1_a4']
-            # Build SCTO connection
-            scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-            ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4)      
+            try:
+                attachment_url = data['formulir_c1_a4']
+                # Build SCTO connection
+                scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4)
+            except Exception as e:
+                print(f'Process: scto_process endpoint\t Keyword: {e}\n')
+                ai_votes = [0] * n_candidate
+                ai_invalid = 0
         else:
             ai_votes = [0] * n_candidate
             ai_invalid = 0
