@@ -345,7 +345,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 # ================================================================================================================
 # Functions to process SCTO data
 
-def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
+def scto_process(data, event, n_candidate, proc_id_a4):
 
     try:
 
@@ -391,17 +391,11 @@ def scto_process(data, event, n_candidate, processor_id_a4, processor_id_plano):
         formulir_c1_plano = data['formulir_c1_plano']
 
         # OCR C1-Form
-        if processor_id_a4:
+        if proc_id_a4:
             attachment_url = data['formulir_c1_a4']
             # Build SCTO connection
             scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-            ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_a4)
-            if (np.sum(ai_votes) + ai_invalid > 300) or (0 in ai_votes):
-                if processor_id_plano:
-                    attachment_url = data['formulir_c1_plano']
-                    # Build SCTO connection
-                    scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-                    ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, processor_id_plano)       
+            ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4)      
         else:
             ai_votes = [0] * n_candidate
             ai_invalid = 0

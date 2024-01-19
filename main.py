@@ -497,8 +497,7 @@ def scto_data(
     form_id: str = Form(...), 
     n_candidate: int = Form(...), 
     input_time: datetime = Form(...), 
-    processor_id_a4: str = Form(None),
-    processor_id_plano: str = Form(None)
+    proc_id_a4: str = Form(None),
     ):
 
     #####################
@@ -521,7 +520,7 @@ def scto_data(
             for data in list_data:
                 # Run 'scto_process' function asynchronously
                 with concurrent.futures.ThreadPoolExecutor() as executor:
-                    executor.submit(tools.scto_process, data, event, n_candidate, processor_id_a4, processor_id_plano)
+                    executor.submit(tools.scto_process, data, event, n_candidate, proc_id_a4)
     
     except Exception as e:
         print(f'Process: scto_data endpoint\t Keyword: {e}\n')
