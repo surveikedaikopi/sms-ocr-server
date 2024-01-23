@@ -7,6 +7,7 @@ import tools
 import requests
 import numpy as np
 import pandas as pd
+from time import time
 import concurrent.futures
 from fastapi import Request
 from typing import Optional
@@ -39,6 +40,17 @@ NUSA_PASSWORD = os.environ.get('NUSA_PASSWORD')
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 
+
+# ================================================================================================================
+# Endpoint to read the quick count results
+@app.get("/api/get_quickcount_kedaikopi")
+async def get_quickcount_kedaikopi():
+    try:
+        with open('results_quickcount.json', 'r') as json_file:
+            data_read = json.load(json_file)
+        return {"results": data_read}
+    except FileNotFoundError:
+        return {"message": "File not found"}
 
 
 # ================================================================================================================
@@ -538,3 +550,11 @@ async def region_aggregate(
     total_sum = [int(value) for element in total_sum for value in element.split(",")]
     result = list(np.round(np.array(part_sum) / np.array(total_sum) * 100, 2))
     return {"result": result}
+
+
+# ================================================================================================================
+# Run quick count aggregator every 10 minutes
+
+while True:
+    tools.fetch_quickcount()
+    time.sleep(600)  # 600 seconds = 10 minutes

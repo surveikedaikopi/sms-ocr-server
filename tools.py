@@ -472,3 +472,54 @@ def scto_process(data, event, n_candidate, proc_id_a4):
         with print_lock:
             print(f'Process: scto_process\t Keyword: {e}')
 
+
+
+# ================================================================================================================
+# Functions to fetch and save quick count results
+
+def fetch_quickcount():
+    events = []  # To store events
+        
+    # Send a GET request to get events
+    response = requests.get(url_bubble + '/Events')
+
+    # Check the response status code
+    if response.status_code == 200:
+        tmp = response.json()['response']
+        events.extend(tmp['results'])
+        
+    output = {
+        'n_events': len(events),
+        'data': None
+    }
+
+    if len(events) > 0:
+        for event in events:
+            event_data = {
+                'event_id': event['Event ID'],
+                'n_candidates': event['Number of Candidates']
+            }
+
+            # Send a GET request to get votes
+            response = requests.get(url_bubble + '/Votes')
+
+            # Check the response status code
+            votes = []
+            if response.status_code == 200:
+                tmp = response.json()['response']
+                votes.extend(tmp['results'])
+
+                df = pd.DataFrame(votes)
+                total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+                
+                event_data.update({
+                    'percent_data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
+                    'candidate_names': event['Candidate Names'],
+                    'percent_votes': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
+                })
+
+            output.update({'data': event_data})
+
+    with open('results_quickcount.json', 'w') as json_file:
+        json.dump(output, json_file, indent=2)
+
