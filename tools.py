@@ -21,13 +21,10 @@ from datetime import datetime, timedelta
 # Load env
 load_dotenv()
 
-# Local disk
-
-
-# # Load the shapefile
-# shapefile_path = 'location.shp'
-# gdf = gpd.read_file(shapefile_path)
-# gdf.crs = "EPSG:4326"
+# Load the shapefile
+shapefile_path = 'location.shp'
+gdf = gpd.read_file(shapefile_path)
+gdf.crs = "EPSG:4326"
 
 # Load region data from JSON
 with open('region.json', 'r') as json_file:

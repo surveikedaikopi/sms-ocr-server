@@ -25,9 +25,6 @@ from fastapi.responses import StreamingResponse
 # Load env
 load_dotenv()
 
-# Local disk
-local_disk = '/var/data'
-
 # Define app
 app = FastAPI()
 
