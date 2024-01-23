@@ -404,11 +404,11 @@ async def generate_xlsform(
     event = target_file_name.split('_')[-1].split('.')[0]
 
     # Save the target file to a temporary location
-    with open(target_file_name, 'wb') as target_file_content:
+    with open(f'{local_disk}/{target_file_name}', 'wb') as target_file_content:
         target_file_content.write(target_file.file.read())
 
     # Get UIDs from the target file
-    df = pd.read_excel(target_file_name)
+    df = pd.read_excel(f'{local_disk}/{target_file_name}')
 
     # Rename regions
     df['Provinsi Ori'] = df['Provinsi'].copy()
@@ -424,7 +424,7 @@ async def generate_xlsform(
         df.loc[index, 'Kelurahan'] = output_regions[3]
 
     # Save the target file after renaming regions
-    df.to_excel(target_file_name, index=False)
+    df.to_excel(f'{local_disk}/{target_file_name}', index=False)
 
     # Generate Text for API input
     data = '\n'.join([
@@ -480,7 +480,7 @@ async def generate_xlsform(
         json.dump(uid_dict, json_file)
 
     # Generate xlsform logic using the target file
-    tools.create_xlsform_template(target_file_name, form_title, form_id, event)
+    tools.create_xlsform_template(f'{local_disk}/{target_file_name}', form_title, form_id, event)
     xlsform_path = f'{local_disk}/xlsform_{form_id}.xlsx'
 
     def file_generator():
