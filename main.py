@@ -555,6 +555,11 @@ async def region_aggregate(
 # ================================================================================================================
 # Run quick count aggregator every 10 minutes
 
-while True:
-    tools.fetch_quickcount()
-    time.sleep(600)  # 600 seconds = 10 minutes
+def fetch_quickcount():
+    while True:
+        tools.fetch_quickcount()
+        time.sleep(600)  # 600 seconds = 10 minutes
+
+
+if __name__ == "__main__":
+    fetch_quickcount()
