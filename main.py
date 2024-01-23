@@ -6,6 +6,7 @@ import json
 import time
 import tools
 import requests
+import threading
 import numpy as np
 import pandas as pd
 import concurrent.futures
@@ -23,6 +24,9 @@ from fastapi.responses import StreamingResponse
 
 # Load env
 load_dotenv()
+
+# Local disk
+local_disk = '/var/data'
 
 # Define app
 app = FastAPI()
@@ -46,7 +50,7 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 @app.get("/api/get_quickcount_kedaikopi")
 async def get_quickcount_kedaikopi():
     try:
-        with open('results_quickcount.json', 'r') as json_file:
+        with open(f'{local_disk}/results_quickcount.json', 'r') as json_file:
             data_read = json.load(json_file)
         return {"results": data_read}
     except FileNotFoundError:
@@ -55,10 +59,10 @@ async def get_quickcount_kedaikopi():
 
 # ================================================================================================================
 # Endpoint to read the "inbox.txt" file
-@app.get("/read")
+@app.get("/sms_inbox")
 async def read_inbox():
     try:
-        with open("inbox.json", "r") as json_file:
+        with open(f"{local_disk}/inbox.json", "r") as json_file:
             data = [json.loads(line) for line in json_file]
         return {"inbox_data": data}
     except FileNotFoundError:
@@ -98,7 +102,7 @@ for port in range(1, num_endpoints + 1):
         }
 
         # Log the received data to a JSON file
-        with open("inbox.json", "a") as json_file:
+        with open(f"{local_disk}/inbox.json", "a") as json_file:
             json.dump(raw_data, json_file)
             json_file.write('\n')  # Add a newline to separate the JSON objects
 
@@ -117,14 +121,14 @@ for port in range(1, num_endpoints + 1):
                 event = info[2]
 
                 # Get number of candidate pairs
-                with open(f'event_{event}.json', 'r') as json_file:
+                with open(f'{local_disk}/event_{event}.json', 'r') as json_file:
                     json_content = json.load(json_file)
                     number_candidates = json_content['n_candidate']
 
                 format = 'KK#UID#EventID#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#Rusak'
                 template_error_msg = 'cek & kirim ulang dgn format:\n' + format
 
-                tmp = pd.read_excel(f'target_{event}.xlsx', usecols=['UID'])
+                tmp = pd.read_excel(f'{local_disk}/target_{event}.xlsx', usecols=['UID'])
 
                 # Check Error Type 2 (UID)
                 if uid not in tmp['UID'].str.lower().tolist():
@@ -245,7 +249,7 @@ for port in range(1, num_endpoints + 1):
                             raw_sms_status = 'Accepted'
 
                             # Load the JSON file into a dictionary
-                            with open(f'uid_{event}.json', 'r') as json_file:
+                            with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
                                 uid_dict = json.load(json_file)
 
                             # Forward data to Bubble database
@@ -355,7 +359,7 @@ async def create_json_ncandidate(
     event: str = Form(...),
     N_candidate: int = Form(...),
     ):
-    with open(f'event_{event}.json', 'w') as json_file:
+    with open(f'{local_disk}/event_{event}.json', 'w') as json_file:
         json.dump({"n_candidate": N_candidate}, json_file)
 
 
@@ -372,7 +376,7 @@ async def get_uid(
     tools.create_target(event, N_TPS)
     
     # Forward file to Bubble database
-    excel_file_path = f'target_{event}.xlsx'
+    excel_file_path = f'{local_disk}/target_{event}.xlsx'
     
     def file_generator():
         with open(excel_file_path, 'rb') as file_content:
@@ -471,12 +475,12 @@ async def generate_xlsform(
     headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
     res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
     uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
-    with open(f'uid_{event}.json', 'w') as json_file:
+    with open(f'{local_disk}/uid_{event}.json', 'w') as json_file:
         json.dump(uid_dict, json_file)
 
     # Generate xlsform logic using the target file
     tools.create_xlsform_template(target_file_name, form_title, form_id, event)
-    xlsform_path = f'xlsform_{form_id}.xlsx'
+    xlsform_path = f'{local_disk}/xlsform_{form_id}.xlsx'
 
     def file_generator():
         with open(xlsform_path, 'rb') as file_content:
@@ -496,8 +500,8 @@ async def delete_event(
     event: str = Form(...),
     form_id: str = Form(...)
     ):
-    os.system(f'rm -f *_{event}.*')
-    os.system(f'rm -f *_{form_id}.*')
+    os.system(f'rm -f {local_disk}/*_{event}.*')
+    os.system(f'rm -f {local_disk}/*_{form_id}.*')
 
 
 
@@ -557,9 +561,13 @@ async def region_aggregate(
 
 def fetch_quickcount():
     while True:
-        tools.fetch_quickcount()
-        time.sleep(600)  # 600 seconds = 10 minutes
-
+        try:
+            tools.fetch_quickcount()
+            time.sleep(600)  # 600 seconds = 10 minutes
+        except Exception as e:
+            print(f"Error in fetch_quickcount: {str(e)}")
 
 if __name__ == "__main__":
-    fetch_quickcount()
+    # Create a thread for fetch_quickcount to run concurrently
+    fetch_thread = threading.Thread(target=fetch_quickcount, daemon=True)
+    fetch_thread.start()

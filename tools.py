@@ -21,6 +21,9 @@ from datetime import datetime, timedelta
 # Load env
 load_dotenv()
 
+# Local disk
+local_disk = '/var/data'
+
 # Load the shapefile
 shapefile_path = 'location.shp'
 gdf = gpd.read_file(shapefile_path)
@@ -460,7 +463,7 @@ def scto_process(data, event, n_candidate, proc_id_a4):
         }
 
         # Load the JSON file into a dictionary
-        with open(f'uid_{event}.json', 'r') as json_file:
+        with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
             uid_dict = json.load(json_file)
 
         # Forward data to Bubble Votes database
@@ -520,6 +523,6 @@ def fetch_quickcount():
 
             output.update({'data': event_data})
 
-    with open('results_quickcount.json', 'w') as json_file:
+    with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)
 
