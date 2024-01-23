@@ -34,6 +34,7 @@ app = FastAPI()
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
 url_bubble = os.environ.get('url_bubble')
+local_disk = os.environ.get('local_disk')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
@@ -561,13 +562,14 @@ async def region_aggregate(
 
 def fetch_quickcount():
     while True:
+        print('hALLLOOO')
         try:
             tools.fetch_quickcount()
-            time.sleep(600)  # 600 seconds = 10 minutes
         except Exception as e:
             print(f"Error in fetch_quickcount: {str(e)}")
+        time.sleep(600)  # 600 seconds = 10 minutes
 
-if __name__ == "__main__":
-    # Create a thread for fetch_quickcount to run concurrently
-    fetch_thread = threading.Thread(target=fetch_quickcount, daemon=True)
-    fetch_thread.start()
+
+# Create a thread for fetch_quickcount to run concurrently
+fetch_thread = threading.Thread(target=fetch_quickcount, daemon=True)
+fetch_thread.start()

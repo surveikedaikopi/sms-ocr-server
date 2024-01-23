@@ -22,12 +22,12 @@ from datetime import datetime, timedelta
 load_dotenv()
 
 # Local disk
-local_disk = '/var/data'
 
-# Load the shapefile
-shapefile_path = 'location.shp'
-gdf = gpd.read_file(shapefile_path)
-gdf.crs = "EPSG:4326"
+
+# # Load the shapefile
+# shapefile_path = 'location.shp'
+# gdf = gpd.read_file(shapefile_path)
+# gdf.crs = "EPSG:4326"
 
 # Load region data from JSON
 with open('region.json', 'r') as json_file:
@@ -39,6 +39,7 @@ print_lock = threading.Lock()
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
 url_bubble = os.environ.get('url_bubble')
+local_disk = os.environ.get('local_disk')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
@@ -165,7 +166,7 @@ def create_target(event, N):
     # Generate unique IDs
     df['UID'] = generate_unique_codes(N)
     # Save excel file
-    with pd.ExcelWriter(f'target_{event}.xlsx', engine='openpyxl') as writer:
+    with pd.ExcelWriter(f'{local_disk}/target_{event}.xlsx', engine='openpyxl') as writer:
         df.to_excel(writer, index=False, sheet_name='survey')
 
 
@@ -265,7 +266,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                     }, ignore_index=True)
 
     # Save choices to an Excel file
-    with pd.ExcelWriter(f'xlsform_{form_id}.xlsx', engine='openpyxl') as writer:
+    with pd.ExcelWriter(f'{local_disk}/xlsform_{form_id}.xlsx', engine='openpyxl') as writer:
         survey_df.to_excel(writer, index=False, sheet_name='survey')
         
     # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -322,12 +323,12 @@ def create_xlsform_template(target_file, form_title, form_id, event):
                                                              'name': ['_'.join(i.split(' ')) for i in kelurahan],
                                                              'label': kelurahan,
                                                              'filter_provinsi': '_'.join(p.split(' ')),
-                                                             'filter_kabkota': '_'.join(kk.split(' ')),                                                           
+                                                             'filter_kabkota': '_'.join(kk.split(' ')),       
                                                              'filter_kecamatan': '_'.join(kec.split(' '))
                                                             }))
 
     # Save choices to an Excel file
-    with pd.ExcelWriter(f'xlsform_{form_id}.xlsx', engine='openpyxl', mode='a') as writer:
+    with pd.ExcelWriter(f'{local_disk}/xlsform_{form_id}.xlsx', engine='openpyxl', mode='a') as writer:
         choices_df.to_excel(writer, index=False, sheet_name='choices')
         
     # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -340,7 +341,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
     # xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     # Save settings to an Excel file
-    with pd.ExcelWriter(f'xlsform_{form_id}.xlsx', engine='openpyxl', mode='a') as writer:
+    with pd.ExcelWriter(f'{local_disk}/xlsform_{form_id}.xlsx', engine='openpyxl', mode='a') as writer:
         settings_df.to_excel(writer, index=False, sheet_name='settings')
             
 
@@ -525,4 +526,3 @@ def fetch_quickcount():
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)
-
