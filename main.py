@@ -562,7 +562,6 @@ async def region_aggregate(
 
 def fetch_quickcount():
     while True:
-        print('hALLLOOO')
         try:
             tools.fetch_quickcount()
         except Exception as e:
