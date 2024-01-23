@@ -384,7 +384,7 @@ async def get_uid(
             yield from file_content
 
     response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response.headers["Content-Disposition"] = f"attachment; filename={excel_file_path}"
+    response.headers["Content-Disposition"] = f"attachment; filename=target_{event}.xlsx"
 
     # Return response
     return response
