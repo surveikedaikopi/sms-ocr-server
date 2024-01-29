@@ -391,6 +391,9 @@ def scto_process(data, event, n_candidate, proc_id_a4):
         formulir_c1_a4 = data['formulir_c1_a4']
         formulir_c1_plano = data['formulir_c1_plano']
 
+        # Selfie attachment
+        selfie = data['selfie']
+
         # OCR C1-Form
         if proc_id_a4:
             try:
@@ -449,6 +452,7 @@ def scto_process(data, event, n_candidate, proc_id_a4):
             'SCTO Invalid': ai_invalid,
             'SCTO C1 A4': formulir_c1_a4,
             'SCTO C1 Plano': formulir_c1_plano,
+            'SCTO Selfie': selfie,
             'GPS Provinsi': loc['Provinsi'],
             'GPS Kab/Kota': loc['Kab/Kota'],
             'GPS Kecamatan': loc['Kecamatan'],
