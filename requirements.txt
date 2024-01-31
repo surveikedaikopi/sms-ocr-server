@@ -9,5 +9,5 @@ geopandas==0.10.2
 pysurveycto==0.0.13
 google-cloud-documentai==2.20.2
 Shapely==1.8.0
-pytz==2021.3
+pytz==2021.3git
 scikit-learn==1.0.2

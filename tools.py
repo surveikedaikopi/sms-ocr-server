@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import random
 import requests
@@ -69,10 +70,17 @@ def rename_region(data):
     kelurahan = find_closest_string(data[3], reference)
     return provinsi, kabkota, kecamatan, kelurahan
 
+def preprocess_text(text):
+    # Remove spaces and punctuation, convert to lowercase
+    return re.sub(r'\W+', '', text.lower())
+
 def find_closest_string(string1, string_list):
-    vectorizer = CountVectorizer().fit([string1] + string_list)
-    vectorized_strings = vectorizer.transform([string1] + string_list)
-    cosine_sims = cosine_similarity(vectorized_strings)[0][1:]
+    preprocessed_string_list = [preprocess_text(s) for s in string_list]
+    vectorizer = CountVectorizer().fit(preprocessed_string_list)
+    vectorized_strings = vectorizer.transform(preprocessed_string_list)
+    preprocessed_target = preprocess_text(string1)
+    target_vectorized = vectorizer.transform([preprocessed_target])
+    cosine_sims = cosine_similarity(target_vectorized, vectorized_strings)    
     closest_index = cosine_sims.argmax()
     closest_string = string_list[closest_index]
     return closest_string
