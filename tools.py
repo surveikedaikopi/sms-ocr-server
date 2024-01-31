@@ -1,4 +1,5 @@
 import os
+import io
 import re
 import json
 import random
@@ -7,6 +8,7 @@ import threading
 import numpy as np
 import pandas as pd
 from Bio import Align
+from PIL import Image
 import geopandas as gpd
 from dotenv import load_dotenv
 from shapely.geometry import Point
@@ -112,7 +114,7 @@ def get_location(coordinate):
 
 
 # Document inference
-def read_form(scto, attachment_url, n_candidate, processor_id):
+def read_form(scto, attachment_url, n_candidate, processor_id, deviceid):
     project_id = "quick-count-410523"
     location = "us"
 
@@ -125,6 +127,14 @@ def read_form(scto, attachment_url, n_candidate, processor_id):
     # Convert the attachment URL content to a byte array
     file_content = scto.get_attachment(attachment_url)
     
+    if deviceid != '(web)':
+        # Rotate the image 90 degrees clockwise
+        image = Image.open(io.BytesIO(file_content))
+        rotated_image = image.rotate(-90, expand=True)
+        byte_array = io.BytesIO()
+        rotated_image.save(byte_array, format='JPEG')
+        file_content = byte_array.getvalue()
+
     # Load binary data
     raw_document = documentai.RawDocument(content=file_content, mime_type='image/jpeg')
 
@@ -138,12 +148,22 @@ def read_form(scto, attachment_url, n_candidate, processor_id):
     out = client.process_document(request)
     entities = out.document.entities
     output = {}
-    # votes
-    for entity in entities[0].properties:
-        output.update({entity.type_: entity.normalized_value.text})
-    # invalid vote
-    entity = entities[1]
-    output.update({entity.type_: entity.normalized_value.text})
+    if len(entities) > 0:
+        # Valid Votes
+        try:
+            for entity in entities[0].properties:
+                output.update({entity.type_: entity.normalized_value.text})
+        except:
+            pass
+        try:
+            # Invalid votes
+            entity = entities[1]
+            output.update({entity.type_: entity.normalized_value.text})
+        except:
+            pass
+    else:
+        ai_votes = [0] * n_candidate
+        ai_invalid = 0
 
     # Post-processing
     ai_votes = [0] * n_candidate
@@ -427,7 +447,8 @@ def scto_process(data, event, n_candidate, proc_id_a4):
                 attachment_url = data['formulir_c1_a4']
                 # Build SCTO connection
                 scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
-                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4)
+                deviceid = data['deviceid']
+                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4, deviceid)
             except Exception as e:
                 print(f'Process: scto_process endpoint\t Keyword: {e}\n')
                 ai_votes = [0] * n_candidate
@@ -545,7 +566,7 @@ def fetch_quickcount():
                 }
                 ndf = df[df['Event ID']==event['Event ID']]
                 total_votes = ndf['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                if len(ndf) > 0:
+                if total_votes > 0:
                     event_data.update({
                         'percent_data_entry': round(ndf['SMS'].sum() / len(ndf) * 100, 2),
                         'candidate_names': event['Candidate Names'],
