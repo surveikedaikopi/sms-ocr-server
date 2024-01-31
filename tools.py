@@ -12,8 +12,6 @@ from shapely.geometry import Point
 from google.cloud import documentai
 from pysurveycto import SurveyCTOObject
 from datetime import datetime, timedelta
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.feature_extraction.text import CountVectorizer
 
 
 
