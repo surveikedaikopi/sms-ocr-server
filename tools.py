@@ -512,35 +512,36 @@ def fetch_quickcount():
         
     output = {
         'n_events': len(events),
-        'data': None
+        'data': []
     }
 
     if len(events) > 0:
-        for event in events:
-            event_data = {
-                'event_id': event['Event ID'],
-                'n_candidates': event['Number of Candidates']
-            }
 
-            # Send a GET request to get votes
-            response = requests.get(url_bubble + '/Votes')
+        # Send a GET request to get votes
+        response = requests.get(url_bubble + '/Votes')
 
-            # Check the response status code
-            votes = []
-            if response.status_code == 200:
-                tmp = response.json()['response']
-                votes.extend(tmp['results'])
+        # Check the response status code
+        votes = []
+        if response.status_code == 200:
+            tmp = response.json()['response']
+            votes.extend(tmp['results'])
 
-                df = pd.DataFrame(votes)
-                total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                
+            df = pd.DataFrame(votes)
+
+            for event in events:
+                event_data = {
+                    'event_id': event['Event ID'],
+                    'n_candidates': event['Number of Candidates']
+                }
+                ndf = df[df['Event ID']==event['Event ID']]
+                total_votes = ndf['Final Votes'].apply(lambda x: np.nansum(x)).sum()
                 event_data.update({
-                    'percent_data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
+                    'percent_data_entry': round(ndf['SMS'].sum() / len(ndf) * 100, 2),
                     'candidate_names': event['Candidate Names'],
-                    'percent_votes': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
+                    'percent_votes': [round(ndf[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
                 })
 
-            output.update({'data': event_data})
+                output.update({'data': output['data'] + [event_data]})
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)

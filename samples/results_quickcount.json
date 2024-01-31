@@ -1,0 +1,35 @@
+{
+  "n_events": 2,
+  "data": [
+    {
+      "event_id": "tes",
+      "n_candidates": 3,
+      "percent_data_entry": 10.0,
+      "candidate_names": [
+        "Paslon 1",
+        "Paslon 2",
+        "Paslon 3"
+      ],
+      "percent_votes": [
+        45.98,
+        24.7,
+        29.32
+      ]
+    },
+    {
+      "event_id": "korprov",
+      "n_candidates": 3,
+      "percent_data_entry": 5.26,
+      "candidate_names": [
+        "Anies Baswedan - Muhaimin Iskandar",
+        "Prabowo Subianto - Gibran Rakabuming Raka",
+        "Ganjar Pranowo - Mahfud MD"
+      ],
+      "percent_votes": [
+        25.98,
+        30.25,
+        43.77
+      ]
+    }
+  ]
+}

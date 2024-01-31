@@ -23,7 +23,7 @@ from fastapi.responses import StreamingResponse
 # Initial Setup
 
 # Load env
-load_dotenv()
+load_dotenv('.env')
 
 # Define app
 app = FastAPI()
