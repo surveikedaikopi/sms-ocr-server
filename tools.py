@@ -6,12 +6,13 @@ import threading
 import numpy as np
 import pandas as pd
 import geopandas as gpd
-from fuzzywuzzy import process
 from dotenv import load_dotenv
 from shapely.geometry import Point
 from google.cloud import documentai
 from pysurveycto import SurveyCTOObject
 from datetime import datetime, timedelta
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 
@@ -56,17 +57,25 @@ list_provinsi = list(region_data.keys())
 def rename_region(data):
     # provinsi
     reference = list_provinsi
-    provinsi, _ = process.extractOne(data[0], reference)
+    provinsi = find_closest_string(data[0], reference)
     # kabupaten/kota
     reference = list(region_data[provinsi].keys())
-    kabkota, _ = process.extractOne(data[1], reference)       
+    kabkota = find_closest_string(data[1], reference)       
     # kecamatan
     reference = list(region_data[provinsi][kabkota].keys())
-    kecamatan, _ = process.extractOne(data[2], reference) 
+    kecamatan = find_closest_string(data[2], reference) 
     # kelurahan
     reference = list(region_data[provinsi][kabkota][kecamatan])
-    kelurahan, _ = process.extractOne(data[3], reference)
+    kelurahan = find_closest_string(data[3], reference)
     return provinsi, kabkota, kecamatan, kelurahan
+
+def find_closest_string(string1, string_list):
+    vectorizer = CountVectorizer().fit([string1] + string_list)
+    vectorized_strings = vectorizer.transform([string1] + string_list)
+    cosine_sims = cosine_similarity(vectorized_strings)[0][1:]
+    closest_index = cosine_sims.argmax()
+    closest_string = string_list[closest_index]
+    return closest_string
 
 # Get administrative regions from coordinate
 def get_location(coordinate):
