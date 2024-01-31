@@ -545,11 +545,18 @@ def fetch_quickcount():
                 }
                 ndf = df[df['Event ID']==event['Event ID']]
                 total_votes = ndf['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                event_data.update({
-                    'percent_data_entry': round(ndf['SMS'].sum() / len(ndf) * 100, 2),
-                    'candidate_names': event['Candidate Names'],
-                    'percent_votes': [round(ndf[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
-                })
+                if len(ndf) > 0:
+                    event_data.update({
+                        'percent_data_entry': round(ndf['SMS'].sum() / len(ndf) * 100, 2),
+                        'candidate_names': event['Candidate Names'],
+                        'percent_votes': [round(ndf[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
+                    })
+                else:
+                    event_data.update({
+                        'percent_data_entry': 0,
+                        'candidate_names': event['Candidate Names'],
+                        'percent_votes': [0, 0, 0]
+                    })                    
 
                 output.update({'data': output['data'] + [event_data]})
 
