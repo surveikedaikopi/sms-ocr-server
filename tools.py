@@ -6,6 +6,7 @@ import requests
 import threading
 import numpy as np
 import pandas as pd
+from Bio import Align
 import geopandas as gpd
 from dotenv import load_dotenv
 from shapely.geometry import Point
