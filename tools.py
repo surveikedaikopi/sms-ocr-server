@@ -128,12 +128,13 @@ def read_form(scto, attachment_url, n_candidate, processor_id, deviceid):
     file_content = scto.get_attachment(attachment_url)
     
     if deviceid != '(web)':
-        # Rotate the image 90 degrees clockwise
-        image = Image.open(io.BytesIO(file_content))
-        rotated_image = image.rotate(-90, expand=True)
-        byte_array = io.BytesIO()
-        rotated_image.save(byte_array, format='JPEG')
-        file_content = byte_array.getvalue()
+        pass
+        # # Rotate the image 90 degrees clockwise
+        # image = Image.open(io.BytesIO(file_content))
+        # rotated_image = image.rotate(-90, expand=True)
+        # byte_array = io.BytesIO()
+        # rotated_image.save(byte_array, format='JPEG')
+        # file_content = byte_array.getvalue()
 
     # Load binary data
     raw_document = documentai.RawDocument(content=file_content, mime_type='image/jpeg')
