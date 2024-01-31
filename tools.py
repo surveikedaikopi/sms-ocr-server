@@ -74,16 +74,27 @@ def preprocess_text(text):
     # Remove spaces and punctuation, convert to lowercase
     return re.sub(r'\W+', '', text.lower())
 
+def compare_sequences(seq1, seq2):
+    aligner = Align.PairwiseAligner()
+    alignments = aligner.align(seq1, seq2)
+    best_alignment = alignments[0]  # Assuming you want the best alignment
+    return best_alignment.score
+
+def compare_with_list(string1, string2_list):
+    scores = []
+    for seq2 in string2_list:
+        score = compare_sequences(string1, seq2)
+        scores.append(score)
+    return scores
+
 def find_closest_string(string1, string_list):
     preprocessed_string_list = [preprocess_text(s) for s in string_list]
-    vectorizer = CountVectorizer().fit(preprocessed_string_list)
-    vectorized_strings = vectorizer.transform(preprocessed_string_list)
     preprocessed_target = preprocess_text(string1)
-    target_vectorized = vectorizer.transform([preprocessed_target])
-    cosine_sims = cosine_similarity(target_vectorized, vectorized_strings)    
-    closest_index = cosine_sims.argmax()
-    closest_string = string_list[closest_index]
-    return closest_string
+    scores = compare_with_list(preprocessed_target, preprocessed_string_list)
+    ss = [len([i for i in list(s2) if i not in list(preprocessed_target)]) for s2 in preprocessed_string_list]
+    scores = np.array(scores) - np.array(ss)
+    closest_index = np.argmax(scores)
+    return string_list[closest_index]
 
 # Get administrative regions from coordinate
 def get_location(coordinate):
