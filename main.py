@@ -359,6 +359,7 @@ async def create_json_ncandidate(
     event: str = Form(...),
     N_candidate: int = Form(...),
     ):
+    event = event.lower()
     with open(f'{local_disk}/event_{event}.json', 'w') as json_file:
         json.dump({"n_candidate": N_candidate}, json_file)
 
@@ -371,7 +372,7 @@ async def get_uid(
     event: str = Form(...),
     N_TPS: int = Form(...)
     ):
-
+    event = event.lower()
     # Generate target file
     tools.create_target(event, N_TPS)
     
@@ -400,7 +401,7 @@ async def generate_xlsform(
     target_file: UploadFile = Form(...)
     ):
 
-    event = target_file_name.split('_')[-1].split('.')[0]
+    event = target_file_name.split('_')[-1].split('.')[0].lower()
 
     # Save the target file to a temporary location
     with open(f'{local_disk}/{target_file_name}', 'wb') as target_file_content:
