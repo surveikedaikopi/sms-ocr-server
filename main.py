@@ -116,7 +116,7 @@ for port in range(1, num_endpoints + 1):
 
             try:
                 uid = info[1].lower()
-                event = info[2]
+                event = info[2].lower()
 
                 # Get number of candidate pairs
                 with open(f'{local_disk}/event_{event}.json', 'r') as json_file:
