@@ -562,11 +562,11 @@ async def region_aggregate(
 
 def fetch_quickcount():
     while True:
-        # try:
-        tools.fetch_quickcount()
-        # except Exception as e:
-        #     print(f"Error in fetch_quickcount: {str(e)}")
-        # time.sleep(600)  # 600 seconds = 10 minutes
+        try:
+            tools.fetch_quickcount()
+        except Exception as e:
+            print(f"Error in fetch_quickcount: {str(e)}")
+        time.sleep(600)  # 600 seconds = 10 minutes
 
 
 # Create a thread for fetch_quickcount to run concurrently
