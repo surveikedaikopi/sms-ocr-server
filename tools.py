@@ -533,7 +533,13 @@ def scto_process(data, event, n_candidate, proc_id_a4):
 
 def fetch_quickcount():
     events = []  # To store events
-        
+
+    output = {
+        'data_entry': 0,
+        'total': 0
+        }
+    output.update({prov:0 for prov in list_provinsi}) 
+
     # Send a GET request to get events
     response = requests.get(url_bubble + '/Events')
 
@@ -541,11 +547,6 @@ def fetch_quickcount():
     if response.status_code == 200:
         tmp = response.json()['response']
         events.extend(tmp['results'])
-        
-    output = {
-        'n_events': len(events),
-        'data': []
-    }
 
     if len(events) > 0:
 
@@ -560,27 +561,21 @@ def fetch_quickcount():
 
             df = pd.DataFrame(votes)
 
-            for event in events:
-                event_data = {
-                    'event_id': event['Event ID'],
-                    'n_candidates': event['Number of Candidates']
-                }
-                ndf = df[df['Event ID']==event['Event ID']]
-                total_votes = ndf['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                if total_votes > 0:
-                    event_data.update({
-                        'percent_data_entry': round(ndf['SMS'].sum() / len(ndf) * 100, 2),
-                        'candidate_names': event['Candidate Names'],
-                        'percent_votes': [round(ndf[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, event['Number of Candidates'] + 1)]
-                    })
-                else:
-                    event_data.update({
-                        'percent_data_entry': 0,
-                        'candidate_names': event['Candidate Names'],
-                        'percent_votes': [0, 0, 0]
-                    })                    
+            # Filter pilpres only
+            df = df[df['Event ID']=='pilpres']
+            n_candidate = 3
 
-                output.update({'data': output['data'] + [event_data]})
+            if len(df) > 0:
+
+                total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+                if total_votes > 0:
+                    output = {
+                        'data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
+                        'total': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, n_candidate + 1)]
+                    }
+                    for prov in list_provinsi:
+                        data_prov = df[df['Provinsi']==prov]
+                        output.update({prov: round(data_prov['SMS'].sum() / len(data_prov) * 100, 2)})              
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)
