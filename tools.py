@@ -54,8 +54,11 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 # ================================================================================================================
 # Auxiliary Functions
 
-# Rename regions
+# List of provinces
 list_provinsi = list(region_data.keys())
+list_provinsi.sort()
+
+# Rename regions
 def rename_region(data):
     # provinsi
     reference = list_provinsi
