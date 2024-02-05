@@ -580,10 +580,9 @@ def fetch_quickcount():
                     }
                     for prov in list_provinsi:
                         data_prov = df[df['Provinsi']==prov]
-                        if len(data_prov) > 0:
-                            total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+                        total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+                        if total_prov > 0:
                             output.update({prov: [round(data_prov[f'Vote{i}'].sum() / total_prov * 100, 2) for i in range(1, n_candidate + 1)]})
-                            
                         else:
                             output.update({prov: [0, 0, 0]})
 
