@@ -580,8 +580,12 @@ def fetch_quickcount():
                     }
                     for prov in list_provinsi:
                         data_prov = df[df['Provinsi']==prov]
-                        total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                        output.update({prov: [round(data_prov[f'Vote{i}'].sum() / total_prov * 100, 2) for i in range(1, n_candidate + 1)]})              
+                        if len(data_prov) > 0:
+                            total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+                            output.update({prov: [round(data_prov[f'Vote{i}'].sum() / total_prov * 100, 2) for i in range(1, n_candidate + 1)]})
+                            
+                        else:
+                            output.update({prov: [0, 0, 0]})
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)
