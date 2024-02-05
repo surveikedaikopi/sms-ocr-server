@@ -501,6 +501,7 @@ async def delete_event(
     event: str = Form(...),
     form_id: str = Form(...)
     ):
+    event = event.lower()
     os.system(f'rm -f {local_disk}/*_{event}.*')
     os.system(f'rm -f {local_disk}/*_{form_id}.*')
 

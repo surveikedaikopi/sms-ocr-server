@@ -207,6 +207,7 @@ def generate_unique_codes(N):
     return codes
 
 def create_target(event, N):
+    event = event.lower()
     df = pd.DataFrame(columns=['UID', 'Korprov', 'Korwil', 'Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan'])
     # Generate unique IDs
     df['UID'] = generate_unique_codes(N)
@@ -220,6 +221,8 @@ def create_target(event, N):
 # Function to generate SCTO xlsform
 
 def create_xlsform_template(target_file, form_title, form_id, event):
+
+    event = event.lower()
 
     # Load target data from Excel
     target_data = pd.read_excel(target_file)
@@ -395,6 +398,8 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 # Functions to process SCTO data
 
 def scto_process(data, event, n_candidate, proc_id_a4):
+
+    event = event.lower()
 
     try:
 
