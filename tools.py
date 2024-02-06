@@ -1,14 +1,15 @@
 import os
-import io
+# import io
 import re
 import json
+import time
 import random
 import requests
 import threading
 import numpy as np
 import pandas as pd
 from Bio import Align
-from PIL import Image
+# from PIL import Image
 import geopandas as gpd
 from dotenv import load_dotenv
 from shapely.geometry import Point
@@ -47,8 +48,6 @@ SCTO_PASSWORD = os.environ.get('SCTO_PASSWORD')
 
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-
-
 
 
 # ================================================================================================================
@@ -543,6 +542,7 @@ def fetch_quickcount():
     events = []  # To store events
 
     output = {
+        'timestamp': time.time(),
         'data_entry': 0,
         'total': 0
         }

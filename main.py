@@ -13,10 +13,12 @@ import concurrent.futures
 from fastapi import Request
 from typing import Optional
 from dotenv import load_dotenv
+from collections import defaultdict
 from pysurveycto import SurveyCTOObject
 from datetime import datetime, timedelta
-from fastapi import Form, FastAPI, UploadFile
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Form, FastAPI, UploadFile, Request, HTTPException
 
 
 # ================================================================================================================
@@ -26,7 +28,22 @@ from fastapi.responses import StreamingResponse
 load_dotenv('.env')
 
 # Define app
-app = FastAPI()
+app = FastAPI(docs_url=None, redoc_url=None)
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Dictionary to store request timestamps for each client IP
+request_timestamps = defaultdict(float)
+
+# Time window in seconds
+TIME_WINDOW = 60  # 1 minute
 
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
@@ -42,11 +59,32 @@ NUSA_PASSWORD = os.environ.get('NUSA_PASSWORD')
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 
-
 # ================================================================================================================
 # Endpoint to read the quick count results
 @app.get("/api/get_quickcount_kedaikopi")
-async def get_quickcount_kedaikopi():
+async def get_quickcount_kedaikopi(request: Request):
+    client_ip = request.client.host
+
+    # IP Whitelist
+    with open(f"{local_disk}/ip_whitelist.json", "r") as file:
+        whitelist = json.load(file)
+
+    # Check if the client is whitelisted
+    if client_ip not in whitelist:
+        # Return Forbidden status code if client is not whitelisted
+        raise HTTPException(status_code=403, detail="Access Forbidden")
+
+    # Get the current timestamp
+    current_time = time.time()
+
+    # Check if the client has made a request within the last minute
+    last_request_time = request_timestamps.get(client_ip, 0)
+    if current_time - last_request_time < TIME_WINDOW:
+        raise HTTPException(status_code=429, detail="Too Many Requests")
+
+    # Update the request timestamp for the client
+    request_timestamps[client_ip] = current_time
+
     try:
         with open(f'{local_disk}/results_quickcount.json', 'r') as json_file:
             data_read = json.load(json_file)
