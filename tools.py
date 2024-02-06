@@ -578,6 +578,7 @@ def fetch_quickcount():
                 total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
                 if total_votes > 0:
                     output = {
+                        'timestamp': time.time(),
                         'data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
                         'total': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, n_candidate + 1)]
                     }
