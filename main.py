@@ -64,6 +64,7 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 @app.get("/api/get_quickcount_kedaikopi")
 async def get_quickcount_kedaikopi(request: Request):
     client_ip = request.client.host
+    print(client_ip)
 
     # IP Whitelist
     with open(f"{local_disk}/ip_whitelist.json", "r") as file:
