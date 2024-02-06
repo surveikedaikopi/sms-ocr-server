@@ -63,7 +63,7 @@ headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 # Endpoint to read the quick count results
 @app.get("/api/get_quickcount_kedaikopi")
 async def get_quickcount_kedaikopi(request: Request):
-    client_ip = request.headers.get("X-Forwarded-For")
+    client_ip = request.headers.get("X-Forwarded-For")[0]
     print(client_ip)
 
     # IP Whitelist
