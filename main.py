@@ -465,48 +465,59 @@ async def generate_xlsform(
     # Save the target file after renaming regions
     df.to_excel(f'{local_disk}/{target_file_name}', index=False)
 
-    # Generate Text for API input
-    data = '\n'.join([
-        f'{{"UID": "{uid}", '
-        f'"Active": false, '
-        f'"Complete": false, '
-        f'"SMS": false, '
-        f'"SCTO": false, '
-        f'"SMS Int": 0, '
-        f'"SCTO Int": 0, '
-        f'"Status": "Empty", '
-        f'"Event ID": "{event}", '
-        f'"Korprov": "{korprov}", '
-        f'"Korwil": "{korwil}", '
-        f'"Provinsi": "{provinsi}", '
-        f'"Kab/Kota": "{kab_kota}", '
-        f'"Kecamatan": "{kecamatan}", '
-        f'"Kelurahan": "{kelurahan}", '
-        f'"Provinsi Ori": "{provinsi_ori}", '
-        f'"Kab/Kota Ori": "{kab_kota_ori}", '
-        f'"Kecamatan Ori": "{kecamatan_ori}", '
-        f'"Kelurahan Ori": "{kelurahan_ori}"}}'
-        for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
-            df['UID'],
-            df['Korprov'],
-            df['Korwil'],
-            df['Provinsi'],
-            df['Kab/Kota'],
-            df['Kecamatan'],
-            df['Kelurahan'],
-            df['Provinsi Ori'],
-            df['Kab/Kota Ori'],
-            df['Kecamatan Ori'],
-            df['Kelurahan Ori']
-        )
-    ])
+    # Break into batches
+    n_batches = int(np.ceil(len(df) / 100))
 
-    # Populate votes table in bulk
-    headers = {
-        'Authorization': f'Bearer {BUBBLE_API_KEY}', 
-        'Content-Type': 'text/plain'
-        }
-    requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+    for batch in range(n_batches):
+        start = batch * 100
+        end = start + 100
+
+        tdf = df.loc[start:end, :]
+
+        # Generate Text for API input
+        data = '\n'.join([
+            f'{{"UID": "{uid}", '
+            f'"Active": false, '
+            f'"Complete": false, '
+            f'"SMS": false, '
+            f'"SCTO": false, '
+            f'"SMS Int": 0, '
+            f'"SCTO Int": 0, '
+            f'"Status": "Empty", '
+            f'"Event ID": "{event}", '
+            f'"Korprov": "{korprov}", '
+            f'"Korwil": "{korwil}", '
+            f'"Provinsi": "{provinsi}", '
+            f'"Kab/Kota": "{kab_kota}", '
+            f'"Kecamatan": "{kecamatan}", '
+            f'"Kelurahan": "{kelurahan}", '
+            f'"Provinsi Ori": "{provinsi_ori}", '
+            f'"Kab/Kota Ori": "{kab_kota_ori}", '
+            f'"Kecamatan Ori": "{kecamatan_ori}", '
+            f'"Kelurahan Ori": "{kelurahan_ori}"}}'
+            for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
+                tdf['UID'],
+                tdf['Korprov'],
+                tdf['Korwil'],
+                tdf['Provinsi'],
+                tdf['Kab/Kota'],
+                tdf['Kecamatan'],
+                tdf['Kelurahan'],
+                tdf['Provinsi Ori'],
+                tdf['Kab/Kota Ori'],
+                tdf['Kecamatan Ori'],
+                tdf['Kelurahan Ori']
+            )
+        ])
+
+        # Populate votes table in bulk
+        headers = {
+            'Authorization': f'Bearer {BUBBLE_API_KEY}', 
+            'Content-Type': 'text/plain'
+            }
+        requests.post(f'{url_bubble}/Votes/bulk', headers=headers, data=data)
+
+        time.sleep(3)
 
     # Get UIDs and store as json
     filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
