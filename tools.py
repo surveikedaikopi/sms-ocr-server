@@ -544,9 +544,9 @@ def fetch_quickcount():
     output = {
         'timestamp': time.time(),
         'data_entry': 0,
-        'total': 0
+        'total': [0, 0, 0]
         }
-    output.update({prov:0 for prov in list_provinsi}) 
+    output.update({prov:[0, 0, 0] for prov in list_provinsi}) 
 
     # Send a GET request to get events
     response = requests.get(url_bubble + '/Events')
