@@ -61,16 +61,16 @@ list_provinsi.sort()
 def rename_region(data):
     # provinsi
     reference = list_provinsi
-    provinsi = find_closest_string(data[0], reference)
+    provinsi = find_closest_string(data[0], reference, 'Provinsi')
     # kabupaten/kota
     reference = list(region_data[provinsi].keys())
-    kabkota = find_closest_string(data[1], reference)       
+    kabkota = find_closest_string(data[1], reference, 'Kab/Kota')       
     # kecamatan
     reference = list(region_data[provinsi][kabkota].keys())
-    kecamatan = find_closest_string(data[2], reference) 
+    kecamatan = find_closest_string(data[2], reference, 'Kecamatan') 
     # kelurahan
     reference = list(region_data[provinsi][kabkota][kecamatan])
-    kelurahan = find_closest_string(data[3], reference)
+    kelurahan = find_closest_string(data[3], reference, 'Kelurahan')
     return provinsi, kabkota, kecamatan, kelurahan
 
 def preprocess_text(text):
@@ -90,12 +90,16 @@ def compare_with_list(string1, string2_list):
         scores.append(score)
     return scores
 
-def find_closest_string(string1, string_list):
+def find_closest_string(string1, string_list, region):
+    if region == 'Kab/Kota':
+        if string1.split(' ')[0].lower() not in ['Kab.', 'Kabupaten', 'Kab']:
+            string1 = 'Kab. ' + string1
     preprocessed_string_list = [preprocess_text(s) for s in string_list]
     preprocessed_target = preprocess_text(string1)
     scores = compare_with_list(preprocessed_target, preprocessed_string_list)
     ss = [len([i for i in list(s2) if i not in list(preprocessed_target)]) for s2 in preprocessed_string_list]
-    scores = np.array(scores) - np.array(ss)
+    tt = [len(t2)-len(preprocessed_target) for t2 in preprocessed_string_list]
+    scores = np.array(scores) - np.array(ss) - np.array(tt)
     closest_index = np.argmax(scores)
     return string_list[closest_index]
 

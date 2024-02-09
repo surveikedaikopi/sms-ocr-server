@@ -470,7 +470,10 @@ async def generate_xlsform(
 
     for batch in range(n_batches):
         start = batch * 100
-        end = start + 100
+        if batch+1 == n_batches:
+            end = len(df)
+        else:
+            end = start + 100
 
         tdf = df.loc[start:end, :]
 
