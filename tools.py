@@ -92,13 +92,15 @@ def compare_with_list(string1, string2_list):
 
 def find_closest_string(string1, string_list, region):
     if region == 'Kab/Kota':
-        if string1.split(' ')[0].lower() not in ['Kab.', 'Kabupaten', 'Kab']:
-            string1 = 'Kab. ' + string1
+        first_string = string1.split(' ')[0].lower()
+        if first_string != 'kota':
+            if first_string not in ['kab.', 'kabupaten', 'kab']:
+                string1 = 'Kab. ' + string1
     preprocessed_string_list = [preprocess_text(s) for s in string_list]
     preprocessed_target = preprocess_text(string1)
     scores = compare_with_list(preprocessed_target, preprocessed_string_list)
     ss = [len([i for i in list(s2) if i not in list(preprocessed_target)]) for s2 in preprocessed_string_list]
-    tt = [len(t2)-len(preprocessed_target) for t2 in preprocessed_string_list]
+    tt = [np.sum([preprocessed_target.count(t1) for t1 in list(t2)])/len(preprocessed_target) for t2 in preprocessed_string_list]
     scores = np.array(scores) - np.array(ss) - np.array(tt)
     closest_index = np.argmax(scores)
     return string_list[closest_index]
