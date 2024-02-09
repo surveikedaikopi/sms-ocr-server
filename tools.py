@@ -330,7 +330,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
     # Create a nested dictionary
     nested_target = {}
     for row in target_data.itertuples(index=False):
-        provinsi, kab_kota, kecamatan = row[3:6]
+        provinsi, kab_kota, kecamatan, kelurahan = row[3:7]
         # Check for None values and initialize nested dictionaries
         if provinsi is not None:
             nested_target.setdefault(provinsi, {})
@@ -338,6 +338,8 @@ def create_xlsform_template(target_file, form_title, form_id, event):
             nested_target[provinsi].setdefault(kab_kota, [])
         if kecamatan is not None and provinsi in nested_target and kab_kota in nested_target[provinsi]:
             nested_target[provinsi][kab_kota].append(kecamatan)
+        if kelurahan is not None and provinsi in nested_target and kab_kota in nested_target[provinsi] and kecamatan in nested_target[kab_kota]:
+            nested_target[provinsi][kab_kota][kecamatan].append(kelurahan)
 
     # Create a DataFrame for choices
     choices_df = pd.DataFrame(columns=['list_name', 'name', 'label', 'filter_provinsi', 'filter_kabkota', 'filter_kecamatan'])
@@ -373,7 +375,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
 
             # Add kelurahan choices
             for kec in kecamatan:
-                kelurahan = region_data[p][kk][kec]
+                kelurahan = nested_target[p][kk][kec]
                 kelurahan = sorted(kelurahan)
                 choices_df = choices_df.append(pd.DataFrame({'list_name': 'list_kelurahan', 
                                                              'name': ['_'.join(i.split(' ')) for i in kelurahan],
