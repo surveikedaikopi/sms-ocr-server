@@ -335,7 +335,7 @@ def create_xlsform_template(target_file, form_title, form_id, event):
         if provinsi is not None:
             nested_target.setdefault(provinsi, {})
         if kab_kota is not None and provinsi in nested_target:
-            nested_target[provinsi].setdefault(kab_kota, [])
+            nested_target[provinsi].setdefault(kab_kota, {})
         if kecamatan is not None and provinsi in nested_target and kab_kota in nested_target[provinsi]:
             nested_target[provinsi][kab_kota].setdefault(kecamatan, [])
         if kelurahan is not None and provinsi in nested_target and kab_kota in nested_target[provinsi] and kecamatan in nested_target[provinsi][kab_kota]:
