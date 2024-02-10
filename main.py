@@ -48,6 +48,7 @@ TIME_WINDOW = 60  # 1 minute
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
 url_bubble = os.environ.get('url_bubble')
+url_getUID = os.environ.get('url_getUID')
 local_disk = os.environ.get('local_disk')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
@@ -471,7 +472,6 @@ async def generate_xlsform(
     for batch in range(n_batches):
         start = batch * 100
         end = min((batch + 1) * 100, len(df)) - 1 
-
         tdf = df.loc[start:end, :]
 
         # Generate Text for API input
@@ -520,12 +520,21 @@ async def generate_xlsform(
         time.sleep(3)
 
     # Get UIDs and store as json
-    filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
-    filter_json = json.dumps(filter_params)
-    params = {"constraints": filter_json}
     headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-    res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-    uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
+    uid_dict = {}
+    for uid_start in range(1, len(df), 50):
+        params = {'Event ID': event, 'start': uid_start, 'end': uid_start+50}
+        res = requests.get(url_getUID, headers=headers, params=params)
+        out = res.json()['response']
+        uid_dict.update(zip(out['UID'], out['id_']))
+
+    # filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
+    # filter_json = json.dumps(filter_params)
+    # params = {"constraints": filter_json}
+    # headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
+    # res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+    # uid_dict = {i['UID']:i['_id'] for i in res.json()['response']['results']}
+
     with open(f'{local_disk}/uid_{event}.json', 'w') as json_file:
         json.dump(uid_dict, json_file)
 

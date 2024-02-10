@@ -40,6 +40,7 @@ print_lock = threading.Lock()
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
 url_bubble = os.environ.get('url_bubble')
+url_votes_aggregate = os.environ.get('url_votes_aggregate')
 local_disk = os.environ.get('local_disk')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
@@ -547,56 +548,86 @@ def scto_process(data, event, n_candidate, proc_id_a4):
 # Functions to fetch and save quick count results
 
 def fetch_quickcount():
-    events = []  # To store events
 
-    output = {
+    headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
+    params = {'Event ID': 'korprov'}
+    res = requests.get(url_votes_aggregate, headers=headers, params=params)
+    out = res.json()['response']
+    provinsi = out['provinsi']
+    vote1 = out['vote 1']
+    vote2 = out['vote 2']
+    vote3 = out['vote 3']
+
+    df = pd.DataFrame({'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
+    df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3, axis=1)
+
+    data_entry = round(len(df[df['vote1']!=0]) / len(df) * 100, 2)
+    total = df[['vote1', 'vote2', 'vote3']].sum()
+    total = (total / total.sum() * 100).round(2).values
+
+    out = {
         'timestamp': time.time(),
-        'data_entry': 0,
-        'total': [0, 0, 0]
-        }
-    output.update({prov:[0, 0, 0] for prov in list_provinsi}) 
+        'data_entry': data_entry,
+        'total': list(total),
+    }
+    for prov in list_provinsi:
+        tmp = df[df['Provinsi']==prov]
+        total_prov = tmp['valid'].sum()
+        if total_prov == 0:
+            out.update({prov: [0, 0, 0]})
+        else:
+            out.update({prov: [round(tmp['vote1'].sum() / total_prov * 100, 2), round(tmp['vote2'].sum() / total_prov * 100, 2), round(tmp['vote3'].sum() / total_prov * 100, 2)]})
 
-    # Send a GET request to get events
-    response = requests.get(url_bubble + '/Events')
+    # events = []  # To store events
 
-    # Check the response status code
-    if response.status_code == 200:
-        tmp = response.json()['response']
-        events.extend(tmp['results'])
+    # output = {
+    #     'timestamp': time.time(),
+    #     'data_entry': 0,
+    #     'total': [0, 0, 0]
+    #     }
+    # output.update({prov:[0, 0, 0] for prov in list_provinsi}) 
 
-    if len(events) > 0:
+    # # Send a GET request to get events
+    # response = requests.get(url_bubble + '/Events')
 
-        # Send a GET request to get votes
-        response = requests.get(url_bubble + '/Votes')
+    # # Check the response status code
+    # if response.status_code == 200:
+    #     tmp = response.json()['response']
+    #     events.extend(tmp['results'])
 
-        # Check the response status code
-        votes = []
-        if response.status_code == 200:
-            tmp = response.json()['response']
-            votes.extend(tmp['results'])
+    # if len(events) > 0:
 
-            df = pd.DataFrame(votes)
+    #     # Send a GET request to get votes
+    #     response = requests.get(url_bubble + '/Votes')
 
-            # Filter pilpres only
-            df = df[df['Event ID']=='pilpres']
-            n_candidate = 3
+    #     # Check the response status code
+    #     votes = []
+    #     if response.status_code == 200:
+    #         tmp = response.json()['response']
+    #         votes.extend(tmp['results'])
 
-            if len(df) > 0:
+    #         df = pd.DataFrame(votes)
 
-                total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                if total_votes > 0:
-                    output = {
-                        'timestamp': time.time(),
-                        'data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
-                        'total': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, n_candidate + 1)]
-                    }
-                    for prov in list_provinsi:
-                        data_prov = df[df['Provinsi']==prov]
-                        total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
-                        if total_prov > 0:
-                            output.update({prov: [round(data_prov[f'Vote{i}'].sum() / total_prov * 100, 2) for i in range(1, n_candidate + 1)]})
-                        else:
-                            output.update({prov: [0, 0, 0]})
+    #         # Filter pilpres only
+    #         df = df[df['Event ID']=='pilpres']
+    #         n_candidate = 3
+
+    #         if len(df) > 0:
+
+    #             total_votes = df['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+    #             if total_votes > 0:
+    #                 output = {
+    #                     'timestamp': time.time(),
+    #                     'data_entry': round(df['SMS'].sum() / len(df) * 100, 2),
+    #                     'total': [round(df[f'Vote{i}'].sum() / total_votes * 100, 2) for i in range(1, n_candidate + 1)]
+    #                 }
+    #                 for prov in list_provinsi:
+    #                     data_prov = df[df['Provinsi']==prov]
+    #                     total_prov = data_prov['Final Votes'].apply(lambda x: np.nansum(x)).sum()
+    #                     if total_prov > 0:
+    #                         output.update({prov: [round(data_prov[f'Vote{i}'].sum() / total_prov * 100, 2) for i in range(1, n_candidate + 1)]})
+    #                     else:
+    #                         output.update({prov: [0, 0, 0]})
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
-        json.dump(output, json_file, indent=2)
+        json.dump(out, json_file, indent=2)
