@@ -422,7 +422,7 @@ def scto_process(data, event, n_candidate, proc_id_a4):
         std_datetime = std_datetime + timedelta(hours=7)
 
         # Retrieve data with this UID from Bubble database
-        filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid}]
+        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid}]
         filter_json = json.dumps(filter_params)
         params = {"constraints": filter_json}
         res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
