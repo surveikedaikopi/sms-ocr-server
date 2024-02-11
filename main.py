@@ -213,7 +213,7 @@ for port in range(1, num_endpoints + 1):
                         message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
                         # Retrieve data with this UID from Bubble database
-                        filter_params = [{"key": "UID", "constraint_type": "text contains", "value": uid.upper()}]
+                        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
                         filter_json = json.dumps(filter_params)
                         params = {"constraints": filter_json}
                         res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
@@ -320,7 +320,7 @@ for port in range(1, num_endpoints + 1):
             }
 
             # Retrieve data with this SIM Number from Bubble database (GatewayCheck)
-            filter_params = [{"key": "Gateway ID", "constraint_type": "text contains", "value": gateway_number}]
+            filter_params = [{"key": "Gateway ID", "constraint_type": "equals", "value": gateway_number}]
             filter_json = json.dumps(filter_params)
             params = {"constraints": filter_json}
             res = requests.get(f'{url_bubble}/GatewayCheck', headers=headers, params=params)
@@ -528,7 +528,7 @@ async def generate_xlsform(
         out = res.json()['response']
         uid_dict.update(zip(out['UID'], out['id_']))
 
-    # filter_params = [{"key": "Event ID", "constraint_type": "text contains", "value": event}]
+    # filter_params = [{"key": "Event ID", "constraint_type": "equals", "value": event}]
     # filter_json = json.dumps(filter_params)
     # params = {"constraints": filter_json}
     # headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
