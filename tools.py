@@ -557,9 +557,8 @@ def fetch_quickcount():
     vote1 = out['vote 1']
     vote2 = out['vote 2']
     vote3 = out['vote 3']
-    list_id = out['id_']
 
-    df = pd.DataFrame({'id_': list_id, 'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
+    df = pd.DataFrame({'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
     df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3, axis=1)
 
     data_entry = round(out['data entry'] * 100, 2)
