@@ -557,8 +557,9 @@ def fetch_quickcount():
     vote1 = out['vote 1']
     vote2 = out['vote 2']
     vote3 = out['vote 3']
+    list_id = out['id_']
 
-    df = pd.DataFrame({'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
+    df = pd.DataFrame({'id_': list_id, 'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
     df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3, axis=1)
 
     data_entry = round(out['data entry'] * 100, 2)
@@ -580,3 +581,42 @@ def fetch_quickcount():
 
     with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
         json.dump(output, json_file, indent=2)
+
+    # Update Bubble datamart
+    res = requests.get(f'{url_bubble}/Pilpres2024', headers=headers)
+    # if datamart is empty
+    if res.json()['response']['count'] == 0:
+        data = '\n'.join([
+            f'{{"provinsi": "{provinsi}", '
+            f'"sum": {sum_}, '
+            f'"vote1": "{vote1}", '
+            f'"vote1": "{vote2}", '
+            f'"vote3": "{vote3}"}}'
+            for provinsi, sum_, vote1, vote2, vote3 in zip(
+                df['Provinsi'],
+                df['valid'],
+                df['vote1']/df['valid']*100,
+                df['vote2']/df['valid']*100,
+                df['vote3']/df['valid']*100
+            )
+        ])
+        # Populate datamart in bulk
+        headers = {
+            'Authorization': f'Bearer {BUBBLE_API_KEY}', 
+            'Content-Type': 'text/plain'
+            }
+        out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
+    # if datamart is NOT empty
+    else:
+        for k, id_ in enumerate([i['_id'] for i in res.json()['response']['results']]):
+            payload = {
+                'provinsi': df.loc[k, 'Provinsi'],
+                'sum': df.loc[k, 'valid'],
+                'vote1': df.loc[k, 'vote1']/df.loc[k, 'valid']*100,
+                'vote2': df.loc[k, 'vote2']/df.loc[k, 'valid']*100,
+                'vote3': df.loc[k, 'vote3']/df.loc[k, 'valid']*100
+            }
+            requests.patch(f'{url_bubble}/Pilpres2024/{id_}', headers=headers, data=payload)
+            time.sleep(1)
+    
+
