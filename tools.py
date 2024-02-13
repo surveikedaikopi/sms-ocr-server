@@ -112,10 +112,13 @@ def get_location(coordinate):
     point = Point(coordinate)
     # Check which polygon contains the point
     selected_row = gdf[gdf.geometry.contains(point)]
+    # For Kab/Kota only
+    kabkota = selected_row['Kab/Kota'].values[0]
+    kabkota = f'Kab. {kabkota}' if kabkota.split(' ')[0] not in ['Kab.', 'Kota'] else kabkota
     # Output
     out = {
         'Provinsi': selected_row['Provinsi'].values[0],
-        'Kab/Kota': selected_row['Kab/Kota'].values[0],
+        'Kab/Kota': kabkota,
         'Kecamatan': selected_row['Kecamatan'].values[0],
         'Kelurahan': selected_row['Kelurahan'].values[0]
     }
