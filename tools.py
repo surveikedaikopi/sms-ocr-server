@@ -595,7 +595,7 @@ def fetch_quickcount():
                 f'{{"provinsi": "{provinsi}", '
                 f'"sum": {sum_}, '
                 f'"vote1": {vote1}, '
-                f'"vote1": {vote2}, '
+                f'"vote2": {vote2}, '
                 f'"vote3": {vote3}}}'
                 for provinsi, sum_, vote1, vote2, vote3 in zip(
                     df['Provinsi'],
@@ -652,4 +652,4 @@ def fetch_quickcount():
         out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
 
         with print_lock:
-            print(f'Process: scto_process\t Keyword: {e}')
+            print(f'Process: fetch_quickcount\t Keyword: {e}')
