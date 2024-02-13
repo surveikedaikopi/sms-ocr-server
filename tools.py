@@ -586,19 +586,20 @@ def fetch_quickcount():
         # Update Bubble datamart
         res = requests.get(f'{url_bubble}/Pilpres2024', headers=headers)
         # if datamart is empty
+        divs = [1 if i == 0 else i for i in df['valid']]
         if res.json()['response']['count'] == 0:
             data = '\n'.join([
                 f'{{"provinsi": "{provinsi}", '
                 f'"sum": {sum_}, '
-                f'"vote1": "{vote1}", '
-                f'"vote1": "{vote2}", '
-                f'"vote3": "{vote3}"}}'
+                f'"vote1": {vote1}, '
+                f'"vote1": {vote2}, '
+                f'"vote3": {vote3}}}'
                 for provinsi, sum_, vote1, vote2, vote3 in zip(
                     df['Provinsi'],
                     df['valid'],
-                    df['vote1']/df['valid']*100,
-                    df['vote2']/df['valid']*100,
-                    df['vote3']/df['valid']*100
+                    df['vote1']/divs*100,
+                    df['vote2']/divs*100,
+                    df['vote3']/divs*100
                 )
             ])
             # Populate datamart in bulk
@@ -613,12 +614,12 @@ def fetch_quickcount():
                 payload = {
                     'provinsi': df.loc[k, 'Provinsi'],
                     'sum': df.loc[k, 'valid'],
-                    'vote1': df.loc[k, 'vote1']/df.loc[k, 'valid']*100,
-                    'vote2': df.loc[k, 'vote2']/df.loc[k, 'valid']*100,
-                    'vote3': df.loc[k, 'vote3']/df.loc[k, 'valid']*100
+                    'vote1': df.loc[k, 'vote1']/divs[k]*100,
+                    'vote2': df.loc[k, 'vote2']/divs[k]*100,
+                    'vote3': df.loc[k, 'vote3']/divs[k]*100
                 }
                 requests.patch(f'{url_bubble}/Pilpres2024/{id_}', headers=headers, data=payload)
-                time.sleep(1)
+                time.sleep(2)
     
     except Exception as e:
         output = {
@@ -631,6 +632,21 @@ def fetch_quickcount():
 
         with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
             json.dump(output, json_file, indent=2)
-        
+
+        data = '\n'.join([
+            f'{{"provinsi": "{provinsi}", '
+            f'"sum": 0, '
+            f'"vote1": 0, '
+            f'"vote1": 0, '
+            f'"vote3": 0}}'
+            for provinsi in list_provinsi
+        ])
+        # Populate datamart in bulk
+        headers = {
+            'Authorization': f'Bearer {BUBBLE_API_KEY}', 
+            'Content-Type': 'text/plain'
+            }
+        out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
+
         with print_lock:
             print(f'Process: scto_process\t Keyword: {e}')
