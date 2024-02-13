@@ -640,7 +640,7 @@ def fetch_quickcount():
             f'{{"provinsi": "{provinsi}", '
             f'"sum": 0, '
             f'"vote1": 0, '
-            f'"vote1": 0, '
+            f'"vote2": 0, '
             f'"vote3": 0}}'
             for provinsi in list_provinsi
         ])
