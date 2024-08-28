@@ -28,7 +28,7 @@ from fastapi import Form, FastAPI, UploadFile, Request, HTTPException
 load_dotenv('.env')
 
 # Define app
-app = FastAPI(docs_url=None, redoc_url=None)
+app = FastAPI(docs_url="/docs", redoc_url=None)
 
 # Enable CORS
 app.add_middleware(
