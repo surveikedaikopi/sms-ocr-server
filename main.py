@@ -10,7 +10,6 @@ import threading
 import numpy as np
 import pandas as pd
 import concurrent.futures
-from fastapi import Request
 from typing import Optional
 from dotenv import load_dotenv
 from collections import defaultdict
@@ -47,6 +46,7 @@ TIME_WINDOW = 60  # 1 minute
 
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
+url_send_wa = os.environ.get('url_send_wa')
 url_bubble = os.environ.get('url_bubble')
 url_getUID = os.environ.get('url_getUID')
 local_disk = os.environ.get('local_disk')
@@ -56,6 +56,8 @@ SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
 SCTO_PASSWORD = os.environ.get('SCTO_PASSWORD')
 NUSA_USER_NAME = os.environ.get('NUSA_USER_NAME')
 NUSA_PASSWORD = os.environ.get('NUSA_PASSWORD')
+NUSA_API_KEY = os.environ.get('NUSA_API_KEY')
+WA_GATEWAY_1 = os.environ.get('WA_GATEWAY_1')
 
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
@@ -98,7 +100,7 @@ async def get_quickcount_kedaikopi(request: Request):
 # ================================================================================================================
 # Endpoint to read the "sms_inbox" file
 @app.get("/sms_inbox")
-async def read_inbox():
+async def read_sms_inbox():
     try:
         with open(f"{local_disk}/sms_inbox.json", "r") as json_file:
             data = [json.loads(line) for line in json_file]
@@ -110,7 +112,7 @@ async def read_inbox():
 # ================================================================================================================
 # Endpoint to read the "sms_inbox" file
 @app.get("/wa_inbox")
-async def read_inbox():
+async def read_wa_inbox():
     try:
         with open(f"{local_disk}/wa_inbox.json", "r") as json_file:
             data = [json.loads(line) for line in json_file]
@@ -124,10 +126,10 @@ async def read_inbox():
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
 
 # Define the number of endpoints
-num_endpoints = 16
+num_sms_endpoints = 16
 
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data
-for port in range(1, num_endpoints + 1):
+for port in range(1, num_sms_endpoints + 1):
     @app.post(f"/sms-receive-{port}")
     async def receive_sms(
         request: Request,
@@ -331,16 +333,16 @@ for port in range(1, num_endpoints + 1):
                 'Last Check': receive_date,
             }
 
-            # Retrieve data with this SIM Number from Bubble database (GatewayCheck)
+            # Retrieve data with this SIM Number from Bubble database (GatewayCheckSMS)
             filter_params = [{"key": "Gateway ID", "constraint_type": "equals", "value": gateway_number}]
             filter_json = json.dumps(filter_params)
             params = {"constraints": filter_json}
-            res = requests.get(f'{url_bubble}/GatewayCheck', headers=headers, params=params)
+            res = requests.get(f'{url_bubble}/GatewayCheckSMS', headers=headers, params=params)
             data = res.json()
             data = data['response']['results'][0]
             # Forward data to Bubble database (Check Gateway)
             _id = data['_id']
-            requests.patch(f'{url_bubble}/GatewayCheck/{_id}', headers=headers, data=payload_status)
+            requests.patch(f'{url_bubble}/GatewayCheckSMS/{_id}', headers=headers, data=payload_status)
             # Set SMS status
             raw_sms_status = 'Check Gateway'
         
@@ -369,10 +371,10 @@ for port in range(1, num_endpoints + 1):
 # Endpoint to receive WhatsApp message, to validate, and to forward the pre-processed data
 
 # Define the number of endpoints
-num_endpoints = 16
+num_whatsapp_endpoints = 16
 
-# Endpoint to receive SMS message, to validate, and to forward the pre-processed data
-for port in range(1, num_endpoints + 1):
+# Endpoint to receive WhatsApp message, to validate, and to forward the pre-processed data
+for port in range(1, num_whatsapp_endpoints + 1):
     @app.post(f"/wa-receive-{port}")
     async def receive_sms(
         request: Request,
@@ -401,218 +403,221 @@ for port in range(1, num_endpoints + 1):
             json.dump(raw_data, json_file)
             json_file.write('\n')  # Add a newline to separate the JSON objects
 
-        # # Split message and remove spaces
-        # info = [part.strip() for part in msg.lower().split('#')]
+        # Split message and remove spaces
+        info = [part.strip() for part in msg.lower().split('#')]
 
-        # # Default Values
-        # error_type = None
-        # raw_sms_status = 'Rejected'
+        # Default Values
+        error_type = None
+        raw_wa_status = 'Rejected'
 
-        # # Check Error Type 1 (prefix)
-        # if info[0] == 'kk':
+        # Check Error Type 1 (prefix)
+        if info[0] == 'kk':
 
-        #     try:
-        #         uid = info[1].lower()
-        #         event = info[2].lower()
+            try:
+                uid = info[1].lower()
+                event = info[2].lower()
 
-        #         # Get number of candidate pairs
-        #         with open(f'{local_disk}/event_{event}.json', 'r') as json_file:
-        #             json_content = json.load(json_file)
-        #             number_candidates = json_content['n_candidate']
+                # Get number of candidate pairs
+                with open(f'{local_disk}/event_{event}.json', 'r') as json_file:
+                    json_content = json.load(json_file)
+                    number_candidates = json_content['n_candidate']
 
-        #         format = 'KK#UID#EventID#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#Rusak'
-        #         template_error_msg = 'cek & kirim ulang dgn format:\n' + format
+                format = 'KK#UID#EventID#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#Rusak'
+                template_error_msg = 'cek & kirim ulang dgn format:\n' + format
 
-        #         tmp = pd.read_excel(f'{local_disk}/target_{event}.xlsx', usecols=['UID'])
+                tmp = pd.read_excel(f'{local_disk}/target_{event}.xlsx', usecols=['UID'])
 
-        #         # Check Error Type 2 (UID)
-        #         if uid not in tmp['UID'].str.lower().tolist():
-        #             message = f'UID "{uid.upper()}" tidak terdaftar, ' + template_error_msg
-        #             error_type = 2
-        #         else:
-        #             # Check Error Type 3 (data completeness)
-        #             if len(info) != number_candidates + 4:
-        #                 message = 'Data tidak lengkap, ' + template_error_msg
-        #                 error_type = 3
-        #             else:
-        #                 # Get votes
-        #                 votes = np.array(info[3:-1]).astype(int)
-        #                 vote1 = votes[0]
-        #                 vote2 = votes[1]
-        #                 try:
-        #                     vote3 = votes[2]
-        #                 except:
-        #                     vote3 = None
-        #                 try:
-        #                     vote4 = votes[3]
-        #                 except:
-        #                     vote4 = None
-        #                 try:
-        #                     vote5 = votes[4]
-        #                 except:
-        #                     vote5 = None
-        #                 try:
-        #                     vote6 = votes[5]
-        #                 except:
-        #                     vote6 = None
-        #                 # Get invalid votes
-        #                 invalid = info[-1]
-        #                 # Get total votes
-        #                 total_votes = np.array(votes).astype(int).sum() + int(invalid)
-        #                 summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
+                # Check Error Type 2 (UID)
+                if uid not in tmp['UID'].str.lower().tolist():
+                    message = f'UID "{uid.upper()}" tidak terdaftar, ' + template_error_msg
+                    error_type = 2
+                else:
+                    # Check Error Type 3 (data completeness)
+                    if len(info) != number_candidates + 4:
+                        message = 'Data tidak lengkap, ' + template_error_msg
+                        error_type = 3
+                    else:
+                        # Get votes
+                        votes = np.array(info[3:-1]).astype(int)
+                        vote1 = votes[0]
+                        vote2 = votes[1]
+                        try:
+                            vote3 = votes[2]
+                        except:
+                            vote3 = None
+                        try:
+                            vote4 = votes[3]
+                        except:
+                            vote4 = None
+                        try:
+                            vote5 = votes[4]
+                        except:
+                            vote5 = None
+                        try:
+                            vote6 = votes[5]
+                        except:
+                            vote6 = None
+                        # Get invalid votes
+                        invalid = info[-1]
+                        # Get total votes
+                        total_votes = np.array(votes).astype(int).sum() + int(invalid)
+                        summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
 
-        #                 # # Check Error Type 4 (maximum votes)
-        #                 # if total_votes > 300:
-        #                 #     message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
-        #                 #     error_type = 4
-        #                 # else:
+                        # # Check Error Type 4 (maximum votes)
+                        # if total_votes > 300:
+                        #     message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+                        #     error_type = 4
+                        # else:
 
-        #                 message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                        message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
-        #                 # Retrieve data with this UID from Bubble database
-        #                 filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
-        #                 filter_json = json.dumps(filter_params)
-        #                 params = {"constraints": filter_json}
-        #                 res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-        #                 data = res.json()
-        #                 data = data['response']['results'][0]
+                        # Retrieve data with this UID from Bubble database
+                        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
+                        filter_json = json.dumps(filter_params)
+                        params = {"constraints": filter_json}
+                        res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
+                        data = res.json()
+                        data = data['response']['results'][0]
 
-        #                 # Get existing validator
-        #                 if 'Validator' in data:
-        #                     validator = data['Validator']
-        #                 else:
-        #                     validator = None
+                        # Get existing validator
+                        if 'Validator' in data:
+                            validator = data['Validator']
+                        else:
+                            validator = None
 
-        #                 # Check if SCTO data exists
-        #                 scto = data['SCTO']
+                        # Check if SCTO data exists
+                        scto = data['SCTO']
 
-        #                 # If SCTO data exists, check if they are consistent
-        #                 if scto:
-        #                     if (np.array_equal(np.array(votes).astype(int), np.array(data['SCTO Votes']).astype(int))) and (int(invalid) == int(data['SCTO Invalid'])):
-        #                         status = 'Verified'
-        #                         validator = 'System'
-        #                     else:
-        #                         status = 'Not Verified'
-        #                 else:
-        #                     status = 'SMS Only'
+                        # If SCTO data exists, check if they are consistent
+                        if scto:
+                            if (np.array_equal(np.array(votes).astype(int), np.array(data['SCTO Votes']).astype(int))) and (int(invalid) == int(data['SCTO Invalid'])):
+                                status = 'Verified'
+                                validator = 'System'
+                            else:
+                                status = 'Not Verified'
+                        else:
+                            status = 'SMS Only'
                         
-        #                 # Extract the hour as an integer
-        #                 tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-        #                 hour = tmp.hour
+                        # Extract the hour as an integer
+                        tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
+                        hour = tmp.hour
                         
-        #                 # Delta Time
-        #                 if 'SCTO Timestamp' in data:
-        #                     sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-        #                     scto_timestamp = datetime.strptime(data['SCTO Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
-        #                     delta_time = abs(scto_timestamp - sms_timestamp)
-        #                     delta_time_hours = delta_time.total_seconds() / 3600
-        #                 else:
-        #                     delta_time_hours = None
+                        # Delta Time
+                        if 'SCTO Timestamp' in data:
+                            sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
+                            scto_timestamp = datetime.strptime(data['SCTO Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
+                            delta_time = abs(scto_timestamp - sms_timestamp)
+                            delta_time_hours = delta_time.total_seconds() / 3600
+                        else:
+                            delta_time_hours = None
 
-        #                 # Total Votes
-        #                 total_votes = 0
-        #                 for v in votes:
-        #                     total_votes += int(v) if v is not None else 0
+                        # Total Votes
+                        total_votes = 0
+                        for v in votes:
+                            total_votes += int(v) if v is not None else 0
 
-        #                 # Payload
-        #                 payload = {
-        #                     'Active': True,
-        #                     'SMS': True,
-        #                     'SMS Int': 1,
-        #                     'UID': uid.upper(),
-        #                     'SMS Gateway Port': port,
-        #                     'SMS Gateway ID': gateway_number,
-        #                     'SMS Sender': originator,
-        #                     'SMS Timestamp': receive_date,
-        #                     'SMS Hour': hour,
-        #                     'Event ID': event,
-        #                     'SMS Votes': votes,
-        #                     'SMS Invalid': invalid,
-        #                     'Vote1': vote1,
-        #                     'Vote2': vote2,
-        #                     'Vote3': vote3,
-        #                     'Vote4': vote4,
-        #                     'Vote5': vote5,
-        #                     'Vote6': vote6,
-        #                     'Total Votes': total_votes,
-        #                     'Final Votes': votes,
-        #                     'Invalid Votes': invalid,
-        #                     'Complete': scto,
-        #                     'Status': status,
-        #                     'Delta Time': delta_time_hours,
-        #                     'Validator': validator
-        #                 }
+                        # Payload
+                        payload = {
+                            'Active': True,
+                            'SMS': True,
+                            'SMS Int': 1,
+                            'UID': uid.upper(),
+                            'SMS Gateway Port': port,
+                            'SMS Gateway ID': gateway_number,
+                            'SMS Sender': originator,
+                            'SMS Timestamp': receive_date,
+                            'SMS Hour': hour,
+                            'Event ID': event,
+                            'SMS Votes': votes,
+                            'SMS Invalid': invalid,
+                            'Vote1': vote1,
+                            'Vote2': vote2,
+                            'Vote3': vote3,
+                            'Vote4': vote4,
+                            'Vote5': vote5,
+                            'Vote6': vote6,
+                            'Total Votes': total_votes,
+                            'Final Votes': votes,
+                            'Invalid Votes': invalid,
+                            'Complete': scto,
+                            'Status': status,
+                            'Delta Time': delta_time_hours,
+                            'Validator': validator
+                        }
 
-        #                 raw_sms_status = 'Accepted'
+                        raw_wa_status = 'Accepted'
 
-        #                 # Load the JSON file into a dictionary
-        #                 with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
-        #                     uid_dict = json.load(json_file)
+                        # Load the JSON file into a dictionary
+                        with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
+                            uid_dict = json.load(json_file)
 
-        #                 # Forward data to Bubble database
-        #                 _id = uid_dict[uid.upper()]
-        #                 requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+                        # Forward data to Bubble database
+                        _id = uid_dict[uid.upper()]
+                        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
 
-        #     except Exception as e:
-        #         error_type = 1
-        #         message = 'Format tidak dikenali. Kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nKK#UID#EventID#01#02#03#Rusak'
-        #         print(f'Error Location: SMS - Error Type 1, keyword: {e}')
+            except Exception as e:
+                error_type = 1
+                message = 'Format tidak dikenali. Kirim ulang dengan format yg sudah ditentukan. Contoh utk 3 paslon:\nKK#UID#EventID#01#02#03#Rusak'
+                print(f'Error Location: WhatsApp - Error Type 1, keyword: {e}')
 
-        #     # Return the message to the sender via SMS Masking
-        #     params = {
-        #         "user": NUSA_USER_NAME,
-        #         "password": NUSA_PASSWORD,
-        #         "SMSText": message,
-        #         "GSM": originator,
-        #         "output": "json",
-        #     }
-        #     requests.get(url_send_sms, params=params)
+            # Return the message to the sender via WhatsApp Gatew
+            HEADERS = {
+                "Accept": "application/json",
+                "APIKey": NUSA_API_KEY
+            }
+            PAYLOADS = {
+                'message': message,
+                'destination': originator,
+                'queue': WA_GATEWAY_1,
+                'include_unsubscribe': False
+            }
+            requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
 
-        # elif msg == 'the gateway is active':
-        #     # Payload (Gateway Check)
-        #     payload_status = {
-        #         'Gateway Port': port,
-        #         'Gateway Status': True,
-        #         'Last Check': receive_date,
-        #     }
+        elif msg == 'the gateway is active':
+            # Payload (Gateway Check)
+            payload_status = {
+                'Gateway Port': port,
+                'Gateway Status': True,
+                'Last Check': receive_date,
+            }
 
-        #     # Retrieve data with this SIM Number from Bubble database (GatewayCheck)
-        #     filter_params = [{"key": "Gateway ID", "constraint_type": "equals", "value": gateway_number}]
-        #     filter_json = json.dumps(filter_params)
-        #     params = {"constraints": filter_json}
-        #     res = requests.get(f'{url_bubble}/GatewayCheck', headers=headers, params=params)
-        #     data = res.json()
-        #     data = data['response']['results'][0]
-        #     # Forward data to Bubble database (Check Gateway)
-        #     _id = data['_id']
-        #     requests.patch(f'{url_bubble}/GatewayCheck/{_id}', headers=headers, data=payload_status)
-        #     # Set SMS status
-        #     raw_sms_status = 'Check Gateway'
+            # Retrieve data with this SIM Number from Bubble database (GatewayCheckWA)
+            filter_params = [{"key": "Gateway ID", "constraint_type": "equals", "value": gateway_number}]
+            filter_json = json.dumps(filter_params)
+            params = {"constraints": filter_json}
+            res = requests.get(f'{url_bubble}/GatewayCheckWA', headers=headers, params=params)
+            data = res.json()
+            data = data['response']['results'][0]
+            # Forward data to Bubble database (Check Gateway)
+            _id = data['_id']
+            requests.patch(f'{url_bubble}/GatewayCheckWA/{_id}', headers=headers, data=payload_status)
+            # Set WhatsApp status
+            raw_wa_status = 'Check Gateway'
         
-        # else:
-        #     error_type = 0
+        else:
+            error_type = 0
 
-        # # Payload (RAW SMS)
-        # payload_raw = {
-        #     'SMS ID': id,
-        #     'Receive Date': receive_date,
-        #     'Sender': originator,
-        #     'Gateway Port': port, 
-        #     'Gateway ID': gateway_number,
-        #     'Message': msg,
-        #     'Error Type': error_type,
-        #     'Status': raw_sms_status
-        # }
+        # Payload (RAW WhatsApp)
+        payload_raw = {
+            'WA ID': id,
+            'Receive Date': receive_date,
+            'Sender': originator,
+            'Gateway Port': port, 
+            'Gateway ID': gateway_number,
+            'Message': msg,
+            'Error Type': error_type,
+            'Status': raw_wa_status
+        }
 
-        # # Forward data to Bubble database (Raw SMS)
-        # requests.post(f'{url_bubble}/RAW_SMS', headers=headers, data=payload_raw)
+        # Forward data to Bubble database (Raw WhatsApp)
+        requests.post(f'{url_bubble}/RAW_WhatsApp', headers=headers, data=payload_raw)
 
 
 
 # ================================================================================================================
-# Endpoint to check gateway status
-@app.post("/check_gateway_status")
-async def check_gateway_status(     
+# Endpoint to check gateway status via SMS
+@app.post("/check_gateway_status_sms")
+async def check_gateway_status_sms(     
     gateway_1: Optional[str] = Form(None),
     gateway_2: Optional[str] = Form(None),
     gateway_3: Optional[str] = Form(None),
@@ -646,6 +651,49 @@ async def check_gateway_status(
                 "output": "json",
             }
             requests.get(url_send_sms, params=params)
+
+
+
+# ================================================================================================================
+# Endpoint to check gateway status via WhatsApp
+@app.post("/check_gateway_status_wa")
+async def check_gateway_status_wa(     
+    gateway_1: Optional[str] = Form(None),
+    gateway_2: Optional[str] = Form(None),
+    gateway_3: Optional[str] = Form(None),
+    gateway_4: Optional[str] = Form(None),
+    gateway_5: Optional[str] = Form(None),
+    gateway_6: Optional[str] = Form(None),
+    gateway_7: Optional[str] = Form(None),
+    gateway_8: Optional[str] = Form(None),
+    gateway_9: Optional[str] = Form(None),
+    gateway_10: Optional[str] = Form(None),
+    gateway_11: Optional[str] = Form(None),
+    gateway_12: Optional[str] = Form(None),
+    gateway_13: Optional[str] = Form(None),
+    gateway_14: Optional[str] = Form(None),
+    gateway_15: Optional[str] = Form(None),
+    gateway_16: Optional[str] = Form(None),
+):
+
+    numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
+               gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
+
+    # Sent trigger via SMS Masking
+    for num in numbers:
+        # if number is not empty
+        if num:
+            HEADERS = {
+                "Accept": "application/json",
+                "APIKey": NUSA_API_KEY
+            }
+            PAYLOADS = {
+                'message': 'the gateway is active',
+                'destination': num,
+                'queue': num,
+                'include_unsubscribe': False
+            }
+            requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
 
 
 

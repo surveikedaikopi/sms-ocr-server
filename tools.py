@@ -1,5 +1,4 @@
 import os
-# import io
 import re
 import json
 import time
@@ -9,11 +8,9 @@ import threading
 import numpy as np
 import pandas as pd
 from Bio import Align
-# from PIL import Image
 import geopandas as gpd
 from dotenv import load_dotenv
 from shapely.geometry import Point
-from google.cloud import documentai
 from pysurveycto import SurveyCTOObject
 from datetime import datetime, timedelta
 
