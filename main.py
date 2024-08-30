@@ -57,7 +57,24 @@ SCTO_PASSWORD = os.environ.get('SCTO_PASSWORD')
 NUSA_USER_NAME = os.environ.get('NUSA_USER_NAME')
 NUSA_PASSWORD = os.environ.get('NUSA_PASSWORD')
 NUSA_API_KEY = os.environ.get('NUSA_API_KEY')
-WA_GATEWAY_1 = os.environ.get('WA_GATEWAY_1')
+list_WhatsApp_Gateway = {
+    1: os.environ.get('WA_GATEWAY_1'),
+    2: os.environ.get('WA_GATEWAY_2'),
+    3: os.environ.get('WA_GATEWAY_3'),
+    4: os.environ.get('WA_GATEWAY_4'),
+    5: os.environ.get('WA_GATEWAY_5'),
+    6: os.environ.get('WA_GATEWAY_6'),
+    7: os.environ.get('WA_GATEWAY_7'),
+    8: os.environ.get('WA_GATEWAY_8'),
+    9: os.environ.get('WA_GATEWAY_9'),
+    10: os.environ.get('WA_GATEWAY_10'),
+    11: os.environ.get('WA_GATEWAY_11'),
+    12: os.environ.get('WA_GATEWAY_12'),
+    13: os.environ.get('WA_GATEWAY_13'),
+    14: os.environ.get('WA_GATEWAY_14'),
+    15: os.environ.get('WA_GATEWAY_15'),
+    16: os.environ.get('WA_GATEWAY_16')
+}
 
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
@@ -218,13 +235,12 @@ for port in range(1, num_sms_endpoints + 1):
                         total_votes = np.array(votes).astype(int).sum() + int(invalid)
                         summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
 
-                        # # Check Error Type 4 (maximum votes)
-                        # if total_votes > 300:
-                        #     message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
-                        #     error_type = 4
-                        # else:
-
-                        message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                        # Check Error Type 4 (maximum votes)
+                        if total_votes > 600:
+                            message = summary + 'Jumlah suara melebihi 600, ' + template_error_msg
+                            error_type = 4
+                        else:
+                            message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
                         # Retrieve data with this UID from Bubble database
                         filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
@@ -376,7 +392,7 @@ num_whatsapp_endpoints = 16
 # Endpoint to receive WhatsApp message, to validate, and to forward the pre-processed data
 for port in range(1, num_whatsapp_endpoints + 1):
     @app.post(f"/wa-receive-{port}")
-    async def receive_sms(
+    async def receive_whatsapp(
         request: Request,
         id: str = Form(...),
         gateway_number: str = Form(...),
@@ -463,13 +479,12 @@ for port in range(1, num_whatsapp_endpoints + 1):
                         total_votes = np.array(votes).astype(int).sum() + int(invalid)
                         summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
 
-                        # # Check Error Type 4 (maximum votes)
-                        # if total_votes > 300:
-                        #     message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
-                        #     error_type = 4
-                        # else:
-
-                        message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                        # Check Error Type 4 (maximum votes)
+                        if total_votes > 300:
+                            message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+                            error_type = 4
+                        else:
+                            message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
 
                         # Retrieve data with this UID from Bubble database
                         filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
@@ -568,7 +583,7 @@ for port in range(1, num_whatsapp_endpoints + 1):
             PAYLOADS = {
                 'message': message,
                 'destination': originator,
-                'queue': WA_GATEWAY_1,
+                'queue': list_WhatsApp_Gateway[int(port)],
                 'include_unsubscribe': False
             }
             requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
