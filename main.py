@@ -5,6 +5,7 @@ import os
 import json
 import time
 import tools
+import random
 import requests
 import threading
 import numpy as np
@@ -694,10 +695,12 @@ async def check_gateway_status_wa(
     numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
                gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
 
-    # Sent trigger via SMS Masking
+    # Sent trigger via WhatsApp Gateway
     for num in numbers:
         # if number is not empty
         if num:
+            filtered_numbers = [n for n in numbers if n is not None and n != num]
+            sender = random.choice(filtered_numbers) if filtered_numbers else None
             HEADERS = {
                 "Accept": "application/json",
                 "APIKey": NUSA_API_KEY
@@ -705,7 +708,7 @@ async def check_gateway_status_wa(
             PAYLOADS = {
                 'message': 'the gateway is active',
                 'destination': num,
-                'queue': num,
+                'queue': sender,
                 'include_unsubscribe': False
             }
             requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
