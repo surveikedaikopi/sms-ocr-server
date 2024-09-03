@@ -670,50 +670,6 @@ async def check_gateway_status_sms(
 
 
 
-# ================================================================================================================
-# Endpoint to check gateway status via WhatsApp
-@app.post("/check_gateway_status_wa")
-async def check_gateway_status_wa(     
-    gateway_1: Optional[str] = Form(None),
-    gateway_2: Optional[str] = Form(None),
-    gateway_3: Optional[str] = Form(None),
-    gateway_4: Optional[str] = Form(None),
-    gateway_5: Optional[str] = Form(None),
-    gateway_6: Optional[str] = Form(None),
-    gateway_7: Optional[str] = Form(None),
-    gateway_8: Optional[str] = Form(None),
-    gateway_9: Optional[str] = Form(None),
-    gateway_10: Optional[str] = Form(None),
-    gateway_11: Optional[str] = Form(None),
-    gateway_12: Optional[str] = Form(None),
-    gateway_13: Optional[str] = Form(None),
-    gateway_14: Optional[str] = Form(None),
-    gateway_15: Optional[str] = Form(None),
-    gateway_16: Optional[str] = Form(None),
-):
-
-    numbers = [gateway_1, gateway_2, gateway_3, gateway_4, gateway_5, gateway_6, gateway_7, gateway_8, gateway_9, gateway_10, 
-               gateway_11, gateway_12, gateway_13, gateway_14, gateway_15, gateway_16]
-
-    # Sent trigger via WhatsApp Gateway
-    for num in numbers:
-        # if number is not empty
-        if num:
-            filtered_numbers = [n for n in numbers if n is not None and n != num]
-            sender = random.choice(filtered_numbers) if filtered_numbers else None
-            HEADERS = {
-                "Accept": "application/json",
-                "APIKey": NUSA_API_KEY
-            }
-            PAYLOADS = {
-                'message': 'the gateway is active',
-                'destination': num,
-                'queue': sender,
-                'include_unsubscribe': False
-            }
-            requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
-
-
 
 # ================================================================================================================
 # Endpoint to create N_Candidate json file
