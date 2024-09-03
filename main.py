@@ -80,6 +80,32 @@ list_WhatsApp_Gateway = {
 # Bubble Headers
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 
+
+# ================================================================================================================
+# Endpoint to receive ip_whitelist
+@app.post("/receive_ip_whitelist")
+async def receive_ip_whitelist(request: Request):
+    try:
+        # Parse the JSON body from the request
+        body = await request.json()
+        
+        # Ensure the body contains a list of IPs
+        if not isinstance(body, list):
+            raise HTTPException(status_code=400, detail="Invalid format. Expected a list of IP addresses.")
+        
+        # Write the list of IPs to the file
+        with open(f"{local_disk}/ip_whitelist.json", "w") as file:
+            json.dump(body, file)
+        
+        return {"message": "IP whitelist updated successfully"}
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON format")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
 # ================================================================================================================
 # Endpoint to read the quick count results
 @app.get("/api/get_quickcount_kedaikopi")
@@ -481,8 +507,8 @@ for port in range(1, num_whatsapp_endpoints + 1):
                         summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
 
                         # Check Error Type 4 (maximum votes)
-                        if total_votes > 300:
-                            message = summary + 'Jumlah suara melebihi 300, ' + template_error_msg
+                        if total_votes > 600:
+                            message = summary + 'Jumlah suara melebihi 600, ' + template_error_msg
                             error_type = 4
                         else:
                             message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
