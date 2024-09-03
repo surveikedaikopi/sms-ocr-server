@@ -37,7 +37,8 @@ print_lock = threading.Lock()
 # Global Variables
 url_send_sms = os.environ.get('url_send_sms')
 url_bubble = os.environ.get('url_bubble')
-url_votes_aggregate = os.environ.get('url_votes_aggregate')
+url_votes_aggregate_pilpres = os.environ.get('url_votes_aggregate_pilpres')
+url_votes_aggregate_pilkada = os.environ.get('url_votes_aggregate_pilkada')
 local_disk = os.environ.get('local_disk')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
@@ -468,124 +469,163 @@ def scto_process(data, event, n_candidate, proc_id_a4):
 
 
 
+
 # ================================================================================================================
-# Functions to fetch and save quick count results
+# Functions to fetch and save quick count results (PILKADA)
 
-def fetch_quickcount():
+def fetch_pilkada_quickcount():
 
-    try:
+    headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
+    res = requests.get(url_votes_aggregate_pilkada, headers=headers, params=params)
+    out = res.json()['response']
+    pilkada = out['pilkada']
+    vote1 = out['vote 1']
+    vote2 = out['vote 2']
+    vote3 = out['vote 3']
+    vote4 = out['vote 4']
+    vote5 = out['vote 5']
+    vote6 = out['vote 6']
 
-        headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-        params = {'Event ID': 'pilpres'}
-        res = requests.get(url_votes_aggregate, headers=headers, params=params)
-        out = res.json()['response']
-        provinsi = out['provinsi']
-        vote1 = out['vote 1']
-        vote2 = out['vote 2']
-        vote3 = out['vote 3']
+    df = pd.DataFrame({'Pilkada': pilkada, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3, 'vote4': vote4, 'vote5': vote5, 'vote6': vote6})
+    df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3 + x.vote4 + x.vote5 + x.vote6, axis=1)
 
-        df = pd.DataFrame({'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
-        df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3, axis=1)
+    data_entry = round(out['data entry'] * 100, 2)
+    total = df[['vote1', 'vote2', 'vote3', 'vote4', 'vote5', 'vote6']].sum()
 
-        data_entry = round(out['data entry'] * 100, 2)
-        total = df[['vote1', 'vote2', 'vote3']].sum()
+    if total.sum() > 0:
 
-        if total.sum() > 0:
+        total = (total / total.sum() * 100).round(2).values
 
-            total = (total / total.sum() * 100).round(2).values
-
-            output = {
-                'timestamp': time.time(),
-                'data_entry': data_entry,
-                'total': list(total),
-            }
-            for prov in list_provinsi:
-                tmp = df[df['Provinsi']==prov]
-                total_prov = tmp['valid'].sum()
-                if total_prov == 0:
-                    output.update({prov: [0, 0, 0]})
-                else:
-                    output.update({prov: [round(tmp['vote1'].sum() / total_prov * 100, 2), round(tmp['vote2'].sum() / total_prov * 100, 2), round(tmp['vote3'].sum() / total_prov * 100, 2)]})
-
-            with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
-                json.dump(output, json_file, indent=2)
-
-            # Update Bubble datamart
-            res = requests.get(f'{url_bubble}/Pilpres2024', headers=headers)
-            # if datamart is empty
-            divs = [1 if i == 0 else i for i in df['valid']]
-            if res.json()['response']['count'] == 0:
-                data = '\n'.join([
-                    f'{{"provinsi": "{provinsi}", '
-                    f'"sum": {sum_}, '
-                    f'"vote1": {vote1}, '
-                    f'"vote2": {vote2}, '
-                    f'"vote3": {vote3}}}'
-                    for provinsi, sum_, vote1, vote2, vote3 in zip(
-                        df['Provinsi'],
-                        df['valid'],
-                        df['vote1']/divs*100,
-                        df['vote2']/divs*100,
-                        df['vote3']/divs*100
-                    )
-                ])
-                # Populate datamart in bulk
-                headers = {
-                    'Authorization': f'Bearer {BUBBLE_API_KEY}', 
-                    'Content-Type': 'text/plain'
-                    }
-                out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
-            # if datamart is NOT empty
-            else:
-                for k, id_ in enumerate([i['_id'] for i in res.json()['response']['results']]):
-                    payload = {
-                        'provinsi': df.loc[k, 'Provinsi'],
-                        'sum': df.loc[k, 'valid'],
-                        'vote1': df.loc[k, 'vote1']/divs[k]*100,
-                        'vote2': df.loc[k, 'vote2']/divs[k]*100,
-                        'vote3': df.loc[k, 'vote3']/divs[k]*100
-                    }
-                    requests.patch(f'{url_bubble}/Pilpres2024/{id_}', headers=headers, data=payload)
-                    time.sleep(2)
-    
-        else:
-            output = {
-                'timestamp': time.time(),
-                'data_entry': 0,
-                'total': [0,0,0],
-            }
-            for prov in list_provinsi:
-                output.update({prov: [0, 0, 0]})
-
-            with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
-                json.dump(output, json_file, indent=2)     
-
-    except Exception as e:
         output = {
             'timestamp': time.time(),
-            'data_entry': 0,
-            'total': [0,0,0],
+            'data_entry': data_entry,
+            'total': list(total),
         }
-        for prov in list_provinsi:
-            output.update({prov: [0, 0, 0]})
 
-        with open(f'{local_disk}/results_quickcount.json', 'w') as json_file:
+        with open(f'{local_disk}/results_pilkada_quickcount.json', 'w') as json_file:
             json.dump(output, json_file, indent=2)
 
-        data = '\n'.join([
-            f'{{"provinsi": "{provinsi}", '
-            f'"sum": 0, '
-            f'"vote1": 0, '
-            f'"vote2": 0, '
-            f'"vote3": 0}}'
-            for provinsi in list_provinsi
-        ])
-        # Populate datamart in bulk
-        headers = {
-            'Authorization': f'Bearer {BUBBLE_API_KEY}', 
-            'Content-Type': 'text/plain'
-            }
-        out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
 
-        with print_lock:
-            print(f'Process: fetch_quickcount\t Keyword: {e}')
+
+
+# ================================================================================================================
+# Functions to fetch and save quick count results (PILPRES)
+
+# def fetch_pilpres_quickcount():
+
+#     try:
+
+#         headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
+#         params = {'Event ID': 'pilpres'}
+#         res = requests.get(url_votes_aggregate_pilpres, headers=headers, params=params)
+#         out = res.json()['response']
+#         provinsi = out['provinsi']
+#         vote1 = out['vote 1']
+#         vote2 = out['vote 2']
+#         vote3 = out['vote 3']
+
+#         df = pd.DataFrame({'Provinsi': provinsi, 'vote1': vote1, 'vote2': vote2, 'vote3': vote3})
+#         df['valid'] = df.apply(lambda x : x.vote1 + x.vote2 + x.vote3, axis=1)
+
+#         data_entry = round(out['data entry'] * 100, 2)
+#         total = df[['vote1', 'vote2', 'vote3']].sum()
+
+#         if total.sum() > 0:
+
+#             total = (total / total.sum() * 100).round(2).values
+
+#             output = {
+#                 'timestamp': time.time(),
+#                 'data_entry': data_entry,
+#                 'total': list(total),
+#             }
+#             for prov in list_provinsi:
+#                 tmp = df[df['Provinsi']==prov]
+#                 total_prov = tmp['valid'].sum()
+#                 if total_prov == 0:
+#                     output.update({prov: [0, 0, 0]})
+#                 else:
+#                     output.update({prov: [round(tmp['vote1'].sum() / total_prov * 100, 2), round(tmp['vote2'].sum() / total_prov * 100, 2), round(tmp['vote3'].sum() / total_prov * 100, 2)]})
+
+#             with open(f'{local_disk}/results_pilpres_quickcount.json', 'w') as json_file:
+#                 json.dump(output, json_file, indent=2)
+
+#             # Update Bubble datamart
+#             res = requests.get(f'{url_bubble}/Pilpres2024', headers=headers)
+#             # if datamart is empty
+#             divs = [1 if i == 0 else i for i in df['valid']]
+#             if res.json()['response']['count'] == 0:
+#                 data = '\n'.join([
+#                     f'{{"provinsi": "{provinsi}", '
+#                     f'"sum": {sum_}, '
+#                     f'"vote1": {vote1}, '
+#                     f'"vote2": {vote2}, '
+#                     f'"vote3": {vote3}}}'
+#                     for provinsi, sum_, vote1, vote2, vote3 in zip(
+#                         df['Provinsi'],
+#                         df['valid'],
+#                         df['vote1']/divs*100,
+#                         df['vote2']/divs*100,
+#                         df['vote3']/divs*100
+#                     )
+#                 ])
+#                 # Populate datamart in bulk
+#                 headers = {
+#                     'Authorization': f'Bearer {BUBBLE_API_KEY}', 
+#                     'Content-Type': 'text/plain'
+#                     }
+#                 out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
+#             # if datamart is NOT empty
+#             else:
+#                 for k, id_ in enumerate([i['_id'] for i in res.json()['response']['results']]):
+#                     payload = {
+#                         'provinsi': df.loc[k, 'Provinsi'],
+#                         'sum': df.loc[k, 'valid'],
+#                         'vote1': df.loc[k, 'vote1']/divs[k]*100,
+#                         'vote2': df.loc[k, 'vote2']/divs[k]*100,
+#                         'vote3': df.loc[k, 'vote3']/divs[k]*100
+#                     }
+#                     requests.patch(f'{url_bubble}/Pilpres2024/{id_}', headers=headers, data=payload)
+#                     time.sleep(2)
+    
+#         else:
+#             output = {
+#                 'timestamp': time.time(),
+#                 'data_entry': 0,
+#                 'total': [0,0,0],
+#             }
+#             for prov in list_provinsi:
+#                 output.update({prov: [0, 0, 0]})
+
+#             with open(f'{local_disk}/results_pilpres_quickcount.json', 'w') as json_file:
+#                 json.dump(output, json_file, indent=2)     
+
+#     except Exception as e:
+#         output = {
+#             'timestamp': time.time(),
+#             'data_entry': 0,
+#             'total': [0,0,0],
+#         }
+#         for prov in list_provinsi:
+#             output.update({prov: [0, 0, 0]})
+
+#         with open(f'{local_disk}/results_pilpres_quickcount.json', 'w') as json_file:
+#             json.dump(output, json_file, indent=2)
+
+#         data = '\n'.join([
+#             f'{{"provinsi": "{provinsi}", '
+#             f'"sum": 0, '
+#             f'"vote1": 0, '
+#             f'"vote2": 0, '
+#             f'"vote3": 0}}'
+#             for provinsi in list_provinsi
+#         ])
+#         # Populate datamart in bulk
+#         headers = {
+#             'Authorization': f'Bearer {BUBBLE_API_KEY}', 
+#             'Content-Type': 'text/plain'
+#             }
+#         out = requests.post(f'{url_bubble}/Pilpres2024/bulk', headers=headers, data=data)
+
+#         with print_lock:
+#             print(f'Process: fetch_quickcount\t Keyword: {e}')

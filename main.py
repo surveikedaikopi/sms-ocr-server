@@ -5,7 +5,6 @@ import os
 import json
 import time
 import tools
-import random
 import requests
 import threading
 import numpy as np
@@ -107,9 +106,9 @@ async def receive_ip_whitelist(request: Request):
 
 
 # ================================================================================================================
-# Endpoint to read the quick count results
-@app.get("/api/get_quickcount_kedaikopi")
-async def get_quickcount_kedaikopi(request: Request):
+# Endpoint to read the quick count results (PILPRES)
+@app.get("/api/pilpres_quickcount_kedaikopi")
+async def pilpres_quickcount_kedaikopi(request: Request):
     client_ip = request.headers.get("X-Forwarded-For").split(', ')[0]
     print(f'Client IP: {client_ip}')
 
@@ -134,7 +133,43 @@ async def get_quickcount_kedaikopi(request: Request):
     request_timestamps[client_ip] = current_time
 
     try:
-        with open(f'{local_disk}/results_quickcount.json', 'r') as json_file:
+        with open(f'{local_disk}/results_pilpres_quickcount.json', 'r') as json_file:
+            data_read = json.load(json_file)
+        return {"results": data_read}
+    except FileNotFoundError:
+        return {"message": "File not found"}
+
+
+
+# ================================================================================================================
+# Endpoint to read the quick count results (PILKADA)
+@app.get("/api/pilkada_quickcount_kedaikopi")
+async def pilkada_quickcount_kedaikopi(request: Request):
+    client_ip = request.headers.get("X-Forwarded-For").split(', ')[0]
+    print(f'Client IP: {client_ip}')
+
+    # IP Whitelist
+    with open(f"{local_disk}/ip_whitelist.json", "r") as file:
+        whitelist = json.load(file)
+
+    # Check if the client is whitelisted
+    if client_ip not in whitelist:
+        # Return Forbidden status code if client is not whitelisted
+        raise HTTPException(status_code=403, detail="Access Forbidden")
+
+    # Get the current timestamp
+    current_time = time.time()
+
+    # Check if the client has made a request within the last minute
+    last_request_time = request_timestamps.get(client_ip, 0)
+    if current_time - last_request_time < TIME_WINDOW:
+        raise HTTPException(status_code=429, detail="Too Many Requests")
+
+    # Update the request timestamp for the client
+    request_timestamps[client_ip] = current_time
+
+    try:
+        with open(f'{local_disk}/results_pilkada_quickcount.json', 'r') as json_file:
             data_read = json.load(json_file)
         return {"results": data_read}
     except FileNotFoundError:
@@ -610,7 +645,7 @@ for port in range(1, num_whatsapp_endpoints + 1):
             PAYLOADS = {
                 'message': message,
                 'destination': originator,
-                'queue': list_WhatsApp_Gateway[int(port)],
+                'sender': list_WhatsApp_Gateway[int(port)],
                 'include_unsubscribe': False
             }
             requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
@@ -923,12 +958,29 @@ async def region_aggregate(
 
 
 # # ================================================================================================================
-# # Run quick count aggregator every 10 minutes
+# # Run quick count (PILKADA) aggregator every 10 minutes
 
-# def fetch_quickcount():
+# def fetch_pilkada_quickcount():
 #     while True:
 #         try:
-#             tools.fetch_quickcount()
+#             tools.fetch_pilkadaquickcount()
+#         except Exception as e:
+#             print(f"Error in fetch_quickcount: {str(e)}")
+#         time.sleep(600)  # 600 seconds = 10 minutes
+
+
+# # Create a thread for fetch_quickcount to run concurrently
+# fetch_thread = threading.Thread(target=fetch_quickcount, daemon=True)
+# fetch_thread.start()
+
+
+# # ================================================================================================================
+# # Run quick count (PILPRES) aggregator every 10 minutes
+
+# def fetch_pilpres_quickcount():
+#     while True:
+#         try:
+#             tools.fetch_pilpres_quickcount()
 #         except Exception as e:
 #             print(f"Error in fetch_quickcount: {str(e)}")
 #         time.sleep(600)  # 600 seconds = 10 minutes
