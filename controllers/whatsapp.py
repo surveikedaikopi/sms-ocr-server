@@ -55,13 +55,9 @@ async def receive_whatsapp(
     # Check Error Type 1 (prefix)
     if info[0] == 'kk':
         try:
-            uid = info[1].lower()
-            event = info[2].lower()
-
-            # Get number of candidate pairs
+            uid, event = info[1].lower(), info[2].lower()
             with open(f'{local_disk}/event_{event}.json', 'r') as json_file:
-                json_content = json.load(json_file)
-                number_candidates = json_content['n_candidate']
+                number_candidates = json.load(json_file)['n_candidate']
 
             format = 'KK#UID#EventID#' + '#'.join([f'0{i+1}' for i in range(number_candidates)]) + '#Rusak'
             template_error_msg = 'cek & kirim ulang dgn format:\n' + format
@@ -72,108 +68,62 @@ async def receive_whatsapp(
             if uid not in tmp['UID'].str.lower().tolist():
                 message = f'UID "{uid.upper()}" tidak terdaftar, ' + template_error_msg
                 error_type = 2
+            elif len(info) != number_candidates + 4:
+                message = 'Data tidak lengkap, ' + template_error_msg
+                error_type = 3
             else:
-                # Check Error Type 3 (data completeness)
-                if len(info) != number_candidates + 4:
-                    message = 'Data tidak lengkap, ' + template_error_msg
-                    error_type = 3
+                votes = np.array(info[3:-1]).astype(int)
+                invalid = int(info[-1])
+                total_votes = votes.sum() + invalid
+                summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}\nTotal: {total_votes}\n'
+
+                if total_votes > 700:
+                    message = summary + 'Jumlah suara melebihi 700, ' + template_error_msg
+                    error_type = 4
                 else:
-                    # Get votes
-                    votes = np.array(info[3:-1]).astype(int)
-                    vote1 = votes[0]
-                    vote2 = votes[1]
-                    vote3 = votes[2] if len(votes) > 2 else None
-                    vote4 = votes[3] if len(votes) > 3 else None
-                    vote5 = votes[4] if len(votes) > 4 else None
-                    vote6 = votes[5] if len(votes) > 5 else None
-                    # Get invalid votes
-                    invalid = info[-1]
-                    # Get total votes
-                    total_votes = np.array(votes).astype(int).sum() + int(invalid)
-                    summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}' + f'\nTotal: {total_votes}\n'
+                    message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                    filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
+                    res = requests.get(f'{url_bubble}/Votes', headers=headers, params={"constraints": json.dumps(filter_params)})
+                    data = res.json()['response']['results'][0]
 
-                    # Check Error Type 4 (maximum votes)
-                    if total_votes > 700:
-                        message = summary + 'Jumlah suara melebihi 700, ' + template_error_msg
-                        error_type = 4
-                    else:
-                        message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
+                    validator = data.get('Validator', None)
+                    scto = data['SCTO']
+                    status = 'Verified' if scto and np.array_equal(votes, np.array(data['SCTO Votes']).astype(int)) and invalid == int(data['SCTO Invalid']) else 'Not Verified' if scto else 'SMS Only'
+                    hour = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S").hour
+                    delta_time_hours = (datetime.strptime(data['SCTO Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ") - datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")).total_seconds() / 3600 if 'SCTO Timestamp' in data else None
 
-                        # Retrieve data with this UID from Bubble database
-                        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
-                        filter_json = json.dumps(filter_params)
-                        params = {"constraints": filter_json}
-                        res = requests.get(f'{url_bubble}/Votes', headers=headers, params=params)
-                        data = res.json()
-                        data = data['response']['results'][0]
+                    payload = {
+                        'Active': True,
+                        'SMS': True,
+                        'SMS Int': 1,
+                        'UID': uid.upper(),
+                        'SMS Gateway Port': port,
+                        'SMS Gateway ID': gateway_number,
+                        'SMS Sender': originator,
+                        'SMS Timestamp': receive_date,
+                        'SMS Hour': hour,
+                        'Event ID': event,
+                        'SMS Votes': votes.tolist(),
+                        'SMS Invalid': invalid,
+                        'Vote1': votes[0] if len(votes) > 0 else None,
+                        'Vote2': votes[1] if len(votes) > 1 else None,
+                        'Vote3': votes[2] if len(votes) > 2 else None,
+                        'Vote4': votes[3] if len(votes) > 3 else None,
+                        'Vote5': votes[4] if len(votes) > 4 else None,
+                        'Vote6': votes[5] if len(votes) > 5 else None,
+                        'Total Votes': total_votes,
+                        'Final Votes': votes.tolist(),
+                        'Invalid Votes': invalid,
+                        'Complete': scto,
+                        'Status': status,
+                        'Delta Time': delta_time_hours,
+                        'Validator': validator
+                    }
 
-                        # Get existing validator
-                        validator = data.get('Validator', None)
-
-                        # Check if SCTO data exists
-                        scto = data['SCTO']
-
-                        # If SCTO data exists, check if they are consistent
-                        if scto:
-                            if (np.array_equal(np.array(votes).astype(int), np.array(data['SCTO Votes']).astype(int))) and (int(invalid) == int(data['SCTO Invalid'])):
-                                status = 'Verified'
-                                validator = 'System'
-                            else:
-                                status = 'Not Verified'
-                        else:
-                            status = 'SMS Only'
-                        
-                        # Extract the hour as an integer
-                        tmp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-                        hour = tmp.hour
-                        
-                        # Delta Time
-                        if 'SCTO Timestamp' in data:
-                            sms_timestamp = datetime.strptime(receive_date, "%Y-%m-%d %H:%M:%S")
-                            scto_timestamp = datetime.strptime(data['SCTO Timestamp'], "%Y-%m-%dT%H:%M:%S.%fZ")
-                            delta_time = abs(scto_timestamp - sms_timestamp)
-                            delta_time_hours = delta_time.total_seconds() / 3600
-                        else:
-                            delta_time_hours = None
-
-                        # Payload
-                        payload = {
-                            'Active': True,
-                            'SMS': True,
-                            'SMS Int': 1,
-                            'UID': uid.upper(),
-                            'SMS Gateway Port': port,
-                            'SMS Gateway ID': gateway_number,
-                            'SMS Sender': originator,
-                            'SMS Timestamp': receive_date,
-                            'SMS Hour': hour,
-                            'Event ID': event,
-                            'SMS Votes': list(votes),
-                            'SMS Invalid': invalid,
-                            'Vote1': vote1,
-                            'Vote2': vote2,
-                            'Vote3': vote3,
-                            'Vote4': vote4,
-                            'Vote5': vote5,
-                            'Vote6': vote6,
-                            'Total Votes': total_votes,
-                            'Final Votes': votes,
-                            'Invalid Votes': invalid,
-                            'Complete': scto,
-                            'Status': status,
-                            'Delta Time': delta_time_hours,
-                            'Validator': validator
-                        }
-
-                        raw_wa_status = 'Accepted'
-
-                        # Load the JSON file into a dictionary
-                        with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
-                            uid_dict = json.load(json_file)
-
-                        # Forward data to Bubble database
-                        _id = uid_dict[uid.upper()]
-                        requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, json=payload)
+                    raw_wa_status = 'Accepted'
+                    with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
+                        uid_dict = json.load(json_file)
+                    requests.patch(f'{url_bubble}/votes/{uid_dict[uid.upper()]}', headers=headers, data=payload)
 
         except Exception as e:
             error_type = 1

@@ -263,7 +263,7 @@ async def generate_xlsform(
 
     for batch in range(n_batches):
         start = batch * 100
-        end = min((batch + 1) * 100, len(df)) - 1 
+        end = min((batch + 1) * 100, len(df)) - 1
         tdf = df.loc[start:end, :]
 
         # Generate Text for API input
