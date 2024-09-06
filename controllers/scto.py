@@ -8,6 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from utils.utils import *
 from config.config import *
+from utils.preprocess import *
 
 
 
@@ -16,7 +17,7 @@ from config.config import *
 
 # Function to process SCTO data
 def scto_data(
-    event: str = Form(...), 
+    event: str = Form(...),
     form_id: str = Form(...), 
     n_candidate: int = Form(...), 
     input_time: datetime = Form(...), 
@@ -39,7 +40,7 @@ def scto_data(
             with ThreadPoolExecutor() as executor:
                 for data in list_data:
                     # Run 'scto_process' function asynchronously
-                    executor.submit(tools.scto_process, data, event, n_candidate, proc_id_a4)
+                    executor.submit(scto_process, data, event, n_candidate, proc_id_a4)
     
     except Exception as e:
         print(f'Process: scto_data endpoint\t Keyword: {e}\n')

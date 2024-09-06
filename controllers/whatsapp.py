@@ -148,7 +148,7 @@ async def receive_whatsapp(
                             'SMS Timestamp': receive_date,
                             'SMS Hour': hour,
                             'Event ID': event,
-                            'SMS Votes': votes,
+                            'SMS Votes': list(votes),
                             'SMS Invalid': invalid,
                             'Vote1': vote1,
                             'Vote2': vote2,
@@ -188,7 +188,7 @@ async def receive_whatsapp(
         PAYLOADS = {
             'message': message,
             'destination': originator,
-            'sender': list_WhatsApp_Gateway[int(port)],
+            'queue': list_WhatsApp_Gateway[int(port)],
             'include_unsubscribe': False
         }
         requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
