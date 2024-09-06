@@ -83,7 +83,7 @@ async def receive_sms(
                 votes = np.array(info[3:-1]).astype(int)
                 invalid = int(info[-1])
                 total_votes = votes.sum() + invalid
-                summary = f'EventID: {event}\n' + '\n'.join([f'Paslon0{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}\nTotal: {total_votes}\n'
+                summary = f'EventID: {event}\n' + '\n'.join([f'Paslon_{i+1}: {votes[i]}' for i in range(number_candidates)]) + f'\nTidak Sah: {invalid}\nTotal: {total_votes}\n'
 
                 if total_votes > 700:
                     message = summary + 'Jumlah suara melebihi 700, ' + template_error_msg

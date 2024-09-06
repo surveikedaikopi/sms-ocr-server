@@ -92,7 +92,8 @@ def scto_process(data, event, n_candidate, proc_id_a4):
             ai_invalid = 0
         
         sms = data_bubble['SMS']
-        status = 'Verified' if sms and np.array_equal(np.array(ai_votes).astype(int), np.array(data_bubble['SMS Votes']).astype(int)) and int(ai_invalid) == int(data_bubble['SMS Invalid']) else 'Not Verified'
+        status = 'Not Verified' if sms else 'SCTO Only'
+        
         gps_status = 'Verified' if all(data_bubble[k] == loc[k] for k in ['Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan']) else 'Not Verified'
         
         payload = {
