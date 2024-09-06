@@ -1,18 +1,20 @@
-from dotenv import load_dotenv
+from fastapi import FastAPI
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import FastAPI
 
-from controllers.sms import receive_sms, check_gateway_status_sms
-from controllers.whatsapp import receive_whatsapp
-from controllers.scto import scto_data, create_json_ncandidate, get_uid, generate_xlsform, delete_event
-from controllers.bubble import receive_ip_whitelist, pilpres_quickcount_kedaikopi, pilkada_quickcount_kedaikopi, read_sms_inbox, read_wa_inbox, region_aggregate
+
+from utils.utils import *
+from utils.preprocess import *
+from controllers.sms import *
+from controllers.scto import *
+from controllers.media import *
+from controllers.whatsapp import *
+
+
+
 
 # ================================================================================================================
 # Initial Setup
-
-# Load env
-load_dotenv('.env')
 
 # Define app
 app = FastAPI(docs_url="/docs", redoc_url=None)
@@ -49,7 +51,7 @@ app.post("/scto_data")(scto_data)
 app.post("/group_normalize")(region_aggregate)
 
 # Define the number of endpoints
-num_sms_endpoints = 16
+num_sms_endpoints = 4
 num_whatsapp_endpoints = 16
 
 # Endpoint to receive SMS message, to validate, and to forward the pre-processed data

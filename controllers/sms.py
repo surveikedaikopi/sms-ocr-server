@@ -5,7 +5,7 @@ import pandas as pd
 from fastapi import Form, Request
 from datetime import datetime
 from typing import Optional
-from config.config import local_disk, url_send_sms, url_bubble, NUSA_USER_NAME, NUSA_PASSWORD, headers
+from config.config import *
 
 async def receive_sms(
     request: Request,

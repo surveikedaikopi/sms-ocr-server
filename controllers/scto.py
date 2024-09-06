@@ -1,149 +1,18 @@
-import os
 import json
-import time
 import requests
 import numpy as np
-import pandas as pd
-from fastapi import Form, UploadFile
+from fastapi import Form
 from datetime import datetime, timedelta
 from pysurveycto import SurveyCTOObject
-from fastapi.responses import StreamingResponse
 from concurrent.futures import ThreadPoolExecutor
-from config.config import url_getUID, local_disk, url_bubble, headers, headers_populate_votes, SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD
+
 from utils.utils import *
+from config.config import *
 
-# Function to create a JSON file with the number of candidates for a given event
-async def create_json_ncandidate(event: str = Form(...), N_candidate: int = Form(...)):
-    event = event.lower()
-    with open(f'{local_disk}/event_{event}.json', 'w') as json_file:
-        json.dump({"n_candidate": N_candidate}, json_file)
 
-# Function to generate a UID and return an Excel file with the target data
-async def get_uid(event: str = Form(...), N_TPS: int = Form(...)):
-    event = event.lower()
-    tools.create_target(event, N_TPS)
-    
-    excel_file_path = f'{local_disk}/target_{event}.xlsx'
-    
-    def file_generator():
-        with open(excel_file_path, 'rb') as file_content:
-            yield from file_content
 
-    response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response.headers["Content-Disposition"] = f"attachment; filename=target_{event}.xlsx"
 
-    return response
 
-# Function to generate an XLSForm based on the provided target file and form details
-async def generate_xlsform(
-    form_title: str = Form(...),
-    form_id: str = Form(...),
-    target_file_name: str = Form(...),
-    target_file: UploadFile = Form(...),
-):
-    event = target_file_name.split('_')[-1].split('.')[0].lower()
-
-    # Save the target file to a temporary location
-    with open(f'{local_disk}/{target_file_name}', 'wb') as target_file_content:
-        target_file_content.write(target_file.file.read())
-
-    # Get UIDs from the target file
-    df = pd.read_excel(f'{local_disk}/{target_file_name}')
-
-    # Rename regions
-    df['Provinsi Ori'] = df['Provinsi'].copy()
-    df['Kab/Kota Ori'] = df['Kab/Kota'].copy()
-    df['Kecamatan Ori'] = df['Kecamatan'].copy()
-    df['Kelurahan Ori'] = df['Kelurahan'].copy()
-    for index, row in df.iterrows():
-        input_regions = [row['Provinsi'], row['Kab/Kota'], row['Kecamatan'], row['Kelurahan']]
-        output_regions = tools.rename_region(input_regions)
-        df.loc[index, 'Provinsi'] = output_regions[0]
-        df.loc[index, 'Kab/Kota'] = output_regions[1]
-        df.loc[index, 'Kecamatan'] = output_regions[2]
-        df.loc[index, 'Kelurahan'] = output_regions[3]
-
-    # Save the target file after renaming regions
-    df.to_excel(f'{local_disk}/{target_file_name}', index=False)
-
-    # Break into batches
-    n_batches = int(np.ceil(len(df) / 100))
-
-    for batch in range(n_batches):
-        start = batch * 100
-        end = min((batch + 1) * 100, len(df)) - 1 
-        tdf = df.loc[start:end, :]
-
-        # Generate Text for API input
-        data = '\n'.join([
-            f'{{"UID": "{uid}", '
-            f'"Active": false, '
-            f'"Complete": false, '
-            f'"SMS": false, '
-            f'"SCTO": false, '
-            f'"SMS Int": 0, '
-            f'"SCTO Int": 0, '
-            f'"Status": "Empty", '
-            f'"Event ID": "{event}", '
-            f'"Korprov": "{korprov}", '
-            f'"Korwil": "{korwil}", '
-            f'"Provinsi": "{provinsi}", '
-            f'"Kab/Kota": "{kab_kota}", '
-            f'"Kecamatan": "{kecamatan}", '
-            f'"Kelurahan": "{kelurahan}", '
-            f'"Provinsi Ori": "{provinsi_ori}", '
-            f'"Kab/Kota Ori": "{kab_kota_ori}", '
-            f'"Kecamatan Ori": "{kecamatan_ori}", '
-            f'"Kelurahan Ori": "{kelurahan_ori}"}}'
-            for uid, korprov, korwil, provinsi, kab_kota, kecamatan, kelurahan, provinsi_ori, kab_kota_ori, kecamatan_ori, kelurahan_ori in zip(
-                tdf['UID'],
-                tdf['Korprov'],
-                tdf['Korwil'],
-                tdf['Provinsi'],
-                tdf['Kab/Kota'],
-                tdf['Kecamatan'],
-                tdf['Kelurahan'],
-                tdf['Provinsi Ori'],
-                tdf['Kab/Kota Ori'],
-                tdf['Kecamatan Ori'],
-                tdf['Kelurahan Ori']
-            )
-        ])
-
-        # Populate votes table in bulk
-        requests.post(f'{url_bubble}/Votes/bulk', headers=headers_populate_votes, data=data)
-
-        time.sleep(3)
-
-    # Get UIDs and store as json
-    uid_dict = {}
-    for uid_start in range(1, len(df), 50):
-        params = {'Event ID': event, 'start': uid_start, 'end': uid_start+50}
-        res = requests.get(url_getUID, headers=headers, params=params)
-        out = res.json()['response']
-        uid_dict.update(zip(out['UID'], out['id_']))
-
-    with open(f'{local_disk}/uid_{event}.json', 'w') as json_file:
-        json.dump(uid_dict, json_file)
-
-    # Generate xlsform logic using the target file
-    tools.create_xlsform_template(f'{local_disk}/{target_file_name}', form_title, form_id, event)
-    xlsform_path = f'{local_disk}/xlsform_{form_id}.xlsx'
-
-    def file_generator():
-        with open(xlsform_path, 'rb') as file_content:
-            yield from file_content
-
-    response = StreamingResponse(file_generator(), media_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response.headers["Content-Disposition"] = f"attachment; filename=xlsform_{form_id}.xlsx"
-
-    return response
-
-# Function to delete event-related files
-async def delete_event(event: str = Form(...), form_id: str = Form(...)):
-    event = event.lower()
-    os.system(f'rm -f {local_disk}/*_{event}.*')
-    os.system(f'rm -f {local_disk}/*_{form_id}.*')
 
 # Function to process SCTO data
 def scto_data(
@@ -174,3 +43,97 @@ def scto_data(
     
     except Exception as e:
         print(f'Process: scto_data endpoint\t Keyword: {e}\n')
+
+
+
+
+
+
+def scto_process(data, event, n_candidate, proc_id_a4):
+    """
+    Process SCTO data and update the Bubble server.
+    """
+    event = event.lower()
+    try:
+        uid = data['UID']
+        std_datetime = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p") + timedelta(hours=7)
+        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid}]
+        res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params={"constraints": json.dumps(filter_params)})
+        data_bubble = res_bubble.json()['response']['results'][0]
+        
+        validator = data_bubble.get('Validator')
+        sms_timestamp = data_bubble.get('SMS Timestamp')
+        delta_time_hours = None
+        if sms_timestamp:
+            delta_time = abs(std_datetime - datetime.strptime(sms_timestamp, "%Y-%m-%dT%H:%M:%S.%fZ"))
+            delta_time_hours = delta_time.total_seconds() / 3600
+        
+        coordinate = np.array(data['koordinat'].split(' ')[1::-1]).astype(float)
+        loc = get_location(coordinate)
+        key = data['KEY'].split('uuid:')[-1]
+        link = f"https://{SCTO_SERVER_NAME}.surveycto.com/view/submission.html?uuid=uuid%3A{key}"
+        formulir_c1_a4 = data['formulir_c1_a4']
+        formulir_c1_plano = data['formulir_c1_plano']
+        selfie = data['selfie']
+
+        if proc_id_a4:
+            try:
+                attachment_url = data['formulir_c1_a4']
+                scto = SurveyCTOObject(SCTO_SERVER_NAME, SCTO_USER_NAME, SCTO_PASSWORD)
+                deviceid = data['deviceid']
+                ai_votes, ai_invalid = read_form(scto, attachment_url, n_candidate, proc_id_a4, deviceid)
+            except Exception as e:
+                print(f'Process: scto_process endpoint\t Keyword: {e}\n')
+                ai_votes = [0] * n_candidate
+                ai_invalid = 0
+        else:
+            ai_votes = [0] * n_candidate
+            ai_invalid = 0
+        
+        sms = data_bubble['SMS']
+        status = 'Verified' if sms and np.array_equal(np.array(ai_votes).astype(int), np.array(data_bubble['SMS Votes']).astype(int)) and int(ai_invalid) == int(data_bubble['SMS Invalid']) else 'Not Verified'
+        gps_status = 'Verified' if all(data_bubble[k] == loc[k] for k in ['Provinsi', 'Kab/Kota', 'Kecamatan', 'Kelurahan']) else 'Not Verified'
+        
+        payload = {
+            'Active': True,
+            'Complete': sms,
+            'UID': uid,
+            'SCTO TPS': data['no_tps'],
+            'SCTO Dapil': data['dapil'],
+            'SCTO Address': data['alamat'],
+            'SCTO RT': data['rt'],
+            'SCTO RW': data['rw'],
+            'SCTO': True,
+            'SCTO Int': 1,
+            'SCTO Enum Name': data['nama'],
+            'SCTO Enum Phone': data['no_hp'],
+            'SCTO Timestamp': std_datetime,
+            'SCTO Hour': std_datetime.hour,
+            'SCTO Provinsi': data['selected_provinsi'].replace('_', ' '),
+            'SCTO Kab/Kota': data['selected_kabkota'].replace('_', ' '),
+            'SCTO Kecamatan': data['selected_kecamatan'].replace('_', ' '),
+            'SCTO Kelurahan': data['selected_kelurahan'].replace('_', ' '),
+            'SCTO Votes': ai_votes,
+            'SCTO Invalid': ai_invalid,
+            'SCTO C1 A4': formulir_c1_a4,
+            'SCTO C1 Plano': formulir_c1_plano,
+            'SCTO Selfie': selfie,
+            'GPS Provinsi': loc['Provinsi'],
+            'GPS Kab/Kota': loc['Kab/Kota'],
+            'GPS Kecamatan': loc['Kecamatan'],
+            'GPS Kelurahan': loc['Kelurahan'],
+            'GPS Status': gps_status,
+            'Delta Time': delta_time_hours,
+            'Status': status,
+            'Survey Link': link,
+            'Validator': validator
+        }
+        
+        with open(f'{local_disk}/uid_{event}.json', 'r') as json_file:
+            uid_dict = json.load(json_file)
+        _id = uid_dict[uid.upper()]
+        out = requests.patch(f'{url_bubble}/votes/{_id}', headers=headers, data=payload)
+        print(out)
+    except Exception as e:
+        with print_lock:
+            print(f'Process: scto_process\t Keyword: {e}')

@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from fastapi import Form, Request
 from datetime import datetime
-from config.config import local_disk, url_send_wa, url_bubble, NUSA_API_KEY, list_WhatsApp_Gateway, headers
+from config.config import *
 
 async def receive_whatsapp(
     request: Request,

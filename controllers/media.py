@@ -1,16 +1,16 @@
-import os
 import json
 import time
-import requests
-from fastapi import Form, Request, HTTPException
 import numpy as np
+from fastapi import Form, Request, HTTPException
 
-# Configuration import
-from config.config import local_disk, headers
+from config.config import *
 
 # Dictionary to store request timestamps for rate limiting
 request_timestamps = {}
 TIME_WINDOW = 60  # Time window in seconds for rate limiting
+
+
+
 
 async def receive_ip_whitelist(request: Request):
     """
@@ -33,6 +33,10 @@ async def receive_ip_whitelist(request: Request):
         raise HTTPException(status_code=400, detail="Invalid JSON format")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+
+
 
 async def pilpres_quickcount_kedaikopi(request: Request):
     """
@@ -70,6 +74,9 @@ async def pilpres_quickcount_kedaikopi(request: Request):
     except FileNotFoundError:
         return {"message": "File not found"}
 
+
+
+
 async def pilkada_quickcount_kedaikopi(request: Request):
     """
     Handles quick count requests for Pilkada (Regional Election).
@@ -106,27 +113,9 @@ async def pilkada_quickcount_kedaikopi(request: Request):
     except FileNotFoundError:
         return {"message": "File not found"}
 
-async def read_sms_inbox():
-    """
-    Reads the SMS inbox from a JSON file and returns the data.
-    """
-    try:
-        with open(f"{local_disk}/sms_inbox.json", "r") as json_file:
-            data = [json.loads(line) for line in json_file]
-        return {"sms_inbox": data}
-    except FileNotFoundError:
-        return {"message": "File not found"}
 
-async def read_wa_inbox():
-    """
-    Reads the WhatsApp inbox from a JSON file and returns the data.
-    """
-    try:
-        with open(f"{local_disk}/wa_inbox.json", "r") as json_file:
-            data = [json.loads(line) for line in json_file]
-        return {"wa_inbox": data}
-    except FileNotFoundError:
-        return {"message": "File not found"}
+
+
 
 async def region_aggregate(
     part_sum: list = Form(...), 
