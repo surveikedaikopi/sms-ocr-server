@@ -198,13 +198,17 @@ def create_xlsform_template(target_file, form_title, form_id, event):
     for row in target_data.itertuples(index=False):
         provinsi, kab_kota, kecamatan, kelurahan = row[3:7]
         if provinsi:
-            nested_target.setdefault(provinsi, {})
+            if provinsi not in nested_target:
+                nested_target[provinsi] = {}
         if kab_kota and provinsi in nested_target:
-            nested_target[provinsi].setdefault(kab_kota, {})
+            if kab_kota not in nested_target[provinsi]:
+                nested_target[provinsi][kab_kota] = {}
         if kecamatan and provinsi in nested_target and kab_kota in nested_target[provinsi]:
-            nested_target[provinsi][kab_kota].setdefault(kecamatan, [])
+            if kecamatan not in nested_target[provinsi][kab_kota]:
+                nested_target[provinsi][kab_kota][kecamatan] = []
         if kelurahan and provinsi in nested_target and kab_kota in nested_target[provinsi] and kecamatan in nested_target[provinsi][kab_kota]:
-            nested_target[provinsi][kab_kota][kecamatan].append(kelurahan)
+            if kelurahan not in nested_target[provinsi][kab_kota][kecamatan]:
+                nested_target[provinsi][kab_kota][kecamatan].append(kelurahan)
     
     choices_df = pd.DataFrame(columns=['list_name', 'name', 'label', 'filter_provinsi', 'filter_kabkota', 'filter_kecamatan'])
     for p in sorted(nested_target.keys()):
