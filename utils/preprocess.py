@@ -307,7 +307,7 @@ async def generate_xlsform(
         ])
 
         # Populate votes table in bulk
-        requests.post(f'{url_bubble}/Votes/bulk', headers=headers_populate_votes, data=data)
+        requests.post(f'{url_bubble}/Votes/bulk', headers=headers_bulk, data=data)
 
         time.sleep(3)
 

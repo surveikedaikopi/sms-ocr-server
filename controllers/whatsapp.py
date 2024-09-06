@@ -138,7 +138,7 @@ async def receive_whatsapp(
         PAYLOADS = {
             'message': message,
             'destination': originator,
-            'queue': list_WhatsApp_Gateway[int(port)],
+            'sender': list_WhatsApp_Gateway[int(port)],
             'include_unsubscribe': False
         }
         requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)

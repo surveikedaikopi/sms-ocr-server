@@ -473,10 +473,10 @@ def scto_process(data, event, n_candidate, proc_id_a4):
 # ================================================================================================================
 # Functions to fetch and save quick count results (PILKADA)
 
-def fetch_pilkada_quickcount():
+def fetch_quickcount():
 
     headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-    res = requests.get(url_votes_aggregate_pilkada, headers=headers, params=params)
+    res = requests.get(url_votes_aggregate_provinsi, headers=headers, params=params)
     out = res.json()['response']
     pilkada = out['pilkada']
     vote1 = out['vote 1']

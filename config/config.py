@@ -9,6 +9,10 @@ url_send_sms = os.environ.get('url_send_sms')
 url_send_wa = os.environ.get('url_send_wa')
 url_bubble = os.environ.get('url_bubble')
 url_getUID = os.environ.get('url_getUID')
+url_get_event_ids = os.environ.get('url_get_event_ids')
+url_votes_agg_pilpres = os.environ.get('url_votes_agg_pilpres')
+url_votes_agg_provinsi = os.environ.get('url_votes_agg_provinsi')
+url_votes_agg_kabkota = os.environ.get('url_votes_agg_kabkota')
 BUBBLE_API_KEY = os.environ.get('BUBBLE_API_KEY')
 SCTO_SERVER_NAME = os.environ.get('SCTO_SERVER_NAME')
 SCTO_USER_NAME = os.environ.get('SCTO_USER_NAME')
@@ -35,4 +39,4 @@ list_WhatsApp_Gateway = {
     16: os.environ.get('WA_GATEWAY_16')
 }
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
-headers_populate_votes = {'Authorization': f'Bearer {BUBBLE_API_KEY}', 'Content-Type': 'text/plain'}
+headers_bulk = {'Authorization': f'Bearer {BUBBLE_API_KEY}', 'Content-Type': 'text/plain'}

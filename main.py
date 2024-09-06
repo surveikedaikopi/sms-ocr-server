@@ -1,10 +1,12 @@
-from fastapi import FastAPI
+import asyncio
+from fastapi import FastAPI, BackgroundTasks
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 
 
 from utils.utils import *
 from utils.preprocess import *
+from utils.postprocess import *
 from controllers.sms import *
 from controllers.scto import *
 from controllers.media import *
@@ -61,3 +63,23 @@ for port in range(1, num_sms_endpoints + 1):
 # Endpoint to receive WhatsApp message, to validate, and to forward the pre-processed data
 for port in range(1, num_whatsapp_endpoints + 1):
     app.post(f"/wa-receive-{port}")(receive_whatsapp)
+
+
+
+
+
+# ================================================================================================================
+# Scheduler
+
+def fetch_quickcount_task():
+    try:
+        fetch_quickcount()
+    except Exception as e:
+        print(f"Error in fetch_quickcount: {str(e)}")
+
+@app.on_event("startup")
+async def startup_event():
+    background_tasks = BackgroundTasks()
+    while True:
+        background_tasks.add_task(fetch_quickcount_task)
+        await asyncio.sleep(300)  # 300 seconds = 5 minutes
