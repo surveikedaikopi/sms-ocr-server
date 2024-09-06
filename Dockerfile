@@ -22,8 +22,8 @@ RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.ta
 # Authenticate with Google Cloud
 RUN ./google-cloud-sdk/bin/gcloud auth activate-service-account --key-file=/app/cloud-storage.json
 
-# Download the 'location.shp' file from Google Cloud Storage to /app
-RUN ./google-cloud-sdk/bin/gsutil cp gs://gis_regions/location.shp /app/location.shp
+# Download the 'location.shp' file from Google Cloud Storage to /app/data
+RUN ./google-cloud-sdk/bin/gsutil cp gs://gis_regions/location.shp /app/data/location.shp
 
 # Stage 2: Final image with Python 3.7
 FROM python:3.7-slim
