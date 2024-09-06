@@ -1,5 +1,6 @@
-import asyncio
-from fastapi import FastAPI, BackgroundTasks
+import time
+import threading
+from fastapi import FastAPI
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -71,15 +72,24 @@ for port in range(1, num_whatsapp_endpoints + 1):
 # ================================================================================================================
 # Scheduler
 
-def fetch_quickcount_task():
-    try:
-        fetch_quickcount()
-    except Exception as e:
-        print(f"Error in fetch_quickcount: {str(e)}")
+# Global flag to ensure the scheduler runs only once
+scheduler_started = False
+scheduler_lock = threading.Lock()
 
 @app.on_event("startup")
-async def startup_event():
-    background_tasks = BackgroundTasks()
+def startup_event():
+    global scheduler_started
+    with scheduler_lock:
+        if not scheduler_started:
+            scheduler_started = True
+            fetch_thread = threading.Thread(target=scheduled_fetch_quickcount, daemon=True)
+            fetch_thread.start()
+
+
+def scheduled_fetch_quickcount():
     while True:
-        background_tasks.add_task(fetch_quickcount_task)
-        await asyncio.sleep(300)  # 300 seconds = 5 minutes
+        try:
+            fetch_quickcount()
+        except Exception as e:
+            print(f"Error in fetch_quickcount: {str(e)}")
+        time.sleep(300)  # 300 seconds = 5 minutes

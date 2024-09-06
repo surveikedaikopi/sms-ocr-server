@@ -1,9 +1,8 @@
 import json
-import time
 import requests
 import pandas as pd
 
-from config import *
+from config.config import *
 
 
 # Functions to fetch and save quick count results
