@@ -99,4 +99,4 @@ def fetch_quickcount():
             }
             region = row['region']
             record_id = existing_ids[region]
-            requests.patch(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, data=payload)
+            requests.put(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, json=payload)
