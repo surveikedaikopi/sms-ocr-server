@@ -40,16 +40,23 @@ TIME_WINDOW = 60  # 1 minute
 # ================================================================================================================
 # Endpoints
 
-app.post("/receive_media_info")(receive_media_info)
-app.get("/api/quickcount_kedaikopi")(quickcount_kedaikopi)
-app.get("/sms_inbox")(read_sms_inbox)
+# GET
 app.get("/wa_inbox")(read_wa_inbox)
-app.post("/check_gateway_status_sms")(check_gateway_status_sms)
-app.post("/create_json_ncandidate")(create_json_ncandidate)
+app.get("/sms_inbox")(read_sms_inbox)
+app.get("/api/quickcount_kedaikopi")(quickcount_kedaikopi)
+
+# POST
 app.post("/getUID")(get_uid)
-app.post("/generate_xlsform")(generate_xlsform)
-app.post("/delete_event")(delete_event)
 app.post("/scto_data")(scto_data)
+app.post("/delete_event")(delete_event)
+app.post("/generate_xlsform")(generate_xlsform)
+app.post("/receive_media_info")(receive_media_info)
+app.post("/create_json_ncandidate")(create_json_ncandidate)
+app.post("/check_gateway_status_sms")(check_gateway_status_sms)
+
+
+
+
 
 # Define the number of endpoints
 num_sms_endpoints = 4

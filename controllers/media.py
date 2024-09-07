@@ -20,7 +20,6 @@ class MediaInfo(BaseModel):
     ip_address: List[str]
     event_id: List[str]
 
-@app.post("/receive_media_info")
 async def receive_media_info(media_info: List[MediaInfo]):
     """
     Receives a list of media, a list of lists of IP addresses, and a list of lists of event IDs,
