@@ -40,9 +40,8 @@ TIME_WINDOW = 60  # 1 minute
 # ================================================================================================================
 # Endpoints
 
-app.post("/receive_ip_whitelist")(receive_ip_whitelist)
-app.get("/api/pilpres_quickcount_kedaikopi")(pilpres_quickcount_kedaikopi)
-app.get("/api/pilkada_quickcount_kedaikopi")(pilkada_quickcount_kedaikopi)
+app.post("/receive_media_info")(receive_media_info)
+app.get("/api/quickcount_kedaikopi")(quickcount_kedaikopi)
 app.get("/sms_inbox")(read_sms_inbox)
 app.get("/wa_inbox")(read_wa_inbox)
 app.post("/check_gateway_status_sms")(check_gateway_status_sms)
@@ -51,7 +50,6 @@ app.post("/getUID")(get_uid)
 app.post("/generate_xlsform")(generate_xlsform)
 app.post("/delete_event")(delete_event)
 app.post("/scto_data")(scto_data)
-app.post("/group_normalize")(region_aggregate)
 
 # Define the number of endpoints
 num_sms_endpoints = 4
@@ -70,7 +68,7 @@ for port in range(1, num_whatsapp_endpoints + 1):
 
 
 # ================================================================================================================
-# Scheduler
+# Scheduler For Quickcount Aggregation
 
 # Global flag to ensure the scheduler runs only once
 scheduler_started = False
