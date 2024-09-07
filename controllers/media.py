@@ -1,8 +1,8 @@
 import json
 import time
-import numpy as np
-from fastapi import Form, Request, HTTPException
+from fastapi import Request, HTTPException
 from typing import List
+from pydantic import BaseModel
 
 from config.config import *
 
@@ -13,35 +13,30 @@ TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 
 
-async def receive_media_info(
-    media: str = Form(...),
-    ip_address: str = Form(...),
-    event_id: str = Form(...)
-):
+
+# Define the structure of the incoming data
+class MediaInfo(BaseModel):
+    media: str
+    ip_address: List[str]
+    event_id: List[str]
+
+@app.post("/receive_media_info")
+async def receive_media_info(media_info: List[MediaInfo]):
     """
-    Receives a list of media, a list of comma-separated lists of IP addresses, and a list of comma-separated lists of event IDs,
+    Receives a list of media, a list of lists of IP addresses, and a list of lists of event IDs,
     merges all IP addresses, and saves the IPs and IP-address-event ID mapping to JSON files.
     """
     try:
-        # Convert comma-separated strings into lists
-        media_list = media.split(',')
-        ip_address_list = [ip.split(',') for ip in ip_address.split(';')]
-        event_id_list = [event.split(',') for event in event_id.split(';')]
-
-        # Ensure the inputs are valid
-        if len(media_list) != len(ip_address_list) or len(media_list) != len(event_id_list):
-            raise HTTPException(status_code=400, detail="The number of media entries must match the number of IP address lists and event ID lists.")
-
-        # Flatten the list of lists of IP addresses and remove duplicates
-        all_ips = list(set(ip for sublist in ip_address_list for ip in sublist))
+        # Flatten the list of all IP addresses and remove duplicates
+        all_ips = list(set(ip for item in media_info for ip in item.ip_address))
 
         # Create new IP-address-event ID mapping
         ip_event_mapping = {}
-        for ip_list, event_list in zip(ip_address_list, event_id_list):
-            for ip in ip_list:
+        for item in media_info:
+            for ip in item.ip_address:
                 if ip not in ip_event_mapping:
                     ip_event_mapping[ip] = set()
-                ip_event_mapping[ip].update(event_list)
+                ip_event_mapping[ip].update(item.event_id)
 
         # Convert sets to lists for JSON serialization
         ip_event_mapping = {ip: list(events) for ip, events in ip_event_mapping.items()}
@@ -57,6 +52,7 @@ async def receive_media_info(
         return {"message": "IP whitelist and IP-address-event ID mapping updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
