@@ -16,9 +16,9 @@ TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 # Define the structure of the incoming data
 class MediaInfo(BaseModel):
-    media: str
-    ip_address: List[str]
-    event_id: List[str]
+    media: List[str]  # Changed to list of text
+    ip_address: List[List[str]]  # Changed to list of lists of text
+    event_id: List[List[str]]  # Changed to list of lists of text
 
 async def receive_media_info(media_info: List[MediaInfo]):
     """
@@ -27,15 +27,16 @@ async def receive_media_info(media_info: List[MediaInfo]):
     """
     try:
         # Flatten the list of all IP addresses and remove duplicates
-        all_ips = list(set(ip for item in media_info for ip in item.ip_address))
+        all_ips = list(set(ip for item in media_info for sublist in item.ip_address for ip in sublist))
 
         # Create new IP-address-event ID mapping
         ip_event_mapping = {}
         for item in media_info:
-            for ip in item.ip_address:
-                if ip not in ip_event_mapping:
-                    ip_event_mapping[ip] = set()
-                ip_event_mapping[ip].update(item.event_id)
+            for sublist in item.ip_address:
+                for ip in sublist:
+                    if ip not in ip_event_mapping:
+                        ip_event_mapping[ip] = set()
+                    ip_event_mapping[ip].update(event for sublist in item.event_id for event in sublist)
 
         # Convert sets to lists for JSON serialization
         ip_event_mapping = {ip: list(events) for ip, events in ip_event_mapping.items()}
