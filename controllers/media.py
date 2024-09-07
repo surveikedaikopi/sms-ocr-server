@@ -1,8 +1,11 @@
 import json
 import time
-from fastapi import Request, HTTPException
+import pandas as pd
 from typing import List
+from fastapi import Request, HTTPException
+
 from pydantic import BaseModel
+
 
 from config.config import *
 
@@ -95,25 +98,48 @@ async def quickcount_kedaikopi(request: Request):
     request_timestamps[client_ip] = current_time
 
     try:
-        with open(f'{local_disk}/results_pilpres_quickcount.json', 'r') as json_file:
-            data_read = json.load(json_file)
-        return {"results": data_read}
+        # Get regions attributed to the client_ip from ip_address_eventid.json
+        with open(f"{local_disk}/ip_address_eventid.json", "r") as file:
+            ip_event_mapping = json.load(file)
+        
+        if client_ip not in ip_event_mapping:
+            raise HTTPException(status_code=403, detail="No regions attributed to this IP")
+
+        regions = ip_event_mapping[client_ip]
+
+        # Read and filter results_quickcount.csv based on selected regions using pandas
+        df = pd.read_csv(f"{local_disk}/results_quickcount.csv")
+        filtered_df = df[df['region'].isin(regions + ['All'])]
+
+        filtered_results = []
+        for _, row in filtered_df.iterrows():
+            event_id = row['event_id']
+            event_file = f"{local_disk}/event_{event_id}.json"
+            if not os.path.exists(event_file):
+                continue
+
+            with open(event_file, "r") as file:
+                event_info = json.load(file)
+                n_candidate = event_info.get("n_candidate", 0)
+
+            result = {
+                "event_id": row['event_id'],
+                "region": row['region']
+            }
+            for i in range(1, n_candidate + 1):
+                result[f"vote{i}"] = row[f"vote{i}_pct"]
+
+            filtered_results.append(result)
+
+        return {
+            "timestamp": current_time,
+            "results": filtered_results
+        }
     except FileNotFoundError:
         return {"message": "File not found"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
 
-
-
-# async def region_aggregate(
-#     part_sum: list = Form(...), 
-#     total_sum: list = Form(...),
-# ):
-#     """
-#     Aggregates regional data by calculating the percentage of part_sum over total_sum.
-#     """
-#     part_sum = [int(value) for element in part_sum for value in element.split(",")]
-#     total_sum = [int(value) for element in total_sum for value in element.split(",")]
-#     result = list(np.round(np.array(part_sum) / np.array(total_sum) * 100, 2))
-#     return {"result": result}

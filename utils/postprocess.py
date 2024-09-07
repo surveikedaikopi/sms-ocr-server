@@ -15,6 +15,8 @@ def fetch_quickcount():
     list_event_type = out['list_types']
 
     data = []
+    total_votes_data = {}
+
     for event_id, event_type in zip(list_event_id, list_event_type):
         params = {'Event ID': event_id}
         if event_type == 'Pilpres':
@@ -35,15 +37,26 @@ def fetch_quickcount():
         vote5 = out['vote 5']
         vote6 = out['vote 6']
 
+        total_votes = [0, 0, 0, 0, 0, 0]
+        total_regions_votes = 0
+
         for region, v1, v2, v3, v4, v5, v6 in zip(regions, vote1, vote2, vote3, vote4, vote5, vote6):
-            total_votes = v1 + v2 + v3 + v4 + v5 + v6
-            if total_votes > 0:
-                v1_pct = v1 / total_votes * 100
-                v2_pct = v2 / total_votes * 100
-                v3_pct = v3 / total_votes * 100
-                v4_pct = v4 / total_votes * 100
-                v5_pct = v5 / total_votes * 100
-                v6_pct = v6 / total_votes * 100
+            region_total_votes = v1 + v2 + v3 + v4 + v5 + v6
+            total_regions_votes += region_total_votes
+            total_votes[0] += v1
+            total_votes[1] += v2
+            total_votes[2] += v3
+            total_votes[3] += v4
+            total_votes[4] += v5
+            total_votes[5] += v6
+
+            if region_total_votes > 0:
+                v1_pct = v1 / region_total_votes * 100
+                v2_pct = v2 / region_total_votes * 100
+                v3_pct = v3 / region_total_votes * 100
+                v4_pct = v4 / region_total_votes * 100
+                v5_pct = v5 / region_total_votes * 100
+                v6_pct = v6 / region_total_votes * 100
             else:
                 v1_pct = v2_pct = v3_pct = v4_pct = v5_pct = v6_pct = 0
 
@@ -57,6 +70,25 @@ def fetch_quickcount():
                 'vote5_pct': v5_pct,
                 'vote6_pct': v6_pct
             })
+
+        if total_regions_votes > 0:
+            total_votes_pct = [v / total_regions_votes * 100 for v in total_votes]
+        else:
+            total_votes_pct = [0, 0, 0, 0, 0, 0]
+
+        total_votes_data[event_id] = {
+            'event_id': event_id,
+            'region': 'All',
+            'vote1_pct': total_votes_pct[0],
+            'vote2_pct': total_votes_pct[1],
+            'vote3_pct': total_votes_pct[2],
+            'vote4_pct': total_votes_pct[3],
+            'vote5_pct': total_votes_pct[4],
+            'vote6_pct': total_votes_pct[5]
+        }
+
+    # Append total votes data to the main data list
+    data.extend(total_votes_data.values())
 
     df = pd.DataFrame(data)
     df.to_csv(f'{local_disk}/results_quickcount.csv', index=False)
