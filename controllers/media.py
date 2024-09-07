@@ -2,6 +2,7 @@ import json
 import time
 import numpy as np
 from fastapi import Form, Request, HTTPException
+from typing import List
 
 from config.config import *
 
@@ -13,9 +14,9 @@ TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 
 async def receive_media_info(
-    media: list[str] = Form(...),
-    ip_address: list[list[str]] = Form(...),
-    event_id: list[list[str]] = Form(...)
+    media: List[str] = Form(...),
+    ip_address: List[List[str]] = Form(...),
+    event_id: List[List[str]] = Form(...)
 ):
     """
     Receives a list of media, a list of lists of IP addresses, and a list of lists of event IDs,
