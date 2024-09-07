@@ -16,26 +16,33 @@ TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 # Define the structure of the incoming data
 class MediaInfo(BaseModel):
-    media: str
+    media: List[str]
     ip_address: List[str]
     event_id: List[str]
 
 async def receive_media_info(media_info: List[MediaInfo]):
     """
     Receives a list of media, a list of IP addresses, and a list of event IDs,
-    merges all IP addresses, and saves the IPs and IP-address-event ID mapping to JSON files.
+    converts IP addresses and event IDs to lists of lists, merges all IP addresses,
+    and saves the IPs and IP-address-event ID mapping to JSON files.
     """
     try:
+        # Convert ip_address and event_id to lists of lists of strings
+        for item in media_info:
+            item.ip_address = [ip.split(',') for ip in item.ip_address]
+            item.event_id = [event.split(',') for event in item.event_id]
+
         # Flatten the list of all IP addresses and remove duplicates
-        all_ips = list(set(ip for item in media_info for ip in item.ip_address))
+        all_ips = list(set(ip for item in media_info for sublist in item.ip_address for ip in sublist))
 
         # Create new IP-address-event ID mapping
         ip_event_mapping = {}
         for item in media_info:
-            for ip in item.ip_address:
-                if ip not in ip_event_mapping:
-                    ip_event_mapping[ip] = set()
-                ip_event_mapping[ip].update(item.event_id)
+            for ip_list, event_list in zip(item.ip_address, item.event_id):
+                for ip in ip_list:
+                    if ip not in ip_event_mapping:
+                        ip_event_mapping[ip] = set()
+                    ip_event_mapping[ip].update(event_list)
 
         # Convert sets to lists for JSON serialization
         ip_event_mapping = {ip: list(events) for ip, events in ip_event_mapping.items()}
