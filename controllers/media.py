@@ -32,11 +32,11 @@ async def receive_media_info(media_info: List[MediaInfo]):
         # Create new IP-address-event ID mapping
         ip_event_mapping = {}
         for item in media_info:
-            for sublist in item.ip_address:
-                for ip in sublist:
+            for ip_list, event_list in zip(item.ip_address, item.event_id):
+                for ip in ip_list:
                     if ip not in ip_event_mapping:
                         ip_event_mapping[ip] = set()
-                    ip_event_mapping[ip].update(event for sublist in item.event_id for event in sublist)
+                    ip_event_mapping[ip].update(event_list)
 
         # Convert sets to lists for JSON serialization
         ip_event_mapping = {ip: list(events) for ip, events in ip_event_mapping.items()}
