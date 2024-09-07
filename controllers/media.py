@@ -14,47 +14,50 @@ TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 
 async def receive_media_info(
-    media: List[str] = Form(...),
-    ip_address: List[List[str]] = Form(...),
-    event_id: List[List[str]] = Form(...)
+    media: str = Form(...),
+    ip_address: str = Form(...),
+    event_id: str = Form(...)
 ):
     """
-    Receives a list of media, a list of lists of IP addresses, and a list of lists of event IDs,
+    Receives a list of media, a list of comma-separated lists of IP addresses, and a list of comma-separated lists of event IDs,
     merges all IP addresses, and saves the IPs and IP-address-event ID mapping to JSON files.
     """
     try:
+        # Convert comma-separated strings into lists
+        media_list = media.split(',')
+        ip_address_list = [ip.split(',') for ip in ip_address.split(';')]
+        event_id_list = [event.split(',') for event in event_id.split(';')]
+
         # Ensure the inputs are valid
-        if not isinstance(media, list) or not all(isinstance(ip_list, list) for ip_list in ip_address) or not all(isinstance(event_list, list) for event_list in event_id):
-            raise HTTPException(status_code=400, detail="Invalid format in one of the inputs.")
-        
-        if len(media) != len(ip_address) or len(media) != len(event_id):
+        if len(media_list) != len(ip_address_list) or len(media_list) != len(event_id_list):
             raise HTTPException(status_code=400, detail="The number of media entries must match the number of IP address lists and event ID lists.")
-        
+
         # Flatten the list of lists of IP addresses and remove duplicates
-        all_ips = list(set(ip for sublist in ip_address for ip in sublist))
-        
+        all_ips = list(set(ip for sublist in ip_address_list for ip in sublist))
+
         # Create new IP-address-event ID mapping
         ip_event_mapping = {}
-        for ip_list, event_list in zip(ip_address, event_id):
+        for ip_list, event_list in zip(ip_address_list, event_id_list):
             for ip in ip_list:
                 if ip not in ip_event_mapping:
                     ip_event_mapping[ip] = set()
                 ip_event_mapping[ip].update(event_list)
-        
+
         # Convert sets to lists for JSON serialization
         ip_event_mapping = {ip: list(events) for ip, events in ip_event_mapping.items()}
-        
+
         # Write the new list of IPs to the file
         with open(f"{local_disk}/ip_whitelist.json", "w") as file:
             json.dump(all_ips, file)
-        
+
         # Write the new IP-address-event ID mapping to the file
         with open(f"{local_disk}/ip_address_eventid.json", "w") as file:
             json.dump(ip_event_mapping, file)
-        
+
         return {"message": "IP whitelist and IP-address-event ID mapping updated successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
