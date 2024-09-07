@@ -70,12 +70,12 @@ def fetch_quickcount():
             json.dumps({
                 "Event ID": row["event_id"],
                 "Region": row["region"],
-                "Vote 1": row["vote1_pct"],
-                "Vote 2": row["vote2_pct"],
-                "Vote 3": row["vote3_pct"],
-                "Vote 4": row["vote4_pct"],
-                "Vote 5": row["vote5_pct"],
-                "Vote 6": row["vote6_pct"]
+                "Paslon 1": row["vote1_pct"],
+                "Paslon 2": row["vote2_pct"],
+                "Paslon 3": row["vote3_pct"],
+                "Paslon 4": row["vote4_pct"],
+                "Paslon 5": row["vote5_pct"],
+                "Paslon 6": row["vote6_pct"]
             })
             for _, row in df.iterrows()
         ])
@@ -90,12 +90,12 @@ def fetch_quickcount():
             payload = {
                 'Event ID': row['event_id'],
                 'Region': row['region'],
-                'Vote 1': row['vote1_pct'],
-                'Vote 2': row['vote2_pct'],
-                'Vote 3': row['vote3_pct'],
-                'Vote 4': row['vote4_pct'],
-                'Vote 5': row['vote5_pct'],
-                'Vote 6': row['vote6_pct']
+                'Paslon 1': row['vote1_pct'],
+                'Paslon 2': row['vote2_pct'],
+                'Paslon 3': row['vote3_pct'],
+                'Paslon 4': row['vote4_pct'],
+                'Paslon 5': row['vote5_pct'],
+                'Paslon 6': row['vote6_pct']
             }
             region = row['region']
             if region in existing_ids:
