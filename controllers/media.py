@@ -98,18 +98,18 @@ async def quickcount_kedaikopi(request: Request):
     request_timestamps[client_ip] = current_time
 
     try:
-        # Get regions attributed to the client_ip from ip_address_eventid.json
+        # Get event IDs attributed to the client_ip from ip_address_eventid.json
         with open(f"{local_disk}/ip_address_eventid.json", "r") as file:
             ip_event_mapping = json.load(file)
         
         if client_ip not in ip_event_mapping:
-            raise HTTPException(status_code=403, detail="No regions attributed to this IP")
+            raise HTTPException(status_code=403, detail="No event IDs attributed to this IP")
 
-        regions = ip_event_mapping[client_ip]
+        event_ids = ip_event_mapping[client_ip]
 
-        # Read and filter results_quickcount.csv based on selected regions using pandas
+        # Read and filter results_quickcount.csv based on selected event IDs using pandas
         df = pd.read_csv(f"{local_disk}/results_quickcount.csv")
-        filtered_df = df[df['region'].isin(regions) | (df['region'] == 'All')]  # Updated filtering condition
+        filtered_df = df[df['event_id'].isin(event_ids)]
 
         filtered_results = []
         for _, row in filtered_df.iterrows():
@@ -127,7 +127,7 @@ async def quickcount_kedaikopi(request: Request):
                 "region": row['region']
             }
             for i in range(1, n_candidate + 1):
-                result[f"vote{i}"] = row[f"vote{i}_pct"]
+                result[f"0{i}"] = row[f"vote{i}_pct"]
 
             filtered_results.append(result)
 
