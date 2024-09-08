@@ -109,7 +109,7 @@ async def quickcount_kedaikopi(request: Request):
 
         # Read and filter results_quickcount.csv based on selected regions using pandas
         df = pd.read_csv(f"{local_disk}/results_quickcount.csv")
-        filtered_df = df[df['region'].isin(regions + ['All'])]
+        filtered_df = df[df['region'].isin(regions) | (df['region'] == 'All')]  # Updated filtering condition
 
         filtered_results = []
         for _, row in filtered_df.iterrows():
