@@ -4,10 +4,10 @@ from fastapi import FastAPI
 from collections import defaultdict
 from fastapi.middleware.cors import CORSMiddleware
 
-
 from utils.utils import *
 from utils.preprocess import *
 from utils.postprocess import *
+from config.config import *
 from controllers.sms import *
 from controllers.scto import *
 from controllers.media import *
