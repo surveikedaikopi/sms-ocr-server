@@ -97,4 +97,4 @@ def scheduled_fetch_quickcount():
             fetch_quickcount()
         except Exception as e:
             print(f"Error in fetch_quickcount: {str(e)}")
-        time.sleep(300)  # 300 seconds = 5 minutes
+        time.sleep(interval_aggregate)
