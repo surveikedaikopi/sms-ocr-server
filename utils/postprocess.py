@@ -116,7 +116,7 @@ def fetch_quickcount():
     else:
         # Update existing records based on their IDs
         existing_records = res.json()['response']['results']
-        existing_ids = {record['Region'].lower(): record['_id'] for record in existing_records}
+        existing_ids = {(record['Event ID'], record['Region'].strip().lower()): record['_id'] for record in existing_records}
 
         for _, row in df.iterrows():
             if row["region"] == 'All':  # Skip 'All' region
@@ -131,9 +131,9 @@ def fetch_quickcount():
                 'Paslon 5': row['vote5_pct'],
                 'Paslon 6': row['vote6_pct']
             }
-            region = row['region'].lower()
-            if region in existing_ids:
-                record_id = existing_ids[region]
+            key = (row['event_id'], row['region'].strip().lower())
+            if key in existing_ids:
+                record_id = existing_ids[key]
                 requests.patch(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, data=payload)
             else:
                 requests.post(f'{url_bubble}/AggregateRegion', headers=headers, json=payload)
