@@ -112,6 +112,45 @@ def fetch_quickcount():
         print(f"Failed to update Bubble datamart: {e}")
         return
 
+    # Fetch all event IDs first
+    try:
+        res = requests.get(url_get_event_ids, headers=headers)
+        res.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch event IDs: {e}")
+        return
+
+    event_ids = res.json()['response']['list_events']
+
+    # Initialize an empty list to store all existing records
+    existing_records = []
+
+    # Loop over each event_id and fetch records
+    for event_id in event_ids:
+        filter_params = [{"key": "Event ID", "constraint_type": "equals", "value": event_id}]
+        try:
+            res = requests.get(f'{url_bubble}/AggregateRegion', headers=headers, params={"constraints": json.dumps(filter_params)})
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch records for event ID {event_id}: {e}")
+            continue
+
+        response_json = res.json()
+        records = response_json['response']['results']
+        existing_records.extend(records)
+
+    # Debug: Print the total number of records in the response
+    print(f"Total records in response: {len(existing_records)}")
+
+    # Create the existing_ids dictionary
+    existing_ids = {(record['Event ID'].strip().lower(), record['Region'].strip().lower()): record['_id'] for record in existing_records}
+
+    # Debug: Print the total number of existing records
+    print(f"Total existing records: {len(existing_ids)}")
+
+    # Debug: Print the existing IDs
+    print(existing_ids)
+
     if res.json()['response']['count'] == 0:
         # Perform bulk insert if the table is empty
         data = '\n'.join([
@@ -136,9 +175,6 @@ def fetch_quickcount():
 
     else:
         # Update existing records based on their IDs
-        existing_records = res.json()['response']['results']
-        existing_ids = {(record['Event ID'].strip().lower(), record['Region'].strip().lower()): record['_id'] for record in existing_records}
-        print(existing_ids)
         for _, row in df.iterrows():
             if row["region"] == 'All':  # Skip 'All' region
                 continue
