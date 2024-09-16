@@ -7,8 +7,13 @@ from config.config import *
 
 # Functions to fetch and save quick count results
 def fetch_quickcount():
+    try:
+        res = requests.get(url_get_event_ids, headers=headers)
+        res.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to fetch event IDs: {e}")
+        return
 
-    res = requests.get(url_get_event_ids, headers=headers)
     out = res.json()['response']
     
     list_event_id = out['list_events']
@@ -26,7 +31,13 @@ def fetch_quickcount():
         elif event_type in ['Pilwalkot', 'Pilbup']:
             url_votes = url_votes_agg_kabkota
 
-        res = requests.get(url_votes, headers=headers, params=params)
+        try:
+            res = requests.get(url_votes, headers=headers, params=params)
+            res.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch votes for event {event_id}: {e}")
+            continue
+
         out = res.json()['response']
 
         regions = out['regions']
@@ -94,7 +105,12 @@ def fetch_quickcount():
     df.to_csv(f'{local_disk}/results_quickcount.csv', index=False)
 
     # Update Bubble datamart
-    res = requests.get(f'{url_bubble}/AggregateRegion', headers=headers)
+    try:
+        res = requests.get(f'{url_bubble}/AggregateRegion', headers=headers)
+        res.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to update Bubble datamart: {e}")
+        return
 
     if res.json()['response']['count'] == 0:
         # Perform bulk insert if the table is empty
@@ -111,7 +127,12 @@ def fetch_quickcount():
             })
             for _, row in df.iterrows() if row["region"] != 'All'  # Exclude 'All' region
         ])
-        out = requests.post(f'{url_bubble}/AggregateRegion/bulk', headers=headers_bulk, data=data)
+        try:
+            out = requests.post(f'{url_bubble}/AggregateRegion/bulk', headers=headers_bulk, data=data)
+            out.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to perform bulk insert: {e}")
+            return
 
     else:
         # Update existing records based on their IDs
@@ -135,7 +156,13 @@ def fetch_quickcount():
             if key in existing_ids:
                 record_id = existing_ids[key]
                 print(f"Updating record: key={key}, existing_id={record_id}")  # Debug print
-                requests.patch(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, data=payload)
+                try:
+                    requests.patch(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, data=payload)
+                except requests.exceptions.RequestException as e:
+                    print(f"Failed to update record {record_id}: {e}")
             else:
                 print(f"Inserting new record: key={key}")  # Debug print
-                requests.post(f'{url_bubble}/AggregateRegion', headers=headers, json=payload)
+                try:
+                    requests.post(f'{url_bubble}/AggregateRegion', headers=headers, json=payload)
+                except requests.exceptions.RequestException as e:
+                    print(f"Failed to insert new record for key {key}: {e}")
