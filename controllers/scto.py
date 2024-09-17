@@ -58,7 +58,10 @@ def scto_process(data, event, n_candidate, proc_id_a4):
     try:
         uid = data['UID']
         std_datetime = datetime.strptime(data['SubmissionDate'], "%b %d, %Y %I:%M:%S %p") + timedelta(hours=7)
-        filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid}]
+        filter_params = [
+            {"key": "UID", "constraint_type": "equals", "value": uid},
+            {"key": "Event ID", "constraint_type": "equals", "value": event}
+        ]
         res_bubble = requests.get(f'{url_bubble}/Votes', headers=headers, params={"constraints": json.dumps(filter_params)})
         data_bubble = res_bubble.json()['response']['results'][0]
         
@@ -100,6 +103,7 @@ def scto_process(data, event, n_candidate, proc_id_a4):
             'Active': True,
             'Complete': sms,
             'UID': uid,
+            'Event ID': event,
             'SCTO TPS': data['no_tps'],
             'SCTO Dapil': data['dapil'],
             'SCTO Address': data['alamat'],
