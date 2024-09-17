@@ -140,16 +140,16 @@ def fetch_quickcount():
         existing_records.extend(records)
 
     # Debug: Print the total number of records in the response
-    print(f"Total records in response: {len(existing_records)}")
+    # print(f"Total records in response: {len(existing_records)}")
 
     # Create the existing_ids dictionary
     existing_ids = {(record['Event ID'].strip().lower(), record['Region'].strip().lower()): record['_id'] for record in existing_records}
 
     # Debug: Print the total number of existing records
-    print(f"Total existing records: {len(existing_ids)}")
+    # print(f"Total existing records: {len(existing_ids)}")
 
     # Debug: Print the existing IDs
-    print(existing_ids)
+    # print(existing_ids)
 
     if res.json()['response']['count'] == 0:
         # Perform bulk insert if the table is empty
@@ -191,13 +191,13 @@ def fetch_quickcount():
             key = (row['event_id'].strip().lower(), row['region'].strip().lower())
             if key in existing_ids:
                 record_id = existing_ids[key]
-                print(f"Updating record: key={key}, existing_id={record_id}")  # Debug print
+                # print(f"Updating record: key={key}, existing_id={record_id}")  # Debug print
                 try:
                     requests.patch(f'{url_bubble}/AggregateRegion/{record_id}', headers=headers, data=payload)
                 except requests.exceptions.RequestException as e:
                     print(f"Failed to update record {record_id}: {e}")
             else:
-                print(f"Inserting new record: key={key}")  # Debug print
+                # print(f"Inserting new record: key={key}")  # Debug print
                 try:
                     requests.post(f'{url_bubble}/AggregateRegion', headers=headers, json=payload)
                 except requests.exceptions.RequestException as e:
