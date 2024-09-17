@@ -151,7 +151,7 @@ def fetch_quickcount():
     # Debug: Print the existing IDs
     # print(existing_ids)
 
-    if res.json()['response']['count'] == 0:
+    if len(existing_records) == 0:
         # Perform bulk insert if the table is empty
         data = '\n'.join([
             json.dumps({
