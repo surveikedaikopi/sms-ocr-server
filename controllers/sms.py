@@ -72,9 +72,9 @@ async def receive_sms(
 
             tmp = pd.read_excel(f'{local_disk}/target_{event}.xlsx', usecols=['UID'])
 
-            # Check Error Type 2 (UID)
+            # Check Error Type 2 (UID within the context of EventID)
             if uid not in tmp['UID'].str.lower().tolist():
-                message = f'UID "{uid.upper()}" tidak terdaftar, ' + template_error_msg
+                message = f'UID "{uid.upper()}" tidak terdaftar untuk EventID "{event}", ' + template_error_msg
                 error_type = 2
             elif len(info) != number_candidates + 4:
                 message = 'Data tidak lengkap, ' + template_error_msg
@@ -90,7 +90,10 @@ async def receive_sms(
                     error_type = 4
                 else:
                     message = summary + 'Berhasil diterima. Utk koreksi, kirim ulang dgn format yg sama:\n' + format
-                    filter_params = [{"key": "UID", "constraint_type": "equals", "value": uid.upper()}]
+                    filter_params = [
+                        {"key": "UID", "constraint_type": "equals", "value": uid.upper()},
+                        {"key": "Event ID", "constraint_type": "equals", "value": event}
+                    ]
                     res = requests.get(f'{url_bubble}/Votes', headers=headers, params={"constraints": json.dumps(filter_params)})
                     data = res.json()['response']['results'][0]
 
