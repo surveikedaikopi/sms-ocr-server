@@ -18,11 +18,12 @@ def fetch_quickcount():
     
     list_event_id = out['list_events']
     list_event_type = out['list_types']
+    list_event_name = out['list_names']
 
     data = []
     total_votes_data = {}
 
-    for event_id, event_type in zip(list_event_id, list_event_type):
+    for event_id, event_type, event_name in zip(list_event_id, list_event_type, list_event_name):
         params = {'Event ID': event_id}
         if event_type == 'Pilpres':
             url_votes = url_votes_agg_pilpres
@@ -39,8 +40,6 @@ def fetch_quickcount():
             continue
 
         out = res.json()['response']
-
-        event_name = out['event_name']
 
         regions = out['regions']
         vote1 = out['vote 1']
@@ -75,8 +74,8 @@ def fetch_quickcount():
 
             data.append({
                 'event_id': event_id,
-                'event_name': event_name,  # Added event_name
-                'event_type': event_type,  # Added event_type
+                'event_name': event_name,
+                'event_type': event_type,
                 'region': region,
                 'vote1_pct': v1_pct,
                 'vote2_pct': v2_pct,
@@ -93,8 +92,8 @@ def fetch_quickcount():
 
         total_votes_data[event_id] = {
             'event_id': event_id,
-            'event_name': event_name,  # Added event_name
-            'event_type': event_type,  # Added event_type
+            'event_name': event_name,
+            'event_type': event_type,
             'region': 'All',
             'vote1_pct': total_votes_pct[0],
             'vote2_pct': total_votes_pct[1],
