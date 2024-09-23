@@ -164,7 +164,7 @@ def fetch_quickcount():
                 "Paslon 5": row["vote5_pct"],
                 "Paslon 6": row["vote6_pct"]
             })
-            for _, row in df.iterrows() if row["region"] != 'All'  # Exclude 'All' region
+            for _, row in df.iterrows()
         ])
         try:
             out = requests.post(f'{url_bubble}/AggregateRegion/bulk', headers=headers_bulk, data=data)
@@ -176,8 +176,6 @@ def fetch_quickcount():
     else:
         # Update existing records based on their IDs
         for _, row in df.iterrows():
-            if row["region"] == 'All':  # Skip 'All' region
-                continue
             payload = {
                 'Event ID': row['event_id'],
                 'Region': row['region'],

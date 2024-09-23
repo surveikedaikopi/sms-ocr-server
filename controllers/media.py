@@ -11,7 +11,6 @@ from config.config import *
 
 # Dictionary to store request timestamps for rate limiting
 request_timestamps = {}
-TIME_WINDOW = 60  # Time window in seconds for rate limiting
 
 
 
@@ -91,7 +90,7 @@ async def quickcount_kedaikopi(request: Request):
 
     # Check if the client has made a request within the last minute
     last_request_time = request_timestamps.get(client_ip, 0)
-    if current_time - last_request_time < TIME_WINDOW:
+    if current_time - last_request_time < RATE_LIMIT_TIME_WINDOW:
         raise HTTPException(status_code=429, detail="Too Many Requests")
 
     # Update the request timestamp for the client

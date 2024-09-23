@@ -34,8 +34,6 @@ app.add_middleware(
 # Dictionary to store request timestamps for each client IP
 request_timestamps = defaultdict(float)
 
-# Time window in seconds
-TIME_WINDOW = 60  # 1 minute
 
 # ================================================================================================================
 # Endpoints

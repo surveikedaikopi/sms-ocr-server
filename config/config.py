@@ -41,3 +41,5 @@ list_WhatsApp_Gateway = {
 headers = {'Authorization': f'Bearer {BUBBLE_API_KEY}'}
 headers_bulk = {'Authorization': f'Bearer {BUBBLE_API_KEY}', 'Content-Type': 'text/plain'}
 interval_aggregate = os.environ.get('interval_aggregate')
+RATE_LIMIT_TIME_WINDOW = os.environ.get('RATE_LIMIT_TIME_WINDOW')
+
