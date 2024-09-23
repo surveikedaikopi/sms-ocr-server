@@ -40,6 +40,8 @@ def fetch_quickcount():
 
         out = res.json()['response']
 
+        event_name = out['event_name']
+
         regions = out['regions']
         vote1 = out['vote 1']
         vote2 = out['vote 2']
@@ -73,6 +75,8 @@ def fetch_quickcount():
 
             data.append({
                 'event_id': event_id,
+                'event_name': event_name,  # Added event_name
+                'event_type': event_type,  # Added event_type
                 'region': region,
                 'vote1_pct': v1_pct,
                 'vote2_pct': v2_pct,
@@ -89,6 +93,8 @@ def fetch_quickcount():
 
         total_votes_data[event_id] = {
             'event_id': event_id,
+            'event_name': event_name,  # Added event_name
+            'event_type': event_type,  # Added event_type
             'region': 'All',
             'vote1_pct': total_votes_pct[0],
             'vote2_pct': total_votes_pct[1],
@@ -156,6 +162,8 @@ def fetch_quickcount():
         data = '\n'.join([
             json.dumps({
                 "Event ID": row["event_id"],
+                "Event Name": row["event_name"],  # Added event_name
+                "Event Type": row["event_type"],  # Added event_type
                 "Region": row["region"],
                 "Paslon 1": row["vote1_pct"],
                 "Paslon 2": row["vote2_pct"],
@@ -178,6 +186,8 @@ def fetch_quickcount():
         for _, row in df.iterrows():
             payload = {
                 'Event ID': row['event_id'],
+                'Event Name': row['event_name'],  # Added event_name
+                'Event Type': row['event_type'],  # Added event_type
                 'Region': row['region'],
                 'Paslon 1': row['vote1_pct'],
                 'Paslon 2': row['vote2_pct'],
