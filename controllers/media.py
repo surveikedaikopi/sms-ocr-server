@@ -123,6 +123,8 @@ async def quickcount_kedaikopi(request: Request):
 
             result = {
                 "event_id": row['event_id'],
+                "event_name": row['event_name'],
+                "event_type": row['event_type'],
                 "region": row['region']
             }
             for i in range(1, n_candidate + 1):
