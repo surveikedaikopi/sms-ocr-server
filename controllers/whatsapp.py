@@ -144,6 +144,7 @@ async def receive_whatsapp(
             'sender': list_WhatsApp_Gateway[int(port)],
             'include_unsubscribe': False
         }
+        print(PAYLOADS)
         requests.post(url_send_wa, headers=HEADERS, json=PAYLOADS)
 
     elif msg == 'the gateway is active':
